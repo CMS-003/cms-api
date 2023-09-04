@@ -1,16 +1,17 @@
 const BaseBLL = require('../base');
-const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 
-class User extends BaseBLL {
+class Sns extends BaseBLL {
   constructor() {
     super();
     const schema = new Schema({
+      // phone,email,google,github,alipay
       _id: {
         type: String,
       },
-      account: String,
+      sns_id: String,
+      user_id: String,
       nickname: {
         type: String,
         comment: '昵称'
@@ -19,39 +20,28 @@ class User extends BaseBLL {
         type: String,
         default: '',
       },
-      pass: {
-        type: String,
-      },
-      salt: {
-        type: String,
-      },
       createdAt: {
         type: Date,
         default: () => new Date(),
       },
+      detail: Object,
       status: {
         type: Number,
         default: 0,
       },
     }, {
       strict: true,
-      collection: 'user_info',
+      collection: 'sns_info',
     });
     schema.loadClass(class Custom {
-      // 密码加盐后的加密密码
-      calculate(pass) {
-        const hmac = crypto.createHmac('sha1', this._doc.salt);
-        hmac.update(pass);
-        return hmac.digest('hex').toString();
-      }
       isEqual(password) {
         return this._doc.pass === this.calculate(password, this._doc.salt);
       }
     })
-    this.model = mongoose.model('User', schema);
+    this.model = mongoose.model('Sns', schema);
 
-    BaseBLL.models.User = this.model;
+    BaseBLL.models.Sns = this.model;
   }
 }
 
-module.exports = new User();
+module.exports = new Sns();

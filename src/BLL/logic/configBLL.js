@@ -41,7 +41,7 @@ class Config extends BaseBLL {
       }
     }, {
       strict: true,
-      collections: 'config_info',
+      collection: 'config_info',
     });
     this.model = mongoose.model('Config', schema);
     BaseBLL.models.Config = this.model;

@@ -25,7 +25,7 @@ class Project extends BaseBLL {
       },
     }, {
       strict: true,
-      collections: 'project_info',
+      collection: 'project_info',
     });
     this.model = mongoose.model('Project', schema);
     BaseBLL.models.Project = this.model;

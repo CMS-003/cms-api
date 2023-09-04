@@ -1,12 +1,22 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = async (ctx, next) => {
-  const token = ctx.get('authorization') || ctx.query.authorization;
+  const token = ctx.get('authorization') || ctx.query.authorization || '';
+  if (!token) {
+    return ctx.response.throwBiz('AUTH.tokenFail')
+  }
   try {
-    const user = jwt.verify(token || '', ctx.config.USER_TOKEN_SECRET)
+    const [type, sign] = token.split(' ');
+    const user = jwt.verify(sign || '', ctx.config.USER_TOKEN_SECRET)
     ctx.state.user = user;
     await next();
   } catch (e) {
-    ctx.response.throwBiz('AUTH.tokenFail')
+    console.log(e, token)
+    // TokenExpiredError, ReferenceError
+    if (e.name === 'TokenExpiredError') {
+      ctx.response.throwBiz('AUTH.tokenExpired');
+    } else {
+      ctx.response.throwBiz('AUTH.tokenFail')
+    }
   }
 }

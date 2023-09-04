@@ -2,7 +2,7 @@ const BaseBLL = require('../base');
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 
-class ComponentBLL extends BaseBLL {
+class ComponentTypeBLL extends BaseBLL {
   constructor() {
     super();
     const schema = new Schema({
@@ -21,29 +21,33 @@ class ComponentBLL extends BaseBLL {
         type: String,
         default: '',
       },
-      desc: {
-        type: String,
-        default: '',
-      },
       accepts: {
         type: [String],
         comment: '可接受的子组件'
-      },
-      status: {
-        type: Number,
-        default: 0,
       },
       order: {
         type: Number,
         default: 0,
       },
+      status: {
+        type: Number,
+        default: 0,
+      },
+      createdAt: {
+        type: Date,
+        default: () => dayjs().toDate(),
+      },
+      updatedAt: {
+        type: Date,
+        default: () => dayjs().toDate(),
+      },
     }, {
       strict: true,
-      collection: 'component_info',
+      collection: 'component_type',
     });
-    this.model = mongoose.model('Component', schema);
-    BaseBLL.models.Component = this.model;
+    this.model = mongoose.model('ComponentType', schema);
+    BaseBLL.models.ComponentType = this.model;
   }
 }
 
-module.exports = new ComponentBLL();
+module.exports = new ComponentTypeBLL();

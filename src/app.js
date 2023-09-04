@@ -15,6 +15,7 @@ const bizError = require('./middleware/bizError');
 const { BizError, genByBiz } = require('./utils/bizError')
 const loadSchedule = require('./schedule/index');
 const { default: mongoose } = require('mongoose');
+const qs = require('querystring')
 
 const app = new Koa();
 
@@ -77,7 +78,7 @@ app.on('error', (err, ctx) => {
 module.exports = {
   app,
   run: async function (cb) {
-    app.db = await mongoose.connect('mongodb://root:123456@192.168.0.124:27017/cms?authSource=admin');
+    app.db = await mongoose.connect(`mongodb://${config.mongo.user}:${config.mongo.pass}@${config.mongo.host}:${config.mongo.port}/${config.mongo.db}?${qs.stringify(config.mongo.query)}`);
     // 连接数据库后,启动前加载配置
     const config_items = await app.BLL.configBLL.getAll({ lean: true })
     config_items.forEach(item => {

@@ -1,5 +1,5 @@
 module.exports = {
-  PORT: 3334,
+  PORT: 3335,
   timezone: 'Asia/Shanghai',
   language: 'zh-CN',
   mongo: {

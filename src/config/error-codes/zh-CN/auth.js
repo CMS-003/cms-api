@@ -23,5 +23,10 @@ module.exports = {
     status: 400,
     code: 101070,
     message: '验证码错误!'
+  },
+  PassError: {
+    status: 200,
+    code: 101080,
+    message: '账号或密码错误'
   }
 };
