@@ -10,11 +10,11 @@ const log4js = require('log4js');
 const logger = require('./utils/logger')('access');
 const constant = require('./constant');
 const router = require('./router');
-const mongoInit = require('./models/mongo');
-const BLLinit = require('./BLL/index');
+const BLL = require('./BLL/index');
 const bizError = require('./middleware/bizError');
 const { BizError, genByBiz } = require('./utils/bizError')
-const loadSchedule = require('./schedule/index')
+const loadSchedule = require('./schedule/index');
+const { default: mongoose } = require('mongoose');
 
 const app = new Koa();
 
@@ -42,8 +42,7 @@ app.request.paging = function () {
 
 // 加载model和业务逻辑层
 app.config = config;
-app.models = mongoInit(config.mongo);
-app.BLL = BLLinit(app.models);
+app.BLL = BLL;
 
 app.use(bizError)
 
@@ -78,6 +77,7 @@ app.on('error', (err, ctx) => {
 module.exports = {
   app,
   run: async function (cb) {
+    app.db = await mongoose.connect('mongodb://root:123456@192.168.0.124:27017/cms?authSource=admin');
     // 连接数据库后,启动前加载配置
     const config_items = await app.BLL.configBLL.getAll({ lean: true })
     config_items.forEach(item => {

@@ -1,14 +1,11 @@
-const path = require('path');
-const loader = require('../utils/loader')
-const BLL = {};
+const componentBLL = require('./logic/componentBLL')
+const configBLL = require('./logic/configBLL')
+const projectBLL = require('./logic/projectBLL')
+const userBLL = require('./logic/userBLL')
 
-module.exports = (models) => {
-  loader({ dir: path.join(__dirname, 'logic') }, function (info) {
-    const name = info.filename;
-    const BL = require(info.fullpath)
-    if (typeof BL === 'function') {
-      BLL[name] = BL(models);
-    }
-  });
-  return BLL;
+module.exports = {
+  componentBLL,
+  configBLL,
+  projectBLL,
+  userBLL,
 }

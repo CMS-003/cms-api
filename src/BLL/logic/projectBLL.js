@@ -1,9 +1,35 @@
+const mongoose = require('mongoose');
 const BaseBLL = require('../base');
 
 class Project extends BaseBLL {
-  constructor(models, model_name) {
-    super(models, model_name);
+  constructor() {
+    super();
+    const schema = new mongoose.Schema({
+      _id: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
+      cover: {
+        type: String,
+        default: '',
+      },
+      desc: {
+        type: String,
+        default: '',
+      },
+      status: {
+        type: Number,
+        default: 0,
+      },
+    }, {
+      strict: true,
+      collections: 'project_info',
+    });
+    this.model = mongoose.model('Project', schema);
+    BaseBLL.models.Project = this.model;
   }
 }
 
-module.exports = models => new Project(models, 'ProjectInfo');
+module.exports = new Project();

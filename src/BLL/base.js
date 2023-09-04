@@ -1,10 +1,9 @@
 const _ = require('lodash');
 
 class BaseBLL {
-  constructor(models, model_name) {
+  static models = {};
+  constructor() {
     this.params = {};
-    this.models = models;
-    this.model = models[model_name];
   }
 
   _init(opts) {
