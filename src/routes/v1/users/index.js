@@ -26,7 +26,6 @@ UserRoute.get('/menu', userVerify, async ({ BLL, params, req, response }) => {
   const { componentBLL } = BLL;
   const where = { tree_id: 'bc2753d5-2af0-4bba-8eef-b2b5cdba2caf' };
   const items = await componentBLL.getList({ where, order: 'order', lean: true });
-  console.log(items);
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];

@@ -11,6 +11,7 @@ class Sns extends BaseBLL {
         type: String,
       },
       sns_id: String,
+      sns_type: String,
       user_id: String,
       nickname: {
         type: String,
@@ -29,6 +30,10 @@ class Sns extends BaseBLL {
         type: Number,
         default: 0,
       },
+      access_token: String,
+      access_expired_at: Date,
+      refresh_token: String,
+      refresh_expired_at: Date,
     }, {
       strict: true,
       collection: 'sns_info',

@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "NODE_ENV=production node ./src/server.js",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "dev": "cross-env NODE_ENV=development HTTP_PROXY=http://192.168.101.166:8899 nodemon ./src/server.js",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
     "auto-deploy": "git pull && docker-compose restart"
@@ -31,6 +31,9 @@
     "nodemailer": "^6.7.5",
     "nodemailer-smtp-transport": "^2.7.4",
     "randomstring": "^1.2.2",
+    "shortid": "^2.2.16",
+    "superagent": "^8.1.2",
+    "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

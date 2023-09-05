@@ -8,7 +8,7 @@ class Project extends BaseBLL {
       _id: {
         type: String,
       },
-      name: {
+      title: {
         type: String,
       },
       cover: {

@@ -78,7 +78,7 @@ app.on('error', (err, ctx) => {
 module.exports = {
   app,
   run: async function (cb) {
-    app.db = await mongoose.connect(`mongodb://${config.mongo.user}:${config.mongo.pass}@${config.mongo.host}:${config.mongo.port}/${config.mongo.db}?${qs.stringify(config.mongo.query)}`);
+    app.db = await mongoose.connect(config.mongo_url);
     // 连接数据库后,启动前加载配置
     const config_items = await app.BLL.configBLL.getAll({ lean: true })
     config_items.forEach(item => {
