@@ -30,6 +30,22 @@ ComponentRoute.post('/', async ({ state, request, response, BLL }) => {
   response.success({ item });
 });
 
+ComponentRoute.post('/batch', async ({ request, response, BLL }) => {
+  const data = request.body;
+  const arr = data.forEach((_id, ...data) => {
+    return {
+      updateOne: {
+        filter: { _id },
+        update: { $set: data }
+      }
+    }
+  });
+  if (arr.length) {
+    await BLL.componentBLL.model.bulkWrite(arr);
+  }
+  response.success();
+});
+
 ComponentRoute.put('/:id', async ({ params, request, response, BLL }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs']);
