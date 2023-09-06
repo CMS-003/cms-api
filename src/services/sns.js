@@ -70,8 +70,7 @@ module.exports = {
       const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true });
       const user = await BLL.userBLL.getInfo({ where: { _id: sns.user_id }, lean: true });
       const token = await userService.genToken(user)
-      ctx.set('cookie', 'access_token=' + token)
-      return ctx.redirect(config.page_public_url + '/oauth/success')
+      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token)
     } else {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }

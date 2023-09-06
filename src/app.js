@@ -4,7 +4,7 @@ const Koa = require('koa');
 const Convert = require('koa-convert');
 const Static = require('koa-static');
 const Cors = require('koa2-cors');
-const bodyParser = require('koa-bodyparser');
+const { koaBody } = require('koa-body')
 const config = require('./config/index');
 const log4js = require('log4js');
 const logger = require('./utils/logger')('access');
@@ -12,6 +12,7 @@ const constant = require('./constant');
 const router = require('./router');
 const BLL = require('./BLL/index');
 const bizError = require('./middleware/bizError');
+const needProject = require('./middleware/project.js');
 const { BizError, genByBiz } = require('./utils/bizError')
 const loadSchedule = require('./schedule/index');
 const { default: mongoose } = require('mongoose');
@@ -38,6 +39,7 @@ app.request.paging = function () {
   let limit = parseInt(qs[constant.SYSTEM.REQ_LIMIT]) || 20;
   hql.page = Math.max(page, 1);
   hql.limit = Math.min(limit, 20);
+  hql.where = {};
   return hql;
 }
 
@@ -45,7 +47,8 @@ app.request.paging = function () {
 app.config = config;
 app.BLL = BLL;
 
-app.use(bizError)
+app.use(bizError);
+app.use(needProject);
 
 const fn = log4js.connectLogger(logger);
 app.use(async (ctx, next) => {
@@ -55,7 +58,15 @@ app.use(async (ctx, next) => {
 
 app.use(Cors());
 
-app.use(bodyParser());
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    uploadDir: constant.PATH.ROOT + '/.tmp',
+    maxFields: 100,
+    maxFieldsSize: 1024 * 1024 * 1024,
+    keepExtensions: false,
+  }
+}));
 
 app.use(Convert(Static(path.join(__dirname, '../static'))))
 

@@ -31,7 +31,7 @@ ConfigRoute.put('/:id', async ({ params, request, response, BLL }) => {
   if (_.isNil(data.project_id)) {
     return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
   }
-  await BLL.configBLL.update(where, { $set: data });
+  await BLL.configBLL.update({ where, data });
   response.success();
 });
 

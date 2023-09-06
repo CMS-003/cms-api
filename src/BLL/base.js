@@ -101,7 +101,7 @@ class BaseBLL {
   destroy(opts) {
     const opt = this._init(opts);
     if (_.isEmpty(opt.where)) {
-      opt.where['id'] = ''
+      opt.where['_id'] = ''
     }
     return this.model.deleteMany(opt.where);
   }

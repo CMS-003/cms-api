@@ -9,6 +9,15 @@ class ComponentBLL extends BaseBLL {
       _id: {
         type: String,
       },
+      project_id: {
+        type: String,
+      },
+      template_id: {
+        type: String,
+      },
+      parent_id: {
+        type: String,
+      },
       title: {
         type: String,
         comment: '标题(中文,显示用)'
@@ -16,6 +25,12 @@ class ComponentBLL extends BaseBLL {
       name: {
         type: String,
         comment: '名称(英文,标记用)'
+      },
+      icon: {
+        type: String,
+      },
+      type: {
+        type: String,
       },
       cover: {
         type: String,

@@ -6,8 +6,10 @@ const ComponentTypeRoute = new Router({
   prefix: '',
 });
 
-ComponentTypeRoute.get('/', async ({ BLL, response }) => {
-  const items = await BLL.componentTypeBLL.getList({});
+ComponentTypeRoute.get('/', async ({ BLL, request, response }) => {
+  const hql = request.paging()
+  hql.order = { order: 1, updatedAt: -1 }
+  const items = await BLL.componentTypeBLL.getAll(hql);
   response.success({ items });
 })
 
@@ -28,7 +30,12 @@ ComponentTypeRoute.put('/:id', async ({ params, request, response, BLL }) => {
   const where = { _id: params.id };
   request.body.updatedAt = new Date()
   const data = request.body;
-  const item = await BLL.componentTypeBLL.update(where, { $set: data });
+  const item = await BLL.componentTypeBLL.update({ where, data });
+  response.success({ item });
+});
+ComponentTypeRoute.delete('/:id', async ({ params, response, BLL }) => {
+  const where = { _id: params.id };
+  await BLL.componentTypeBLL.destroy({ where });
   response.success();
 });
 

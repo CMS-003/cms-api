@@ -18,7 +18,7 @@ project.get('/:id', async ({ params, req, BLL, response }) => {
 })
 
 project.post('/', async ({ request, response, BLL }) => {
-  const data = _.pick(request.body, ['name', 'desc', 'cover']);
+  const data = _.pick(request.body, ['title', 'name', 'desc', 'cover']);
   data._id = uuid.v4();
   const item = await BLL.projectBLL.create(data);
   response.success({ item });
@@ -27,7 +27,13 @@ project.post('/', async ({ request, response, BLL }) => {
 project.put('/:id', async ({ params, request, response, BLL }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['name', 'desc', 'cover']);
-  const item = await BLL.projectBLL.update(where, { $set: data });
+  const item = await BLL.projectBLL.update({ where, data });
+  response.success({ item });
+});
+
+project.delete('/:id', async ({ params, request, response, BLL }) => {
+  const where = { _id: params.id };
+  await BLL.projectBLL.destroy({ where });
   response.success();
 });
 

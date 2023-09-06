@@ -8,17 +8,22 @@ const templateRoute = new Router();
 
 templateRoute.get('/', userVerify, async ({ BLL, request, state, response }) => {
   const hql = request.paging()
-  console.log(state);
+  if (request.query.project_id) {
+    hql.where.project_id = request.query.project_id
+  }
+  hql.order = { order: 1 }
   const items = await BLL.templateBLL.getList(hql);
   response.success({ items })
 })
 
-templateRoute.post('/', userVerify, async ({ request, response }) => {
+templateRoute.post('/', userVerify, async ({ BLL, state, request, response }) => {
+  request.body._id = uuid.v4()
+  request.body.project_id = state.project_id
   await BLL.templateBLL.create(request.body)
   response.success()
 })
 
-templateRoute.put('/:template_id', userVerify, async ({ params, request, response }) => {
+templateRoute.put('/:template_id', userVerify, async ({ BLL, params, request, response }) => {
   await BLL.templateBLL.update({ where: { _id: params.template_id }, data: request.body })
   response.success()
 })
