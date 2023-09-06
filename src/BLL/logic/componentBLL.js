@@ -52,6 +52,10 @@ class ComponentBLL extends BaseBLL {
         type: Number,
         default: 0,
       },
+      attrs: {
+        type: Object,
+        default: {}
+      }
     }, {
       strict: true,
       collection: 'component_info',

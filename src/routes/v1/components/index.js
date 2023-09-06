@@ -32,7 +32,7 @@ ComponentRoute.post('/', async ({ state, request, response, BLL }) => {
 
 ComponentRoute.put('/:id', async ({ params, request, response, BLL }) => {
   const where = { _id: params.id };
-  const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id']);
+  const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs']);
   data.updatedAt = new Date();
   const item = await BLL.componentBLL.update({ where, data });
   response.success(item);
