@@ -15,6 +15,9 @@ class ComponentBLL extends BaseBLL {
       template_id: {
         type: String,
       },
+      tree_id: {
+        type: String,
+      },
       parent_id: {
         type: String,
       },

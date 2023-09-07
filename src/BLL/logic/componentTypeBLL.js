@@ -34,6 +34,10 @@ class ComponentTypeBLL extends BaseBLL {
         type: Number,
         default: 0,
       },
+      level: {
+        type: Number,
+        default: 1,
+      },
       createdAt: {
         type: Date,
         default: () => dayjs().toDate(),
