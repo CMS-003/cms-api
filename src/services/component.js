@@ -1,7 +1,7 @@
 const BLL = require('../BLL/index.js');
 
 async function getTree(tree_id) {
-  const items = await BLL.componentBLL.getAll({ where: { tree_id }, lean: true })
+  const items = await BLL.componentBLL.getAll({ where: { tree_id }, order: { order: 1 }, lean: true })
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];
