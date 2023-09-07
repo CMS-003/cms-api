@@ -23,7 +23,8 @@ TemplateComponentsRoute.get('/:id/components', async ({ params, request, BLL, re
             items[i].children = tree.children;
         }
     }
-    response.success({ items });
+    template.children = items;
+    response.success(template);
 })
 
 module.exports = TemplateComponentsRoute
