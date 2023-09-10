@@ -32,11 +32,11 @@ ComponentRoute.post('/', async ({ state, request, response, BLL }) => {
 
 ComponentRoute.post('/batch', async ({ request, response, BLL }) => {
   const data = request.body;
-  const arr = data.forEach((_id, ...data) => {
+  const arr = data.forEach(({ _id, ...data }) => {
     return {
       updateOne: {
         filter: { _id },
-        update: { $set: data },
+        update: { $set: data, $setOnInsert: { updatedAt: new Date() } },
         upsert: true,
       }
     }
