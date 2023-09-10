@@ -31,8 +31,8 @@ ComponentRoute.post('/', async ({ state, request, response, BLL }) => {
 });
 
 ComponentRoute.post('/batch', async ({ request, response, BLL }) => {
-  const data = request.body;
-  const arr = data.forEach(({ _id, ...data }) => {
+  const info = request.body;
+  const arr = info.map(({ _id, ...data }) => {
     return {
       updateOne: {
         filter: { _id },
