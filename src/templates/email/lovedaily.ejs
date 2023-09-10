@@ -1,0 +1,16 @@
+<div style="min-height: 50vh;background: url('<% if (url) { %><%- url %><% } %>');background-size: cover;background-color: #787860">
+  <h3 style="color: #ffd400;" >今天是 <%- date -%>, 在一起的第<%- days -%>天</h3>
+  <div style="color: #00ffdc;">
+    <% if (weather) { %>
+    <p style="padding-left: 30px;text-indent: -30px;">天气提醒: <%- weather -%></p>
+    <% } %>
+    <% if (sentence) { %>
+    <p>每日一句: <%= sentence %></p>
+    <% } %>
+    <div style="text-align: center;
+    height: 40px;
+    line-height: 40px;
+    color: #ff66d7;
+    font-size: 30px;">❤爱你哟!😘❤</div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+{
+  "name": "manage",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node ./src/server.js",
+    "dev": "cross-env NODE_ENV=development HTTP_PROXY=http://192.168.101.166:8899 nodemon ./src/server.js",
+    "build": "rm -rf ./dist/* && tsc",
+    "test": "NODE_ENV=test jest",
+    "auto-deploy": "git pull && docker-compose restart"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.11.2",
+    "ejs": "^3.1.8",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.4",
+    "koa-body": "^6.0.1",
+    "koa-convert": "^2.0.0",
+    "koa-helmet": "^6.1.0",
+    "koa-router": "^10.1.1",
+    "koa-static": "^5.0.0",
+    "koa2-cors": "^2.0.6",
+    "lodash": "^4.17.21",
+    "log4js": "^6.5.1",
+    "mime": "^3.0.0",
+    "mongoose": "^6.3.3",
+    "node-fetch": "^2.6.7",
+    "node-schedule": "^2.1.0",
+    "nodemailer": "^6.7.5",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "randomstring": "^1.2.2",
+    "shortid": "^2.2.16",
+    "superagent": "^8.1.2",
+    "superagent-proxy": "^3.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^28.1.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json"
+    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{js}",
+      "!**/node_modules/**",
+      "!**/build/**",
+      "!**/coverage/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
+    "coverageReporters": [
+      "text",
+      "text-summary"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/build/",
+      "/coverage/"
+    ]
+  }
+}

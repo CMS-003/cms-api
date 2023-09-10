@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>test</title>
+  <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+  <style>
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <select name="stock">
+      <option value="">请选择</option>
+    </select>
+  </div>
+  <div id="main" style="width: 80%;height:700px;"></div>
+  <span class="dot" style="background-color: #00ff37"></span>
+  <script>
+
+    function formatMoney(value) {
+      if (value > 100000000 - 1) {
+        return (value / 100000000).toFixed(2) + ' 亿'
+      } else if (value > 10000) {
+        return (value / 10000).toFixed(2) + ' W'
+      } else {
+        return value;
+      }
+    }
+    fetch('/api/v1/stocks').then(resp => resp.json()).then(body => {
+      const select = document.querySelector('select[name=stock]');
+      if (select) {
+        select.addEventListener('change', function (e) {
+          var obj = e.target;
+          var index = obj.selectedIndex; //序号，取当前选中选项的序号
+          var val = obj.options[index].value;
+          loadStock(val)
+        })
+      }
+      body.data.items.forEach((item, index) => {
+        const option = document.createElement('option')
+        option.value = item.code;
+        option.innerText = item.name;
+        select.append(option)
+        if (index === 0) {
+          option.selected = true
+          loadStock(item.code)
+        }
+      });
+    })
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var colors = { money: '#ff0000', stock: '#00ff37', price: '#ffa500', rate: '#0095ff' };
+
+    function loadStock(code) {
+      console.log(code)
+      fetch(`/api/v1/stocks/${code}/rzrq?size=365`)
+        .then(response => response.json())
+        .then(result => {
+          var option = {
+            title: {
+              text: '数据分析'
+            },
+            tooltip: {
+              trigger: 'axis',
+              formatter: (params) => {
+                let str = '';
+                params.forEach(param => {
+                  let name = '', value = param.value;
+                  if (param.seriesIndex === 0) {
+                    name = 'money';
+                    value = formatMoney(value);
+                  } else if (param.seriesIndex === 1) {
+                    name = 'stock';
+                    value = formatMoney(value);
+                  } else if (param.seriesIndex === 2) {
+                    name = 'price';
+                  } else if (param.seriesIndex === 3) {
+                    name = 'rate';
+                    value += '%'
+                  }
+                  str += `<div><span class="dot" style="background-color:${colors[name]}"></span>${param.seriesName}: ${value}</div>`
+                })
+                return `<div>${params[0].name}<div>${str}</div></div>`;
+              }
+            },
+            legend: {
+              data: [
+                { name: '融资', lineStyle: { color: colors.money }, itemStyle: { color: colors.money } },
+                { name: '融券', lineStyle: { color: colors.stock } },
+                { name: '股价', lineStyle: { color: colors.price } },
+                { name: '换手', lineStyle: { color: colors.rate, width: 1 } },
+              ]
+            },
+            grid: {
+              left: '3%',
+              right: '3%',
+              bottom: '3%',
+              containLabel: true
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {}
+              }
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: []
+            },
+            yAxis: [
+              {
+                type: 'value',
+                name: '金额',
+                axisLine: {
+                  show: true,
+                  lineStyle: {
+                    color: colors.money
+                  }
+                },
+                axisLabel: {
+                  formatter: formatMoney
+                }
+              }, {
+                type: 'value',
+                name: '价格',
+                axisLine: {
+                  show: true,
+                  lineStyle: {
+                    color: colors.price
+                  }
+                },
+              }, {
+                type: 'value',
+                name: '%',
+                axisLine: {
+                  show: true,
+                  lineStyle: {
+                    color: colors.rate
+                  }
+                },
+                offset: 30,
+                axisLabel: {
+                  formatter: '{value}%'
+                }
+              },
+            ],
+            series: [
+              {
+                name: '融资',
+                type: 'line',
+                yAxisIndex: 0,
+                // stack: 'Total',
+                data: []
+              },
+              {
+                name: '融券',
+                type: 'line',
+                yAxisIndex: 0,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.stock
+                },
+                label: {
+                  color: colors.stock
+                },
+                data: []
+              },
+              {
+                name: '股价',
+                type: 'line',
+                yAxisIndex: 1,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.price
+                },
+                data: []
+              },
+              {
+                name: '换手',
+                type: 'bar',
+                yAxisIndex: 2,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.rate
+                },
+                smooth: true,
+                data: []
+              },
+            ]
+          };
+          option.xAxis.data = result.data.items.map(item => item.date);
+          option.series[0].data = result.data.items.map(item => item.money);
+          option.series[1].data = result.data.items.map(item => item.stock);
+          option.series[2].data = result.data.items.map(item => item.end);
+          option.series[3].data = result.data.items.map(item => item.turnover_rate);
+          // 绘制图表
+          myChart.setOption(option, true);
+        })
+        .catch(error => console.log('error', error));
+
+    }
+
+  </script>
+</body>
+
+</html>

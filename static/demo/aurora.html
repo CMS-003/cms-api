@@ -1,0 +1,138 @@
+<html>
+
+<head>
+  <title>极光</title>
+  <style>
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .g-wrap {
+      position: relative;
+      margin: auto;
+      width: 350px;
+      height: 500px;
+      background: #0b1a3a;
+      overflow: hidden;
+    }
+
+    .g-wrap::before {
+      content: "";
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 #fff, 115px 383px 0 0.1px rgba(255, 255, 255, 0.8), 65px 55px 0 0.2px rgba(255, 255, 255, 0.8), 142px 496px 0 0.5px rgba(255, 255, 255, 0.8), 6px 240px 0 0.2px rgba(255, 255, 255, 0.8), 60px 6px 0 0.4px rgba(255, 255, 255, 0.8), 80px 214px 0 0.5px rgba(255, 255, 255, 0.8), 174px 84px 0 0.3px rgba(255, 255, 255, 0.8), 142px 204px 0 0.2px rgba(255, 255, 255, 0.8), 23px 269px 0 0.1px rgba(255, 255, 255, 0.8), 153px 249px 0 0.1px rgba(255, 255, 255, 0.8), 350px 374px 0 0.6px rgba(255, 255, 255, 0.8), 227px 266px 0 0.4px rgba(255, 255, 255, 0.8), 249px 137px 0 0.2px rgba(255, 255, 255, 0.8), 224px 220px 0 0.2px rgba(255, 255, 255, 0.8), 174px 450px 0 0.6px rgba(255, 255, 255, 0.8), 86px 160px 0 0.4px rgba(255, 255, 255, 0.8), 157px 369px 0 0.5px rgba(255, 255, 255, 0.8), 60px 473px 0 0.1px rgba(255, 255, 255, 0.8), 181px 314px 0 0.3px rgba(255, 255, 255, 0.8), 58px 494px 0 0.4px rgba(255, 255, 255, 0.8), 114px 212px 0 0.6px rgba(255, 255, 255, 0.8), 83px 225px 0 0.6px rgba(255, 255, 255, 0.8), 71px 468px 0 0.2px rgba(255, 255, 255, 0.8), 288px 243px 0 0.3px rgba(255, 255, 255, 0.8), 236px 448px 0 0.4px rgba(255, 255, 255, 0.8), 35px 328px 0 0.6px rgba(255, 255, 255, 0.8), 330px 180px 0 0.5px rgba(255, 255, 255, 0.8), 116px 45px 0 0.6px rgba(255, 255, 255, 0.8), 101px 123px 0 0.6px rgba(255, 255, 255, 0.8), 337px 493px 0 0.5px rgba(255, 255, 255, 0.8), 94px 232px 0 0.3px rgba(255, 255, 255, 0.8), 140px 73px 0 0.2px rgba(255, 255, 255, 0.8), 234px 394px 0 0.1px rgba(255, 255, 255, 0.8), 154px 276px 0 0.3px rgba(255, 255, 255, 0.8), 330px 340px 0 0.5px rgba(255, 255, 255, 0.8), 222px 270px 0 0.6px rgba(255, 255, 255, 0.8), 344px 136px 0 0.4px rgba(255, 255, 255, 0.8), 213px 387px 0 0.6px rgba(255, 255, 255, 0.8), 24px 132px 0 0.2px rgba(255, 255, 255, 0.8), 38px 496px 0 0.2px rgba(255, 255, 255, 0.8), 70px 73px 0 0.5px rgba(255, 255, 255, 0.8), 256px 69px 0 0.3px rgba(255, 255, 255, 0.8), 163px 173px 0 0.2px rgba(255, 255, 255, 0.8), 67px 193px 0 0.5px rgba(255, 255, 255, 0.8), 191px 378px 0 0.4px rgba(255, 255, 255, 0.8), 315px 383px 0 0.2px rgba(255, 255, 255, 0.8), 111px 365px 0 0.4px rgba(255, 255, 255, 0.8), 69px 406px 0 0.1px rgba(255, 255, 255, 0.8), 244px 413px 0 0.4px rgba(255, 255, 255, 0.8), 208px 71px 0 0.5px rgba(255, 255, 255, 0.8), 65px 335px 0 0.6px rgba(255, 255, 255, 0.8), 346px 489px 0 0.2px rgba(255, 255, 255, 0.8), 234px 304px 0 0.1px rgba(255, 255, 255, 0.8), 269px 30px 0 0.2px rgba(255, 255, 255, 0.8), 307px 20px 0 0.3px rgba(255, 255, 255, 0.8), 72px 195px 0 0.3px rgba(255, 255, 255, 0.8), 174px 253px 0 0.5px rgba(255, 255, 255, 0.8), 258px 204px 0 0.1px rgba(255, 255, 255, 0.8), 117px 207px 0 0.2px rgba(255, 255, 255, 0.8), 33px 223px 0 0.4px rgba(255, 255, 255, 0.8), 312px 309px 0 0.4px rgba(255, 255, 255, 0.8), 82px 417px 0 0.5px rgba(255, 255, 255, 0.8), 88px 406px 0 0.1px rgba(255, 255, 255, 0.8), 174px 272px 0 0.4px rgba(255, 255, 255, 0.8), 5px 435px 0 0.5px rgba(255, 255, 255, 0.8), 49px 296px 0 0.4px rgba(255, 255, 255, 0.8), 116px 166px 0 0.1px rgba(255, 255, 255, 0.8), 226px 164px 0 0.6px rgba(255, 255, 255, 0.8), 214px 401px 0 0.6px rgba(255, 255, 255, 0.8), 109px 386px 0 0.1px rgba(255, 255, 255, 0.8), 43px 282px 0 0.5px rgba(255, 255, 255, 0.8), 346px 54px 0 0.3px rgba(255, 255, 255, 0.8), 186px 379px 0 0.6px rgba(255, 255, 255, 0.8), 206px 50px 0 0.2px rgba(255, 255, 255, 0.8), 281px 228px 0 0.1px rgba(255, 255, 255, 0.8), 204px 159px 0 0.2px rgba(255, 255, 255, 0.8), 277px 64px 0 0.1px rgba(255, 255, 255, 0.8), 212px 299px 0 0.5px rgba(255, 255, 255, 0.8), 280px 127px 0 0.3px rgba(255, 255, 255, 0.8), 341px 138px 0 0.6px rgba(255, 255, 255, 0.8), 38px 367px 0 0.4px rgba(255, 255, 255, 0.8), 348px 326px 0 0.4px rgba(255, 255, 255, 0.8), 235px 458px 0 0.2px rgba(255, 255, 255, 0.8), 217px 271px 0 0.5px rgba(255, 255, 255, 0.8), 215px 17px 0 0.2px rgba(255, 255, 255, 0.8), 92px 335px 0 0.3px rgba(255, 255, 255, 0.8), 109px 173px 0 0.4px rgba(255, 255, 255, 0.8), 207px 162px 0 0.3px rgba(255, 255, 255, 0.8), 55px 106px 0 0.2px rgba(255, 255, 255, 0.8), 298px 213px 0 0.1px rgba(255, 255, 255, 0.8), 270px 368px 0 0.6px rgba(255, 255, 255, 0.8), 51px 166px 0 0.5px rgba(255, 255, 255, 0.8), 245px 151px 0 0.5px rgba(255, 255, 255, 0.8), 294px 398px 0 0.2px rgba(255, 255, 255, 0.8), 112px 208px 0 0.2px rgba(255, 255, 255, 0.8), 140px 295px 0 0.5px rgba(255, 255, 255, 0.8), 217px 491px 0 0.6px rgba(255, 255, 255, 0.8), 73px 494px 0 0.1px rgba(255, 255, 255, 0.8), 340px 79px 0 0.4px rgba(255, 255, 255, 0.8), 311px 429px 0 0.6px rgba(255, 255, 255, 0.8), 65px 473px 0 0.3px rgba(255, 255, 255, 0.8);
+    }
+
+    .g-aurora {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+    }
+
+    .g-aurora::before {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 400px;
+      height: 300px;
+      background: #fff;
+      background: radial-gradient(circle at 100% 100%, transparent 45%, #bd63c1 55%, #53e5a6 65%, transparent 85%);
+      box-shadow: inset 0px 0 30px 0 #0b1a3a;
+      filter: url(#wave);
+      mix-blend-mode: color-dodge;
+      transform: rotate(45deg) scaleX(1.4);
+    }
+
+    @-webkit-keyframes bmove {
+      from {
+        transform: translateZ(10px) translateY(0);
+      }
+
+      to {
+        transform: translateZ(10px) translateY(-80px);
+      }
+    }
+
+    @keyframes bmove {
+      from {
+        transform: translateZ(10px) translateY(0);
+      }
+
+      to {
+        transform: translateZ(10px) translateY(-80px);
+      }
+    }
+
+    @-webkit-keyframes cmove {
+      from {
+        transform: translateZ(-5px) translateY(0);
+      }
+
+      to {
+        transform: translateZ(-5px) translateY(80px);
+      }
+    }
+
+    @keyframes cmove {
+      from {
+        transform: translateZ(-5px) translateY(0);
+      }
+
+      to {
+        transform: translateZ(-5px) translateY(80px);
+      }
+    }
+
+    svg {
+      width: 0;
+      height: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <quote>https://juejin.cn/post/7100556518524715044</quote>
+  <div class="g-wrap">
+    <div class="g-aurora"></div>
+  </div>
+
+
+  <svg id='blob' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <defs>
+      <filter id='wave'>
+        <feturbulence basefrequency='0.00510 0.01099' id='turbulence' numoctaves='3' result='noise' seed='10' />
+        <fedisplacementmap id='displacement' in2='noise' in='SourceGraphic' scale='96' />
+      </filter>
+    </defs>
+  </svg>
+
+  <script>
+    var filter = document.querySelector("#turbulence");
+    var frames = 0;
+    var rad = Math.PI / 180;
+
+    function freqAnimation() {
+      bfx = 0.005;
+      bfy = 0.005;
+      frames += 1
+      bfx += 0.0025 * Math.cos(frames * rad);
+      bfy += 0.0025 * Math.sin(frames * rad);
+
+      bf = bfx.toString() + ' ' + bfy.toString();
+      filter.setAttributeNS(null, 'baseFrequency', bf);
+      window.requestAnimationFrame(freqAnimation);
+    }
+
+    window.requestAnimationFrame(freqAnimation);
+  </script>
+</body>
+
+</html>

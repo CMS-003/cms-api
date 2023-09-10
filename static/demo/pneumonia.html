@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>test</title>
+  <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+  <style>
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <select name="stock">
+      <option value="">请选择</option>
+    </select>
+  </div>
+  <div id="main" style="width: 80%;height:700px;"></div>
+  <span class="dot" style="background-color: #00ff37"></span>
+  <script>
+
+    function formatMoney(value) {
+      if (value > 100000000 - 1) {
+        return (value / 100000000).toFixed(2) + ' 亿'
+      } else if (value > 10000) {
+        return (value / 10000).toFixed(2) + ' W'
+      } else {
+        return value;
+      }
+    }
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    var colors = { died: '#ff0000', cured: '#00ff37', icu: '#ffa500', confirmed: '#0095ff', curLocalConfirm: '#00ccff' };
+    load();
+    function load() {
+      fetch(`/api/v1/schedules/pneumonia/data`)
+        .then(response => response.json())
+        .then(result => {
+          var option = {
+            title: {
+              text: '新冠统计'
+            },
+            tooltip: {
+              trigger: 'axis',
+              formatter: (params) => {
+                let str = '';
+                params.forEach(param => {
+                  let name = '', value = param.value;
+                  if (param.seriesIndex === 0) {
+                    name = 'died';
+                  } else if (param.seriesIndex === 1) {
+                    name = 'cured';
+                  } else if (param.seriesIndex === 2) {
+                    name = 'confirmed';
+                  } else if (param.seriesIndex === 3) {
+                    name = 'curLocalConfirm';
+                  }
+                  str += `<div><span class="dot" style="background-color:${colors[name]}"></span>${param.seriesName}: ${value}</div>`
+                })
+                return `<div>${params[0].name}<div>${str}</div></div>`;
+              }
+            },
+            legend: {
+              data: [
+                { name: '累计死亡', lineStyle: { color: colors.died }, itemStyle: { color: colors.died } },
+                { name: '累计治愈', lineStyle: { color: colors.cured } },
+                { name: '累计确诊', lineStyle: { color: colors.confirmed } },
+                { name: '现有确诊', lineStyle: { color: colors.curLocalConfirm, width: 1 } },
+              ]
+            },
+            grid: {
+              left: '3%',
+              right: '3%',
+              bottom: '3%',
+              containLabel: true
+            },
+            toolbox: {
+              feature: {
+                saveAsImage: {}
+              }
+            },
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: []
+            },
+            yAxis: [{
+              type: 'value',
+              name: '人数',
+              axisLine: {
+                show: true,
+              },
+            }, {
+              type: 'value',
+              name: '人数',
+              axisLine: {
+                show: true,
+              },
+            }
+            ],
+            series: [
+              {
+                name: '累计死亡',
+                type: 'line',
+                yAxisIndex: 0,
+                // stack: 'Total',
+                data: []
+              },
+              {
+                name: '累计治愈',
+                type: 'line',
+                yAxisIndex: 0,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.cured
+                },
+                label: {
+                  color: colors.cured
+                },
+                data: []
+              },
+              {
+                name: '累计确诊',
+                type: 'line',
+                yAxisIndex: 1,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.confirmed
+                },
+                data: []
+              },
+              {
+                name: '当前确诊',
+                type: 'line',
+                yAxisIndex: 1,
+                // stack: 'Total',
+                lineStyle: {
+                  color: colors.curLocalConfirm
+                },
+                smooth: true,
+                data: []
+              },
+            ]
+          };
+          option.xAxis.data = result.data.items.map(item => item.date);
+          option.series[0].data = result.data.items.map(item => item.country.died);
+          option.series[1].data = result.data.items.map(item => item.country.cured);
+          option.series[2].data = result.data.items.map(item => item.country.confirmed);
+          option.series[3].data = result.data.items.map(item => item.country.curLocalConfirm);
+          // 绘制图表
+          myChart.setOption(option);
+        })
+        .catch(error => console.log('error', error));
+
+    }
+
+  </script>
+</body>
+
+</html>

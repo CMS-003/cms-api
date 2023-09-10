@@ -1,0 +1,18 @@
+version: "3"
+services: 
+  manage:
+    container_name: "manage"
+    image: node:lts-alpine
+    env_file:
+      - .env
+    working_dir: "/home/manage/"
+    networks: 
+      - allinone
+    volumes:
+      - ./:/home/manage/
+    ports:
+      - "3334:3334"
+    command: "npm start"
+networks: 
+  allinone:
+    external: true
