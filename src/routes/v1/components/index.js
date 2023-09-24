@@ -33,10 +33,11 @@ ComponentRoute.post('/', async ({ state, request, response, BLL }) => {
 ComponentRoute.post('/batch', async ({ request, response, BLL }) => {
   const info = request.body;
   const arr = info.map(({ _id, ...data }) => {
+    data.updatedAt = new Date();
     return {
       updateOne: {
         filter: { _id },
-        update: { $set: data, $setOnInsert: { updatedAt: new Date() } },
+        update: { $set: data, $setOnInsert: { createdAt: new Date() } },
         upsert: true,
       }
     }

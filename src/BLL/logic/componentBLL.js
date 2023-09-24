@@ -58,6 +58,10 @@ class ComponentBLL extends BaseBLL {
       attrs: {
         type: Object,
         default: {}
+      },
+      style: {
+        type: Object,
+        default: {},
       }
     }, {
       strict: true,
