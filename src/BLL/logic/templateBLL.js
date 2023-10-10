@@ -36,6 +36,10 @@ class Template extends BaseBLL {
         type: Object,
         default: {},
       },
+      style: {
+        type: Object,
+        default: {},
+      },
       createdAt: {
         type: Date,
         default: () => dayjs().toDate(),
