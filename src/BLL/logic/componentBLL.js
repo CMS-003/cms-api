@@ -55,6 +55,11 @@ class ComponentBLL extends BaseBLL {
         type: Number,
         default: 0,
       },
+      resources: [{
+        _id: String,
+        title: String,
+        cover: String,
+      }],
       attrs: {
         type: Object,
         default: {}
