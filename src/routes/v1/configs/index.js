@@ -16,8 +16,7 @@ ConfigRoute.get('/:id', async ({ params, BLL, response }) => {
 })
 
 ConfigRoute.post('/', async ({ request, response, BLL }) => {
-  const data = _.pick(request.body, ['project_id', 'name', 'desc', 'type', 'value', 'order']);
-  data._id = uuid.v4();
+  const data = _.pick(request.body, ['_id', 'project_id', 'name', 'desc', 'type', 'value', 'order']);
   if (_.isNil(data.project_id)) {
     return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
   }
@@ -32,6 +31,12 @@ ConfigRoute.put('/:id', async ({ params, request, response, BLL }) => {
     return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
   }
   await BLL.configBLL.update({ where, data });
+  response.success();
+});
+
+ConfigRoute.del('/:id', async ({ params, request, response, BLL }) => {
+  const where = { _id: params.id };
+  await BLL.configBLL.destroy({ where });
   response.success();
 });
 

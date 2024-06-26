@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const dayjs = require('dayjs');
-const BaseBLL = require('../base');
+const BaseBLL = require('../utils/baseBLL');
 
-class Config extends BaseBLL {
+class Template extends BaseBLL {
   constructor() {
     super();
     const schema = new Schema({
@@ -14,16 +14,29 @@ class Config extends BaseBLL {
         type: String,
         default: ''
       },
+      title: {
+        type: String,
+      },
       name: {
         type: String,
       },
       desc: {
         type: String,
       },
-      type: {
+      cover: {
         type: String,
       },
-      value: {
+      type: {
+        type: String, // form list page
+      },
+      path: {
+        type: String,
+      },
+      attrs: {
+        type: Object,
+        default: {},
+      },
+      style: {
         type: Object,
         default: {},
       },
@@ -35,17 +48,23 @@ class Config extends BaseBLL {
         type: Date,
         default: () => dayjs().toDate(),
       },
+      fields: [
+        { component: String, fields: String, title: String, autoFocus: Boolean, defaultValue: Schema.Types.Mixed }
+      ],
+      available: {
+        type: Boolean
+      },
       order: {
         type: Number,
         default: 1
       }
     }, {
       strict: true,
-      collection: 'config_info',
+      collection: 'template_info',
     });
-    this.model = mongoose.model('Config', schema);
-    BaseBLL.models.Config = this.model;
+    this.model = mongoose.model('Template', schema);
+    BaseBLL.models.Template = this.model;
   }
 }
 
-module.exports = new Config();
+module.exports = new Template();

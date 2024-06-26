@@ -7,6 +7,7 @@ const randomstring = require('randomstring')
 const userService = require('../services/user.js')
 const superagent = require('superagent');
 require('superagent-proxy')(superagent);
+const { google } = require('googleapis');
 
 module.exports = {
   signin: (type) => {
@@ -71,6 +72,13 @@ module.exports = {
       const user = await BLL.userBLL.getInfo({ where: { _id: sns.user_id }, lean: true });
       const token = await userService.genToken(user)
       return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token)
+    } else if (type === 'sns_google') {
+      const code = ctx.query.code;
+      const youtube_config = config.social.google.web_json;
+      // 创建 OAuth2 客户端
+      const oauth2Client = new google.auth.OAuth2(youtube_config.client_id, youtube_config.client_secret, youtube_config.redirect_uris[0]);
+      let { tokens } = await oauth2Client.getToken(code);
+      logger.info('youtube 授权', JSON.stringify(tokens))
     } else {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }

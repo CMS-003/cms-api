@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const BaseBLL = require('../base');
+const BaseBLL = require('../utils/baseBLL');
 
 class Project extends BaseBLL {
   constructor() {

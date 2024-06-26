@@ -1,21 +1,19 @@
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const dayjs = require('dayjs');
-const BaseBLL = require('../base');
+const BaseBLL = require('../utils/baseBLL');
 
-class Template extends BaseBLL {
+class Config extends BaseBLL {
   constructor() {
     super();
     const schema = new Schema({
       _id: {
-        type: String,
+        type: String, // 唯一名称
+        index: true
       },
       project_id: {
         type: String,
         default: ''
-      },
-      title: {
-        type: String,
       },
       name: {
         type: String,
@@ -23,20 +21,10 @@ class Template extends BaseBLL {
       desc: {
         type: String,
       },
-      cover: {
-        type: String,
-      },
       type: {
         type: String,
       },
-      path: {
-        type: String,
-      },
-      attrs: {
-        type: Object,
-        default: {},
-      },
-      style: {
+      value: {
         type: Object,
         default: {},
       },
@@ -48,20 +36,17 @@ class Template extends BaseBLL {
         type: Date,
         default: () => dayjs().toDate(),
       },
-      available: {
-        type: Boolean
-      },
       order: {
         type: Number,
         default: 1
       }
     }, {
       strict: true,
-      collection: 'template_info',
+      collection: 'config_info',
     });
-    this.model = mongoose.model('Template', schema);
-    BaseBLL.models.Template = this.model;
+    this.model = mongoose.model('Config', schema);
+    BaseBLL.models.Config = this.model;
   }
 }
 
-module.exports = new Template();
+module.exports = new Config();

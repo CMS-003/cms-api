@@ -33,7 +33,7 @@ OauthRoute.post('/sign-in', async ({ BLL, response, request, config }, next) => 
     if (doc) {
       const user = await BLL.userBLL.getInfo({ where: { _id: doc.user_id } });
       if (user.isEqual(value)) {
-        const access_token = jwt.sign(_.pick(user, ['_id', 'nickname', 'account', 'avatar', 'status']), config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
+        const access_token = jwt.sign(_.pick(user, ['_id', 'nickname', 'account', 'avatar', 'status']), config.USER_TOKEN_SECRET, { expiresIn: '2w', issuer: 'cms-manage' });
         response.success({ access_token, type: 'Bearer' });
       } else {
         response.throwBiz('AUTH.PassError');

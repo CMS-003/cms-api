@@ -1,10 +1,10 @@
-const componentBLL = require('./logic/componentBLL')
-const configBLL = require('./logic/configBLL')
-const projectBLL = require('./logic/projectBLL')
-const userBLL = require('./logic/userBLL')
-const snsBLL = require('./logic/snsBLL.js')
-const componentTypeBLL = require('./logic/componentTypeBLL')
-const templateBLL = require('./logic/templateBLL.js')
+const componentBLL = require('./componentBLL.js')
+const configBLL = require('./configBLL.js')
+const projectBLL = require('./projectBLL.js')
+const userBLL = require('./userBLL.js')
+const snsBLL = require('./snsBLL.js')
+const componentTypeBLL = require('./componentTypeBLL.js')
+const templateBLL = require('./templateBLL.js')
 
 module.exports = {
   componentBLL,
