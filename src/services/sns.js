@@ -26,7 +26,7 @@ module.exports = {
     if (type === 'sns_github') {
       return `https://github.com/login/oauth/authorize?client_id=${sns_config.client_id}&scope=user:email`
     } else if (type === 'sns_google') {
-      const oauth2Client = new google.auth.OAuth2(sns_config.value.client_id, sns_config.value.client_secret, sns_config.value.redirect_uris[0]);
+      const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
       const authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: scopes,
@@ -92,9 +92,10 @@ module.exports = {
     } else if (type === 'sns_google') {
       const code = ctx.query.code;
       // 创建 OAuth2 客户端
-      const oauth2Client = new google.auth.OAuth2(sns_config.value.client_id, sns_config.value.client_secret, sns_config.value.redirect_uris[0]);
+      const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
       let { tokens } = await oauth2Client.getToken(code);
-      logger.info('youtube 授权', JSON.stringify(tokens))
+      oauth2Client.setCredentials(tokens);
+      console.log('youtube 授权', JSON.stringify(tokens))
       const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
       const user_resp = await oauth2.userinfo.get()
       const sns_info = {
@@ -102,7 +103,7 @@ module.exports = {
         sns_type: 'google',
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
-        nickname: user_resp.data.name,
+        nickname: user_resp.data.given_name,
         avatar: user_resp.data.picture,
         status: 1,
         detail: user_resp.data,
