@@ -7,7 +7,7 @@ const ResourceRoute = new Router({
 });
 
 ResourceRoute.get('/', async ({ BLL, state, request, response }) => {
-    const resp = await superagent.get(`${config.resource_api_prefix}/v1/public/resources?${request.querystring}`);
+    const resp = await superagent.get(`${config.resource_api_prefix}/admin/v1/public/resources?${request.querystring}`);
     if (resp.statusCode === 200) {
         response.success({ items: resp.body.data })
     } else {

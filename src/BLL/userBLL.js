@@ -1,4 +1,4 @@
-const BaseBLL = require('../base');
+const BaseBLL = require('../utils/baseBLL');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;

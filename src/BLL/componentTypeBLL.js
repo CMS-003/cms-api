@@ -1,4 +1,4 @@
-const BaseBLL = require('../base');
+const BaseBLL = require('../utils/baseBLL');
 const mongoose = require('mongoose');
 const Schema = require('mongoose').Schema;
 const dayjs = require('dayjs')

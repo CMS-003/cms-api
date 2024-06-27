@@ -8,6 +8,9 @@ const templateRoute = new Router();
 
 templateRoute.get('/', userVerify, async ({ BLL, request, state, response }) => {
   const hql = request.paging()
+  if (request.query.type) {
+    hql.where.type = request.query.type;
+  }
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id
   }
@@ -26,6 +29,12 @@ templateRoute.post('/', userVerify, async ({ BLL, state, request, response }) =>
 templateRoute.put('/:template_id', userVerify, async ({ BLL, params, request, response }) => {
   await BLL.templateBLL.update({ where: { _id: params.template_id }, data: request.body })
   response.success()
+})
+
+templateRoute.get('/:template_id/fields', userVerify, async ({ BLL, params, request, response }) => {
+  const hql = { where: { _id: params.template_id }, lean: true }
+  const item = await BLL.templateBLL.getInfo(hql);
+  response.success({ items: item ? (item.fields || []) : [] })
 })
 
 module.exports = templateRoute

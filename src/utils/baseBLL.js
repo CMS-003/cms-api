@@ -93,7 +93,7 @@ class BaseBLL {
   getAttributes() {
 
   }
-  
+
   create(data) {
     Object.assign(data, this.params);
     return this.model.create(data);

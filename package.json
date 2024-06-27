@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "NODE_ENV=production node ./src/server.js",
-    "dev": "cross-env NODE_ENV=development HTTP_PROXY=http://192.168.101.166:8899 nodemon ./src/server.js",
+    "dev": "cross-env NODE_ENV=development HTTPS_PROXY='http://10.0.15.126:8899' HTTP_PROXY='http://10.0.15.126:8899'  nodemon ./src/server.js",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
     "auto-deploy": "git pull && docker-compose restart"
@@ -15,6 +15,7 @@
   "dependencies": {
     "dayjs": "^1.11.2",
     "ejs": "^3.1.8",
+    "googleapis": "^140.0.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.4",
     "koa-body": "^6.0.1",
