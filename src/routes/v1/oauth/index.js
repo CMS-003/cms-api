@@ -79,6 +79,16 @@ OauthRoute.get('/sns/:type', async ({ params, response }) => {
   response.redirect(url);
 });
 
+OauthRoute.post('/bind', async ({ query, request, response }) => {
+  const { bind_token, ...data } = request.body;
+  const access_token = await snsService.bind(bind_token, data)
+  if (access_token) {
+    response.success({ access_token, type: 'Bearer' });
+  } else {
+    response.fail('fail');
+  }
+})
+
 OauthRoute.get('/sns/:type/callback', async (ctx) => {
   await snsService.callback(ctx, 'sns_' + ctx.params.type, ctx.query);
   // TODO: 返回result结果页面 成功,失败,取消 (如果强制绑定,则需要先跳绑定账号页面)

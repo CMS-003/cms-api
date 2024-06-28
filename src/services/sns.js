@@ -1,5 +1,4 @@
 const config = require('../config/index.js')
-const fetch = require('node-fetch')
 const BLL = require('../BLL/index.js');
 const { v4 } = require('uuid');
 const random = require('../utils/random.js')
@@ -8,6 +7,10 @@ const userService = require('../services/user.js')
 const superagent = require('superagent');
 require('superagent-proxy')(superagent);
 const { google } = require('googleapis');
+const _ = require('lodash');
+const dayjs = require('dayjs');
+const jwt = require('jsonwebtoken')
+const AlipaySdk = require('alipay-sdk').AlipaySdk;
 
 const scopes = [
   'https://www.googleapis.com/auth/userinfo.profile',
@@ -22,20 +25,36 @@ module.exports = {
     if (!sns_config) {
       return '/404'
     }
-    console.log(type ,process.env.HTTP_PROXY)
     if (type === 'sns_github') {
       return `https://github.com/login/oauth/authorize?client_id=${sns_config.client_id}&scope=user:email`
     } else if (type === 'sns_google') {
       const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
-      const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-        include_granted_scopes: true
-      });
+      const authUrl = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: scopes, include_granted_scopes: true });
       return authUrl
-    }
-    else {
+    } else if (type === 'sns_alipay') {
+      const authUrl = `https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=${sns_config.app_id}&scope=auth_user&redirect_uri=${sns_config.redirect_uri}&state=STATE`;
+      return authUrl;
+    } else {
       return '/404'
+    }
+  },
+  bind: async (token, data) => {
+    try {
+      const sns = jwt.verify(token, config.USER_TOKEN_SECRET);
+      if (data.type === 'account') {
+        const user = await BLL.userBLL.getInfo({ where: { account: data.account } });
+        if (user.isEqual(data.value)) {
+          await BLL.snsBLL.update({ where: { sns_id: sns.sns_id, sns_type: sns.sns_type }, data: { $set: { user_id: user._id } } });
+          const access_token = userService.genToken(user);
+          return access_token;
+        }
+      } else if (data.type === 'phone') {
+
+      } else if (data.type === 'email') {
+
+      }
+    } catch (e) {
+      console.log(e)
     }
   },
   callback: async (ctx, type) => {
@@ -43,6 +62,7 @@ module.exports = {
     if (!sns_config) {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }
+    let sns_info = null;
     if (type === 'sns_github') {
       const date = new Date();
       let result;
@@ -59,7 +79,7 @@ module.exports = {
         detail = respDetail.body;
       }
       // TODO: 创建 sns_info表,重定向提示,(跳过或绑定账号),返回新token ; 已有user_id则直接返回token
-      const sns_info = {
+      sns_info = {
         sns_id: `${detail.id}`,
         sns_type: 'github',
         access_token: result.access_token,
@@ -71,24 +91,7 @@ module.exports = {
         status: 1,
         detail,
       }
-      const user_id = v4();
-      const r = await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { user_id } }, { upsert: true });
-      if (r.upsertedCount === 1) {
-        await BLL.userBLL.model.updateOne({ _id: user_id }, {
-          $set: {
-            account: random(6, 'ichar'),
-            nickname: sns_info.nickname,
-            avatar: sns_info.avatar,
-            pass: '',
-            salt: randomstring.generate({ length: 10, charset: 'hex' }),
-            status: 1
-          }
-        }, { upsert: true });
-      }
-      const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true });
-      const user = await BLL.userBLL.getInfo({ where: { _id: sns.user_id }, lean: true });
-      const token = await userService.genToken(user)
-      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token)
+
     } else if (type === 'sns_google') {
       const code = ctx.query.code;
       // 创建 OAuth2 客户端
@@ -98,7 +101,7 @@ module.exports = {
       console.log('youtube 授权', JSON.stringify(tokens))
       const oauth2 = google.oauth2({ auth: oauth2Client, version: 'v2' });
       const user_resp = await oauth2.userinfo.get()
-      const sns_info = {
+      sns_info = {
         sns_id: user_resp.data.id,
         sns_type: 'google',
         access_token: tokens.access_token,
@@ -110,24 +113,39 @@ module.exports = {
         access_expired_at: new Date(tokens.expiry_date),
         refresh_expired_at: new Date('2050-01-01'),
       }
-      const user_id = v4();
-      const r = await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { user_id } }, { upsert: true });
-      if (r.upsertedCount === 1) {
-        await BLL.userBLL.model.updateOne({ _id: user_id }, {
-          $set: {
-            account: random(6, 'ichar'),
-            nickname: sns_info.nickname,
-            avatar: sns_info.avatar,
-            pass: '',
-            salt: randomstring.generate({ length: 10, charset: 'hex' }),
-            status: 1
-          }
-        }, { upsert: true });
+    } else if (type === 'sns_alipay') {
+      const authCode = ctx.query.auth_code;
+      const alipaySdk = new AlipaySdk({
+        appId: sns_config.app_id,
+        privateKey: sns_config.app_secret_key,
+        alipayPublicKey: sns_config.alipay_public_key,
+      });
+      const tokens = await alipaySdk.exec("alipay.system.oauth.token", { code: authCode, grant_type: "authorization_code" });
+      const user = await alipaySdk.exec("alipay.user.info.share", { bizContent: {}, auth_token: tokens.accessToken }, {});
+      sns_info = {
+        sns_id: user.userId,
+        sns_type: 'alipay',
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken,
+        access_expired_at: dayjs(tokens.authStart).add(tokens.expiresIn).toDate(),
+        refresh_expired_at: dayjs(tokens.authStart).add(tokens.reExpiresIn).toDate(),
+        nickname: user.nickName,
+        avatar: user.avatar,
+        status: 1,
+        detail: _.omit(user, ['code', 'msg', 'traceId']),
       }
-      const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true });
+    }
+    if (sns_info) {
+      const user_id = v4();
+      await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
+      const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true })
+      if (!sns.user_id) {
+        const bind_token = await userService.getTempBindToken(sns_info)
+        return ctx.redirect(config.page_public_url + '/oauth/bind?bind_token=' + bind_token);
+      }
       const user = await BLL.userBLL.getInfo({ where: { _id: sns.user_id }, lean: true });
       const token = await userService.genToken(user)
-      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token)
+      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token);
     } else {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }
