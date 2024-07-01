@@ -34,6 +34,8 @@ module.exports = {
     } else if (type === 'sns_alipay') {
       const authUrl = `https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=${sns_config.app_id}&scope=auth_user&redirect_uri=${sns_config.redirect_uri}&state=STATE`;
       return authUrl;
+    } else if (type === 'sns_weibo') {
+      return `https://api.weibo.com/oauth2/authorize?client_id=${sns_config.app_id}&response_type=code&redirect_uri=${sns_config.redirect_uri}`
     } else {
       return '/404'
     }
@@ -134,9 +136,41 @@ module.exports = {
         status: 1,
         detail: _.omit(user, ['code', 'msg', 'traceId']),
       }
+    } else if (type === 'sns_weibo') {
+      const code = ctx.query.code;
+      const resp = await superagent.post(`https://api.weibo.com/oauth2/access_token`).query({
+        client_id: sns_config.app_id,
+        client_secret: sns_config.app_secret,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: sns_config.redirect_uri,
+      });
+      if (resp.statusCode === 200) {
+        const resp2 = await superagent.get(`https://api.weibo.com/2/users/show.json`).query({
+          access_token: resp.body.access_token,
+          uid: resp.body.uid,
+        });
+        if (resp2.status === 200) {
+          sns_info = {
+            sns_id: resp2.body.id,
+            sns_type: 'weibo',
+            access_token: resp.body.access_token,
+            refresh_token: '',
+            nickname: resp2.body.name,
+            avatar: resp2.body.profile_image_url,
+            status: 1,
+            detail: resp2.body,
+            access_expired_at: new Date(Date.now() + resp.body.expires_in),
+            refresh_expired_at: null,
+          }
+        } else {
+          return ctx.redirect(config.page_public_url + '/oauth/fail')
+        }
+      } else {
+        return ctx.redirect(config.page_public_url + '/oauth/fail')
+      }
     }
     if (sns_info) {
-      const user_id = v4();
       await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
       const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true })
       if (!sns.user_id) {
@@ -149,5 +183,8 @@ module.exports = {
     } else {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }
-  }
+  },
+  cancel: async (ctx, type) => {
+
+  },
 }
