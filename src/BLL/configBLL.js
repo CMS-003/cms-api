@@ -9,7 +9,6 @@ class Config extends BaseBLL {
     const schema = new Schema({
       _id: {
         type: String, // 唯一名称
-        index: true
       },
       project_id: {
         type: String,

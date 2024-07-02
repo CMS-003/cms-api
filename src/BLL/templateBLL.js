@@ -49,7 +49,7 @@ class Template extends BaseBLL {
         default: () => dayjs().toDate(),
       },
       fields: [
-        { component: String, fields: String, title: String, autoFocus: Boolean, defaultValue: Schema.Types.Mixed }
+        { component: String, fields: String, title: String, autoFocus: Boolean, dataType: String, dataValue: Schema.Types.Mixed }
       ],
       available: {
         type: Boolean

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const randomstring = require('randomstring')
 const random = require('../../../utils/random.js')
 const snsService = require('../../../services/sns.js')
+const userVerify = require('../../../middleware/user_verify')
 
 const OauthRoute = new Router();
 
@@ -92,6 +93,10 @@ OauthRoute.post('/bind', async ({ query, request, response }) => {
 OauthRoute.get('/sns/:type/callback', async (ctx) => {
   await snsService.callback(ctx, 'sns_' + ctx.params.type, ctx.query);
   // TODO: 返回result结果页面 成功,失败,取消 (如果强制绑定,则需要先跳绑定账号页面)
+})
+
+OauthRoute.post('/sns/:type/cancel', userVerify, async (ctx) => {
+  await snsService.cancel(ctx, ctx.params.type);
 })
 
 module.exports = OauthRoute

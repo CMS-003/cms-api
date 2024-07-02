@@ -185,6 +185,28 @@ module.exports = {
     }
   },
   cancel: async (ctx, type) => {
+    const sns_config = config['sns_' + type];
+    const user = ctx.state.user;
+    await BLL.snsBLL.model.updateOne({ user_id: user._id, sns_type: type }, { $set: { status: 0 } });
+    const sns_info = await BLL.snsBLL.getInfo({ where: { user_id: user._id, sns_type: type }, lean: true })
+    if (!sns_config || !sns_info) {
+      ctx.success();
+      return;
+    }
+    if (type === 'github') {
 
+    } else if (type === 'google') {
+      const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
+      oauth2Client.setCredentials(_.pick(sns_config, ['access_token', 'refresh_token']));
+      await oauth2Client.revokeToken(tokens.access_token)
+      ctx.success();
+      return;
+    } else if (type === 'alipay') {
+      const alipaySdk = new AlipaySdk({
+        appId: sns_config.app_id,
+        privateKey: sns_config.app_secret_key,
+        alipayPublicKey: sns_config.alipay_public_key,
+      });
+    }
   },
 }
