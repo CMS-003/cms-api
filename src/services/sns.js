@@ -20,19 +20,19 @@ const scopes = [
 ];
 
 module.exports = {
-  signin: (type) => {
+  signin: (type, user_id) => {
     const sns_config = config[type];
     if (!sns_config) {
       return '/404'
     }
     if (type === 'sns_github') {
-      return `https://github.com/login/oauth/authorize?client_id=${sns_config.client_id}&scope=user:email`
+      return `https://github.com/login/oauth/authorize?client_id=${sns_config.client_id}&scope=user:email&state=${user_id}`
     } else if (type === 'sns_google') {
       const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
-      const authUrl = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: scopes, include_granted_scopes: true });
+      const authUrl = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: scopes, include_granted_scopes: true, state: user_id });
       return authUrl
     } else if (type === 'sns_alipay') {
-      const authUrl = `https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=${sns_config.app_id}&scope=auth_user&redirect_uri=${sns_config.redirect_uri}&state=STATE`;
+      const authUrl = `https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=${sns_config.app_id}&scope=auth_user&redirect_uri=${sns_config.redirect_uri}&state=${user_id}`;
       return authUrl;
     } else if (type === 'sns_weibo') {
       return `https://api.weibo.com/oauth2/authorize?client_id=${sns_config.app_id}&response_type=code&redirect_uri=${sns_config.redirect_uri}`
@@ -60,6 +60,7 @@ module.exports = {
     }
   },
   callback: async (ctx, type) => {
+    console.log(ctx.query);
     const sns_config = config[type];
     if (!sns_config) {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
@@ -171,6 +172,9 @@ module.exports = {
       }
     }
     if (sns_info) {
+      if (ctx.query.state && ctx.query.state !== 'none') {
+        sns_info.user_id = ctx.query.state;
+      }
       await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
       const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true })
       if (!sns.user_id) {
@@ -190,16 +194,20 @@ module.exports = {
     await BLL.snsBLL.model.updateOne({ user_id: user._id, sns_type: type }, { $set: { status: 0 } });
     const sns_info = await BLL.snsBLL.getInfo({ where: { user_id: user._id, sns_type: type }, lean: true })
     if (!sns_config || !sns_info) {
-      ctx.success();
       return;
     }
     if (type === 'github') {
-
+      const resp = await superagent.del(`https://api.github.com/applications/${sns_config.client_id}/grants/${sns_info.access_token}`)
+        .proxy(process.env.HTTP_PROXY)
+        .set({
+          Authorization: `Basic ${Buffer.from(`${sns_config.client_id}:${sns_config.client_secret}`).toString('base64')}`,
+          Accept: 'application/vnd.github.v3+json',
+        });
+      return;
     } else if (type === 'google') {
       const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
-      oauth2Client.setCredentials(_.pick(sns_config, ['access_token', 'refresh_token']));
-      await oauth2Client.revokeToken(tokens.access_token)
-      ctx.success();
+      oauth2Client.setCredentials(_.pick(sns_info, ['access_token', 'refresh_token']));
+      await oauth2Client.revokeToken(sns_info.access_token)
       return;
     } else if (type === 'alipay') {
       const alipaySdk = new AlipaySdk({
