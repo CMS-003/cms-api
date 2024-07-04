@@ -11,7 +11,6 @@ module.exports = async (ctx, next) => {
     ctx.state.user = user;
     await next();
   } catch (e) {
-    console.log(e, token)
     // TokenExpiredError, ReferenceError
     if (e.name === 'TokenExpiredError') {
       ctx.response.throwBiz('AUTH.tokenExpired');

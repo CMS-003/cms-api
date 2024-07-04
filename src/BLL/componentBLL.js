@@ -67,7 +67,9 @@ class ComponentBLL extends BaseBLL {
       style: {
         type: Object,
         default: {},
-      }
+      },
+      createdAt: { type: Date, default: Date.now },
+      updatedAt: { type: Date, default: Date.now },
     }, {
       strict: true,
       collection: 'component_info',

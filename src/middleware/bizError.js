@@ -5,7 +5,7 @@ module.exports = async (ctx, next) => {
   try {
     await next()
   } catch (e) {
-    console.log(e, 'interrept')
+    console.log(e.message, 'interrept')
     const lang = ctx.state.lang || 'zh-CN';
     if (e instanceof BizError !== true) {
       e.bizName = 'UNKNOWN';

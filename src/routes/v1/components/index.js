@@ -37,7 +37,7 @@ ComponentRoute.post('/batch', async ({ request, response, BLL }) => {
     return {
       updateOne: {
         filter: { _id },
-        update: { $set: data, $setOnInsert: { createdAt: new Date() } },
+        update: { $set: data },
         upsert: true,
       }
     }
