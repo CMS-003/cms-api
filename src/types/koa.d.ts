@@ -9,6 +9,7 @@ interface OPT {
   lean?: boolean,
   data?: any,
   options?: object,
+  page?: number,
   offset?: number,
   limit?: number,
 }
@@ -40,7 +41,7 @@ declare module 'koa' {
   }
 
   interface BaseRequest {
-    paging: () => { page: number, limit: number, where: { [key: string]: any } };
+    paging: () => OPT;
   }
 
   interface BaseResponse {

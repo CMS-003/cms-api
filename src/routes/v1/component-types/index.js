@@ -8,7 +8,7 @@ const ComponentTypeRoute = new Router({
 
 ComponentTypeRoute.get('/', async ({ models, request, response }) => {
   const hql = request.paging()
-  hql.order = { order: 1, updatedAt: -1 }
+  hql.sort = { order: 1, updatedAt: -1 }
   const items = await models.ComponentType.getAll(hql);
   response.success({ items });
 })

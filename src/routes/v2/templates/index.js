@@ -14,7 +14,7 @@ TemplateComponentsRoute.get('/:id/components', async ({ params, request, models,
     }
     hql.where = { template_id: template._id, parent_id: '' };
     hql.lean = true;
-    hql.order = { order: 1 }
+    hql.sort = { order: 1 }
     const items = await models.Component.getList(hql);
     for (let i = 0; i < items.length; i++) {
         const tree = await componentService.getTree(items[i]._id);

@@ -14,7 +14,6 @@ class EmailHelper {
     this.transport = nodemailer.createTransport(smtpTransport({
       service: this.config.service,
       secure: true,// 使用SSL
-      secureConnection: true,// 使用SSL
       host: this.config.host,
       port: this.config.port,
       auth: {

@@ -13,7 +13,7 @@ templateRoute.get('/', verify, async ({ models, request, state, response }) => {
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id
   }
-  hql.order = { order: 1 }
+  hql.sort = { order: 1 }
   const items = await models.Template.getList(hql);
   response.success({ items })
 })

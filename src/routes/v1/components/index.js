@@ -12,7 +12,7 @@ ComponentRoute.get('/', async ({ models, state, request, response }) => {
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id;
   }
-  hql.order = { order: 1, updatedAt: -1 }
+  hql.sort = { order: 1, updatedAt: -1 }
   const items = await models.Component.getList(hql);
   response.success({ items });
 })
