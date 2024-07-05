@@ -1,5 +1,5 @@
-const config = require('./config/index');
-const { run } = require('./app')
+import config from './config/index.js'
+import { run } from './app.js'
 
 run(async (app) => {
   app.listen(config.PORT, () => {

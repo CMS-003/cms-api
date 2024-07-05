@@ -1,16 +1,15 @@
-const config = require('../config/index.js')
-const BLL = require('../BLL/index.js');
-const { v4 } = require('uuid');
-const random = require('../utils/random.js')
-const randomstring = require('randomstring')
-const userService = require('../services/user.js')
-const superagent = require('superagent');
-require('superagent-proxy')(superagent);
-const { google } = require('googleapis');
-const _ = require('lodash');
-const dayjs = require('dayjs');
-const jwt = require('jsonwebtoken')
-const AlipaySdk = require('alipay-sdk').AlipaySdk;
+import config from '../config/index.js'
+import models from '../models/index.js'
+import userService from '../services/user.js'
+import superagent from 'superagent'
+import superagentProxy from "superagent-proxy"
+import { google } from 'googleapis'
+import _ from 'lodash'
+import dayjs from 'dayjs'
+import jwt from 'jsonwebtoken'
+import { AlipaySdk } from 'alipay-sdk';
+
+superagentProxy(superagent);
 
 const scopes = [
   'https://www.googleapis.com/auth/userinfo.profile',
@@ -19,7 +18,7 @@ const scopes = [
   'https://www.googleapis.com/auth/yt-analytics.readonly',
 ];
 
-module.exports = {
+export default {
   signin: (type, user_id) => {
     const sns_config = config[type];
     if (!sns_config) {
@@ -44,9 +43,9 @@ module.exports = {
     try {
       const sns = jwt.verify(token, config.USER_TOKEN_SECRET);
       if (data.type === 'account') {
-        const user = await BLL.userBLL.getInfo({ where: { account: data.account } });
+        const user = await models.User.getInfo({ where: { account: data.account } });
         if (user.isEqual(data.value)) {
-          await BLL.snsBLL.update({ where: { sns_id: sns.sns_id, sns_type: sns.sns_type }, data: { $set: { user_id: user._id } } });
+          await models.Sns.update({ where: { sns_id: sns.sns_id, sns_type: sns.sns_type }, data: { $set: { user_id: user._id } } });
           const access_token = userService.genToken(user);
           return access_token;
         }
@@ -175,13 +174,13 @@ module.exports = {
       if (ctx.query.state && ctx.query.state !== 'none') {
         sns_info.user_id = ctx.query.state;
       }
-      await BLL.snsBLL.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
-      const sns = await BLL.snsBLL.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true })
+      await models.Sns.model.updateOne({ sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, { $set: sns_info, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
+      const sns = await models.Sns.getInfo({ where: { sns_id: sns_info.sns_id, sns_type: sns_info.sns_type }, lean: true })
       if (!sns.user_id) {
         const bind_token = await userService.getTempBindToken(sns_info)
         return ctx.redirect(config.page_public_url + '/oauth/bind?bind_token=' + bind_token);
       }
-      const user = await BLL.userBLL.getInfo({ where: { _id: sns.user_id }, lean: true });
+      const user = await models.User.getInfo({ where: { _id: sns.user_id }, lean: true });
       const token = await userService.genToken(user)
       return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token);
     } else {
@@ -191,8 +190,8 @@ module.exports = {
   cancel: async (ctx, type) => {
     const sns_config = config['sns_' + type];
     const user = ctx.state.user;
-    await BLL.snsBLL.model.updateOne({ user_id: user._id, sns_type: type }, { $set: { status: 0 } });
-    const sns_info = await BLL.snsBLL.getInfo({ where: { user_id: user._id, sns_type: type }, lean: true })
+    await models.Sns.model.updateOne({ user_id: user._id, sns_type: type }, { $set: { status: 0 } });
+    const sns_info = await models.Sns.getInfo({ where: { user_id: user._id, sns_type: type }, lean: true })
     if (!sns_config || !sns_info) {
       return;
     }

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   AccountError: {
     status: 400,
     code: 101040,

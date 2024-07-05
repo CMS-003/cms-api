@@ -1,7 +1,8 @@
-const path = require('path')
+import path from 'path'
+
 const root_path = process.cwd()
 
-module.exports = {
+export default {
   JOB_STATUS: {
     PENDDING: 1,
     SUCCESS: 2,

@@ -1,19 +1,19 @@
-const Router = require('koa-router')
-const superagent = require('superagent')
-const config = require('../../../config')
+import Router from 'koa-router'
+import superagent from 'superagent'
+import config from '../../../config/index.js'
 
 const ResourceRoute = new Router({
-    prefix: '',
+  prefix: '',
 });
 
-ResourceRoute.get('/', async ({ BLL, state, request, response }) => {
-    const resp = await superagent.get(`${config.resource_api_prefix}/admin/v1/public/resources?${request.querystring}`);
-    if (resp.statusCode === 200) {
-        response.success({ items: resp.body.data })
-    } else {
-        response.fail()
-    }
+ResourceRoute.get('/', async ({ models, state, request, response }) => {
+  const resp = await superagent.get(`${config.resource_api_prefix}/admin/v1/public/resources?${request.querystring}`);
+  if (resp.statusCode === 200) {
+    response.success({ items: resp.body.data })
+  } else {
+    response.fail()
+  }
 })
 
 
-module.exports = ResourceRoute
+export default ResourceRoute

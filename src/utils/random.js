@@ -1,4 +1,4 @@
-module.exports = (len, type = 'number') => {
+export default (len, type = 'number') => {
   let chs = '';
   let res = '';
   if (type === 'mix') {

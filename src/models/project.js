@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const BaseBLL = require('../utils/baseBLL');
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
 
-class Project extends BaseBLL {
+class Project extends BaseModel {
   constructor() {
     super();
     const schema = new mongoose.Schema({
@@ -28,8 +28,8 @@ class Project extends BaseBLL {
       collection: 'project_info',
     });
     this.model = mongoose.model('Project', schema);
-    BaseBLL.models.Project = this.model;
+    BaseModel.models.Project = this.model;
   }
 }
 
-module.exports = new Project();
+export default new Project();

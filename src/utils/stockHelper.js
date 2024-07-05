@@ -1,8 +1,8 @@
-const _ = require('lodash')
-const fetch = require('node-fetch')
-const dayjs = require('dayjs')
+import _ from ('lodash')
+import fetch from ('node-fetch')
+import dayjs from ('dayjs')
 
-module.exports = async function (code) {
+export default async function (code) {
   const data = {
     date: '',
     prev_close: 0,

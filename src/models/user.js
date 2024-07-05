@@ -1,12 +1,11 @@
-const BaseBLL = require('../utils/baseBLL');
-const crypto = require('crypto');
-const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
+import crypto from 'crypto'
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
 
-class User extends BaseBLL {
+class User extends BaseModel {
   constructor() {
     super();
-    const schema = new Schema({
+    const schema = new mongoose.Schema({
       _id: {
         type: String,
       },
@@ -50,8 +49,8 @@ class User extends BaseBLL {
     })
     this.model = mongoose.model('User', schema);
 
-    BaseBLL.models.User = this.model;
+    BaseModel.models.User = this.model;
   }
 }
 
-module.exports = new User();
+export default new User();

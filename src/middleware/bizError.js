@@ -1,6 +1,6 @@
-const { genByBiz, BizError } = require('../utils/bizError');
+import { genByBiz, BizError } from '../utils/bizError.js'
 
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   // TODO: lang init
   try {
     await next()

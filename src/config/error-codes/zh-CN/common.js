@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   NeedParam: {
     status: 200,
     code: 100010,

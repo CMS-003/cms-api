@@ -1,9 +1,9 @@
-const _ = require('lodash')
-const shortid = require('shortid')
-const jwt = require('jsonwebtoken')
-const config = require('../config')
+import _ from 'lodash'
+import shortid from 'shortid'
+import jwt from 'jsonwebtoken'
+import config from '../config/index.js'
 
-module.exports = {
+export default {
   genToken: (user) => {
     const data = _.pick(user, ['_id', 'avatar', 'status', 'nickname', 'account'])
     data.jti = shortid.generate();

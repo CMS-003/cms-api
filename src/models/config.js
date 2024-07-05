@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
-const dayjs = require('dayjs');
-const BaseBLL = require('../utils/baseBLL');
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
+import dayjs from 'dayjs'
 
-class Config extends BaseBLL {
+class Config extends BaseModel {
   constructor() {
     super();
-    const schema = new Schema({
+    const schema = new mongoose.Schema({
       _id: {
         type: String, // 唯一名称
       },
@@ -44,8 +43,8 @@ class Config extends BaseBLL {
       collection: 'config_info',
     });
     this.model = mongoose.model('Config', schema);
-    BaseBLL.models.Config = this.model;
+    BaseModel.models.Config = this.model;
   }
 }
 
-module.exports = new Config();
+export default new Config();

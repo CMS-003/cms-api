@@ -1,5 +1,4 @@
-const urlSchema = require('url').URLSearchParams
-module.exports = {
+export default {
   PORT: 3334,
   timezone: process.env.timezone || '+08:00',
   language: process.env.language || 'zh-CN',

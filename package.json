@@ -2,7 +2,12 @@
   "name": "manage",
   "version": "0.0.1",
   "description": "",
+  "type": "module",
   "main": "src/index.js",
+  "types": "src/types/koa.d.ts",
+  "resolutions": {
+    "koa": "2.13.4"
+  },
   "scripts": {
     "start": "NODE_ENV=production node ./src/server.js",
     "dev": "cross-env NODE_ENV=development HTTPS_PROXY='http://10.0.15.126:8899' HTTP_PROXY='http://10.0.15.126:8899'  nodemon ./src/server.js",
@@ -40,6 +45,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/koa-router": "^7.4.8",
     "cross-env": "^7.0.3",
     "jest": "^28.1.0",
     "nodemon": "^2.0.16",

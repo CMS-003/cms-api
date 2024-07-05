@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs'
+import path from 'path'
 
 /**
  * 遍历文件夹并对每个文件应用回调函数
  * @param {object} opt 参数
  * @param {function} cb 回调函数
  */
- function loader(opt, cb = null) {
+function loader(opt, cb = null) {
   scanner(opt.dir, cb, opt.filter, opt.recusive);
 }
 
@@ -24,4 +24,4 @@ function scanner(dir, cb, filter, recusive) {
   });
 }
 
-module.exports = loader;
+export default loader;

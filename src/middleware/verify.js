@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken'
 
-module.exports = async (ctx, next) => {
+export default async (ctx, next) => {
   const token = ctx.get('authorization') || ctx.query.authorization || '';
   if (!token) {
     return ctx.response.throwBiz('AUTH.tokenFail')

@@ -1,11 +1,10 @@
-const BaseBLL = require('../utils/baseBLL');
-const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
 
-class Sns extends BaseBLL {
+class Sns extends BaseModel {
   constructor() {
     super();
-    const schema = new Schema({
+    const schema = new mongoose.Schema({
       // phone,email,google,github,alipay
       _id: {
         type: String,
@@ -45,8 +44,8 @@ class Sns extends BaseBLL {
     })
     this.model = mongoose.model('Sns', schema);
 
-    BaseBLL.models.Sns = this.model;
+    BaseModel.models.Sns = this.model;
   }
 }
 
-module.exports = new Sns();
+export default new Sns();

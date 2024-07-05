@@ -1,6 +1,10 @@
-const _ = require('lodash');
-const path = require('path');
-const loader = require('./loader');
+import _ from 'lodash'
+import { fileURLToPath } from 'url';
+import path from 'path'
+import loader from './loader.js'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class BizError extends Error {
   constructor(name, params = {}) {
@@ -17,8 +21,8 @@ class BizError extends Error {
  * @returns 
  */
 function genByBiz(bizError, lang = 'zh-CN') {
-  const package = packages[lang] ? packages[lang] : packages['zh-CN'];
-  const result = _.get(package, bizError.bizName, { status: 200, code: -1, message: 'unknow' });
+  const lib = libs[lang] ? libs[lang] : libs['zh-CN'];
+  const result = _.get(lib, bizError.bizName, { status: 200, code: -1, message: 'unknow' });
   let message = result.message;
   if (bizError.params) {
     const keys = Object.keys(bizError.params);
@@ -36,24 +40,26 @@ function genByBiz(bizError, lang = 'zh-CN') {
 }
 
 // 业务错误语音包
-const packages = {};
+const libs = {};
 loader({ dir: path.join(__dirname, '../config/error-codes') }, (info) => {
   if (info.ext === '') {
     const lang = info.filename
-    const package = {};
+    const lib = {};
     loader({ dir: path.join(info.dir, info.filename) }, (detail) => {
       if (detail.ext) {
         const name = detail.filename.toUpperCase();
-        const data = require(detail.fullpath);
-        package[name] = data;
+        import(detail.fullpath).then(data => {
+          // const data = require(detail.fullpath);
+          lib[name] = data;
+        })
       }
     });
-    packages[lang] = package;
+    libs[lang] = lib;
   }
 })
 
-module.exports = {
+export {
   BizError,
   genByBiz,
-  packages,
+  libs,
 }

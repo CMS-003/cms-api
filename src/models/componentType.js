@@ -1,12 +1,11 @@
-const BaseBLL = require('../utils/baseBLL');
-const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
-const dayjs = require('dayjs')
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
+import dayjs from 'dayjs'
 
-class ComponentTypeBLL extends BaseBLL {
+class ComponentType extends BaseModel {
   constructor() {
     super();
-    const schema = new Schema({
+    const schema = new mongoose.Schema({
       _id: {
         type: String,
       },
@@ -51,8 +50,8 @@ class ComponentTypeBLL extends BaseBLL {
       collection: 'component_type',
     });
     this.model = mongoose.model('ComponentType', schema);
-    BaseBLL.models.ComponentType = this.model;
+    BaseModel.models.ComponentType = this.model;
   }
 }
 
-module.exports = new ComponentTypeBLL();
+export default new ComponentType();

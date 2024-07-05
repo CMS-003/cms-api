@@ -1,8 +1,9 @@
-const _ = require('lodash');
+import _ from 'lodash'
 
-class BaseBLL {
+class BaseModel {
   static models = {};
   constructor() {
+    this.model = null;
     this.params = {};
   }
 
@@ -138,4 +139,4 @@ class BaseBLL {
   }
 }
 
-module.exports = BaseBLL;
+export default BaseModel;

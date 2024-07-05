@@ -1,14 +1,14 @@
-const Router = require('koa-router')
-const _ = require('lodash');
-const fs = require('fs')
-const shortid = require('shortid')
-const userVerify = require('../../../middleware/user_verify.js');
-const constant = require('../../../constant.js');
-const mime = require('mime')
+import Router from 'koa-router'
+import _ from 'lodash'
+import fs from 'fs'
+import shortid from 'shortid'
+import verify from '../../../middleware/verify.js'
+import constant from '../../../constant.js'
+import mime from 'mime'
 
 const templateRoute = new Router();
 
-templateRoute.post('/image', userVerify, async ({ request, response }) => {
+templateRoute.post('/image', verify, async ({ request, response }) => {
   const file = request.files.image
   const filepath = `/upload/${shortid.generate()}.${mime.getExtension(file.mimetype)}`
   fs.renameSync(file.filepath, constant.PATH.STATIC + filepath)
@@ -16,4 +16,4 @@ templateRoute.post('/image', userVerify, async ({ request, response }) => {
   response.success({ filepath })
 })
 
-module.exports = templateRoute
+export default templateRoute

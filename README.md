@@ -17,6 +17,7 @@
 -  ✅ jest提示detectOpenHandles的问题
 -  i18n
 -  ✅ 日志
--  sns第三方登录
+-  ✅ sns第三方登录
 -  boot聚合接口
 -  form 模板页
+-  ✅ commonjs 改为 esm

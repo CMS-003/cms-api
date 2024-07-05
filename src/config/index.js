@@ -1,11 +1,12 @@
-const devConfig = require('./development')
-const prodConfig = require('./production')
+import dev from './development.js'
+import prod from './production.js'
+
 let config = {};
 if (process.env.NODE_ENV === 'development') {
-  config = devConfig
+  config = dev
 }
 if (process.env.NODE_ENV === 'production') {
-  config = prodConfig
+  config = prod
 }
 
-module.exports = config;
+export default config;

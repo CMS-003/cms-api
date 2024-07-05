@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   tokenNotFound: {
     status: 200,
     code: 101000,

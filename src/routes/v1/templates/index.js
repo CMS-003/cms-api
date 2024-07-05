@@ -1,12 +1,11 @@
-const Router = require('koa-router')
-const _ = require('lodash');
-const uuid = require('uuid');
-const shortid = require('shortid')
-const userVerify = require('../../../middleware/user_verify.js')
+import Router from 'koa-router'
+import _ from 'lodash'
+import { v4 } from 'uuid'
+import verify from '../../../middleware/verify.js'
 
 const templateRoute = new Router();
 
-templateRoute.get('/', userVerify, async ({ BLL, request, state, response }) => {
+templateRoute.get('/', verify, async ({ models, request, state, response }) => {
   const hql = request.paging()
   if (request.query.type) {
     hql.where.type = request.query.type;
@@ -15,26 +14,26 @@ templateRoute.get('/', userVerify, async ({ BLL, request, state, response }) => 
     hql.where.project_id = request.query.project_id
   }
   hql.order = { order: 1 }
-  const items = await BLL.templateBLL.getList(hql);
+  const items = await models.Template.getList(hql);
   response.success({ items })
 })
 
-templateRoute.post('/', userVerify, async ({ BLL, state, request, response }) => {
-  request.body._id = uuid.v4()
+templateRoute.post('/', verify, async ({ models, state, request, response }) => {
+  request.body._id = v4()
   request.body.project_id = state.project_id
-  await BLL.templateBLL.create(request.body)
+  await models.Template.create(request.body)
   response.success()
 })
 
-templateRoute.put('/:template_id', userVerify, async ({ BLL, params, request, response }) => {
-  await BLL.templateBLL.update({ where: { _id: params.template_id }, data: request.body })
+templateRoute.put('/:template_id', verify, async ({ models, params, request, response }) => {
+  await models.Template.update({ where: { _id: params.template_id }, data: request.body })
   response.success()
 })
 
-templateRoute.get('/:template_id/fields', userVerify, async ({ BLL, params, request, response }) => {
+templateRoute.get('/:template_id/fields', verify, async ({ models, params, request, response }) => {
   const hql = { where: { _id: params.template_id }, lean: true }
-  const item = await BLL.templateBLL.getInfo(hql);
+  const item = await models.Template.getInfo(hql);
   response.success({ items: item ? (item.fields || []) : [] })
 })
 
-module.exports = templateRoute
+export default templateRoute

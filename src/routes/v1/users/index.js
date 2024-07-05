@@ -1,31 +1,31 @@
-const Router = require('koa-router')
-const userVerify = require('../../../middleware/user_verify')
+import Router from 'koa-router'
+import verify from '../../../middleware/verify.js'
 
 const UserRoute = new Router();
 
-UserRoute.post('/sign-out', async ({ BLL, response }) => {
-  const items = await BLL.projectBLL.getList({});
+UserRoute.post('/sign-out', async ({ models, response }) => {
+  const items = await models.Project.getList({});
   response.success({ items });
 })
 
-UserRoute.get('/self', userVerify, async ({ params, req, response }) => {
-  const { projectBLL } = ctx.BLL;
+UserRoute.get('/self', verify, async ({ params, req, response }) => {
+  const { Project } = ctx.models;
   const where = { _id: params._id };
-  const item = await projectBLL.getInfo({ where });
+  const item = await Project.getInfo({ where });
   response.success({ item });
 })
 
-UserRoute.get('/profile', userVerify, async ({ BLL, params, req, response, state }) => {
-  const { userBLL } = BLL;
+UserRoute.get('/profile', verify, async ({ models, params, req, response, state }) => {
+  const { User } = models;
   const where = { _id: state.user._id };
-  const item = await userBLL.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
+  const item = await User.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
   response.success({ item });
 })
 
-UserRoute.get('/menu', userVerify, async ({ BLL, params, req, response }) => {
-  const { componentBLL } = BLL;
+UserRoute.get('/menu', verify, async ({ models, params, req, response }) => {
+  const { Component } = models;
   const where = { tree_id: 'bc2753d5-2af0-4bba-8eef-b2b5cdba2caf' };
-  const items = await componentBLL.getList({ where, order: 'order', lean: true });
+  const items = await Component.getList({ where, order: 'order', lean: true });
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];
@@ -42,4 +42,4 @@ UserRoute.get('/menu', userVerify, async ({ BLL, params, req, response }) => {
   response.success(tree);
 })
 
-module.exports = UserRoute
+export default UserRoute

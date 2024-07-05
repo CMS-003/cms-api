@@ -1,43 +1,44 @@
-const Router = require('koa-router')
-const _ = require('lodash');
-const uuid = require('uuid');
+import Router from 'koa-router'
+import _ from 'lodash'
+import { v4 } from 'uuid'
+
 
 const ConfigRoute = new Router();
 
-ConfigRoute.get('/', async ({ BLL, response }) => {
-  const items = await BLL.configBLL.getList({});
+ConfigRoute.get('/', async ({ models, response }) => {
+  const items = await models.Config.getList({});
   response.success({ items });
 })
 
-ConfigRoute.get('/:id', async ({ params, BLL, response }) => {
+ConfigRoute.get('/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
-  const item = await BLL.configBLL.getInfo({ where });
+  const item = await models.Config.getInfo({ where });
   response.success({ item });
 })
 
-ConfigRoute.post('/', async ({ request, response, BLL }) => {
+ConfigRoute.post('/', async ({ request, response, models }) => {
   const data = _.pick(request.body, ['_id', 'project_id', 'name', 'desc', 'type', 'value', 'order']);
   if (_.isNil(data.project_id)) {
     return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
   }
-  const item = await BLL.configBLL.create(data);
+  const item = await models.Config.create(data);
   response.success({ item });
 });
 
-ConfigRoute.put('/:id', async ({ params, request, response, BLL }) => {
+ConfigRoute.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['project_id', 'name', 'desc', 'type', 'value', 'order']);
   if (_.isNil(data.project_id)) {
     return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
   }
-  await BLL.configBLL.update({ where, data });
+  await models.Config.update({ where, data });
   response.success();
 });
 
-ConfigRoute.del('/:id', async ({ params, request, response, BLL }) => {
+ConfigRoute.del('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  await BLL.configBLL.destroy({ where });
+  await models.Config.destroy({ where });
   response.success();
 });
 
-module.exports = ConfigRoute
+export default ConfigRoute

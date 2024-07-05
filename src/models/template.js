@@ -1,12 +1,11 @@
-const mongoose = require('mongoose');
-const Schema = require('mongoose').Schema;
-const dayjs = require('dayjs');
-const BaseBLL = require('../utils/baseBLL');
+import BaseModel from '../utils/baseModel.js'
+import mongoose from 'mongoose'
+import dayjs from 'dayjs'
 
-class Template extends BaseBLL {
+class Template extends BaseModel {
   constructor() {
     super();
-    const schema = new Schema({
+    const schema = new mongoose.Schema({
       _id: {
         type: String,
       },
@@ -49,7 +48,7 @@ class Template extends BaseBLL {
         default: () => dayjs().toDate(),
       },
       fields: [
-        { component: String, fields: String, title: String, autoFocus: Boolean, dataType: String, dataValue: Schema.Types.Mixed }
+        { component: String, fields: String, title: String, autoFocus: Boolean, dataType: String, dataValue: mongoose.Schema.Types.Mixed }
       ],
       available: {
         type: Boolean
@@ -63,8 +62,8 @@ class Template extends BaseBLL {
       collection: 'template_info',
     });
     this.model = mongoose.model('Template', schema);
-    BaseBLL.models.Template = this.model;
+    BaseModel.models.Template = this.model;
   }
 }
 
-module.exports = new Template();
+export default new Template();

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   PORT: 3334,
   timezone: 'Asia/Shanghai',
   language: 'zh-CN',
@@ -13,7 +13,7 @@ module.exports = {
       authSource: 'admin'
     }
   },
-  resource_api_prefix: 'http://192.168.0.124:8097',
-  page_public_url: 'http://localhost:3000',
+  resource_api_prefix: 'http://127.0.0.1:3334',
+  page_public_url: 'https://u67631x482.vicp.fun',
   USER_TOKEN_SECRET: 'lp#yBMS0f!4IleTVnpA@'
 }

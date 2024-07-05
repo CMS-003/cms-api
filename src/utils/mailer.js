@@ -1,7 +1,7 @@
-const _ = require('lodash');
-const nodemailer = require('nodemailer');
-const smtpTransport = require('nodemailer-smtp-transport');
-const constant = require('../constant')
+import _ from 'lodash'
+import nodemailer from 'nodemailer'
+import smtpTransport from 'nodemailer-smtp-transport'
+import constant from '../constant.js'
 
 class EmailHelper {
   /**
@@ -49,4 +49,4 @@ class EmailHelper {
     }
   }
 }
-module.exports = EmailHelper;
+export default EmailHelper;
