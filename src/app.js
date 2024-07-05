@@ -10,7 +10,7 @@ import config from './config/index.js'
 import log4js from 'log4js'
 import Logger from './utils/logger.js'
 import constant from './constant.js';
-import router from './router.js'
+import getRoutes from './router.js'
 import models from './models/index.js'
 import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
@@ -82,13 +82,13 @@ app.use(async (ctx, next) => {
   await next()
 });
 
-app.use(router.routes())
-
 app.on('error', (err, ctx) => {
   console.log(err.message);
 })
 
 async function run(cb) {
+  const router = await getRoutes()
+  app.use(router.routes());
   app.context.db = await mongoose.connect(config.mongo_url);
   // 连接数据库后,启动前加载配置
   const config_items = await app.context.models.Config.getAll({ lean: true })

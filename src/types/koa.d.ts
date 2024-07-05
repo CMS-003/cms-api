@@ -45,7 +45,7 @@ declare module 'koa' {
   }
 
   interface BaseResponse {
-    success: (params?: { items?: Object[], item?: Object, count?: number } & any) => void;
+    success: (params?: { items?: Object[], item?: Object, count?: number } & any, extra?: { message?: string }) => void;
     fail: Function;
     throwBiz: Function;
   }

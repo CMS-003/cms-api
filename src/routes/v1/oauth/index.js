@@ -78,8 +78,8 @@ OauthRoute.get('/sns/:type', async ({ config, request, params, response }) => {
   const token = request.get('authorization') || request.query.authorization || '';
   let user_id = 'none';
   try {
-    const user = jwt.verify(token || '', config.USER_TOKEN_SECRET)
-    user_id = user._id;
+    const user = jwt.verify(_.isArray(token) ? token[0] : token || '', config.USER_TOKEN_SECRET)
+    user_id = typeof user === 'string' ? '' : user._id;
   } catch (e) {
     console.log(e);
   }
@@ -98,7 +98,7 @@ OauthRoute.post('/bind', async ({ query, request, response }) => {
 })
 
 OauthRoute.get('/sns/:type/callback', async (ctx) => {
-  await snsService.callback(ctx, 'sns_' + ctx.params.type, ctx.query);
+  await snsService.callback(ctx, 'sns_' + ctx.params.type);
   // TODO: 返回result结果页面 成功,失败,取消 (如果强制绑定,则需要先跳绑定账号页面)
 })
 

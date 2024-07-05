@@ -2,20 +2,25 @@ import { fileURLToPath } from 'url';
 import path from 'path'
 import Router from 'koa-router'
 import loader from './utils/loader.js'
-import { createRequire } from "module";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = new Router({ prefix: '/api' });
 const routeDir = path.join(__dirname, 'routes')
 
+const filepaths = [];
 loader({ dir: routeDir, recusive: true }, info => {
-  import(info.fullpath).then(subRouter => {
-    const route = path.relative(routeDir, info.dir).replace(path.sep, '/')
-    if (subRouter && subRouter.default.routes) {
-      router.use(`/${route}`, subRouter.default.routes())
-    }
-  })
+  const route = path.relative(routeDir, info.dir).replace(path.sep, '/')
+  filepaths.push({ route, file: info.fullpath });
 })
 
-export default router
+export default async function getRoutes() {
+  for (let i = 0; i < filepaths.length; i++) {
+    const { route, file } = filepaths[i];
+    const subRouter = await import(file);
+    if (subRouter && subRouter.default) {
+      router.use(`/${route}`, subRouter.default.routes());
+    }
+  }
+  return router;
+}

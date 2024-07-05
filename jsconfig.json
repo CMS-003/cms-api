@@ -16,7 +16,6 @@
     ]
   },
   "include": [
-    "**/*.js",
     "src/types/koa.d.ts"
   ]
 }

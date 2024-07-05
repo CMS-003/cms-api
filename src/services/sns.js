@@ -7,7 +7,7 @@ import { google } from 'googleapis'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
-import { AlipaySdk } from 'alipay-sdk';
+import AlipaySdk from 'alipay-sdk';
 
 superagentProxy(superagent);
 
@@ -42,6 +42,9 @@ export default {
   bind: async (token, data) => {
     try {
       const sns = jwt.verify(token, config.USER_TOKEN_SECRET);
+      if (typeof sns === 'string') {
+        return;
+      }
       if (data.type === 'account') {
         const user = await models.User.getInfo({ where: { account: data.account } });
         if (user.isEqual(data.value)) {
@@ -82,6 +85,7 @@ export default {
       }
       // TODO: 创建 sns_info表,重定向提示,(跳过或绑定账号),返回新token ; 已有user_id则直接返回token
       sns_info = {
+        user_id: '',
         sns_id: `${detail.id}`,
         sns_type: 'github',
         access_token: result.access_token,
@@ -117,7 +121,7 @@ export default {
       }
     } else if (type === 'sns_alipay') {
       const authCode = ctx.query.auth_code;
-      const alipaySdk = new AlipaySdk({
+      const alipaySdk = new AlipaySdk.AlipaySdk({
         appId: sns_config.app_id,
         privateKey: sns_config.app_secret_key,
         alipayPublicKey: sns_config.alipay_public_key,
@@ -209,7 +213,7 @@ export default {
       await oauth2Client.revokeToken(sns_info.access_token)
       return;
     } else if (type === 'alipay') {
-      const alipaySdk = new AlipaySdk({
+      const alipaySdk = new AlipaySdk.AlipaySdk({
         appId: sns_config.app_id,
         privateKey: sns_config.app_secret_key,
         alipayPublicKey: sns_config.alipay_public_key,

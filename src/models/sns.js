@@ -37,11 +37,6 @@ class Sns extends BaseModel {
       strict: true,
       collection: 'sns_info',
     });
-    schema.loadClass(class Custom {
-      isEqual(password) {
-        return this._doc.pass === this.calculate(password, this._doc.salt);
-      }
-    })
     this.model = mongoose.model('Sns', schema);
 
     BaseModel.models.Sns = this.model;

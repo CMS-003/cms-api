@@ -36,17 +36,15 @@ class User extends BaseModel {
       strict: true,
       collection: 'user_info',
     });
-    schema.loadClass(class Custom {
-      // 密码加盐后的加密密码
-      calculate(pass) {
-        const hmac = crypto.createHmac('sha1', this._doc.salt);
-        hmac.update(pass);
-        return hmac.digest('hex').toString();
-      }
-      isEqual(password) {
-        return this._doc.pass === this.calculate(password, this._doc.salt);
-      }
-    })
+    schema.methods.isEqual = function (password) {
+      return this._doc && (this._doc.pass === this.calculate(password, this._doc.salt))
+    }
+    schema.methods.calculate = function (pass) {
+      const hmac = crypto.createHmac('sha1', this._doc.salt);
+      hmac.update(pass);
+      return hmac.digest('hex').toString();
+
+    }
     this.model = mongoose.model('User', schema);
 
     BaseModel.models.User = this.model;
