@@ -12,7 +12,7 @@ ComponentRoute.get('/', async ({ models, state, request, response }) => {
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id;
   }
-  hql.sort = { order: 1, updatedAt: -1 }
+  hql.sort = { sort: 1, updatedAt: -1 }
   const items = await models.Component.getList(hql);
   response.success({ items });
 })
@@ -44,7 +44,8 @@ ComponentRoute.post('/batch', async ({ request, response, models }) => {
     }
   });
   if (arr.length) {
-    await models.Component.bulkWrite(arr);
+    const r = await models.Component.model.bulkWrite(arr);
+    console.log(r)
   }
   response.success();
 });

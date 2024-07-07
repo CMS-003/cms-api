@@ -25,7 +25,7 @@ UserRoute.get('/profile', verify, async ({ models, params, req, response, state 
 UserRoute.get('/menu', verify, async ({ models, params, req, response }) => {
   const { Component } = models;
   const where = { tree_id: 'bc2753d5-2af0-4bba-8eef-b2b5cdba2caf' };
-  const items = await Component.getList({ where, order: 'order', lean: true });
+  const items = await Component.getList({ where, sort: 'order', lean: true });
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];

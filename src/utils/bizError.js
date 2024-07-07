@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import path from 'path'
 import loader from './loader.js'
 
@@ -45,11 +45,11 @@ loader({ dir: path.join(__dirname, '../config/error-codes') }, (info) => {
   if (info.ext === '') {
     const lang = info.filename
     const lib = {};
-    loader({ dir: path.join(info.dir, info.filename) }, (detail) => {
+    const fullpath = path.normalize(path.join(info.dir, info.filename));
+    loader({ dir: fullpath }, (detail) => {
       if (detail.ext) {
         const name = detail.filename.toUpperCase();
-        import(detail.fullpath).then(data => {
-          // const data = require(detail.fullpath);
+        import(pathToFileURL(detail.fullpath)).then(data => {
           lib[name] = data;
         })
       }

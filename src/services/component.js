@@ -1,7 +1,7 @@
 import models from '../models/index.js'
 
 async function getTree(tree_id) {
-  const items = await models.Component.getAll({ where: { tree_id }, order: { order: 1 }, lean: true })
+  const items = await models.Component.getAll({ where: { tree_id }, sort: { order: 1 }, lean: true })
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];

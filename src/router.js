@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import path from 'path'
 import Router from 'koa-router'
 import loader from './utils/loader.js'
@@ -17,7 +17,7 @@ loader({ dir: routeDir, recusive: true }, info => {
 export default async function getRoutes() {
   for (let i = 0; i < filepaths.length; i++) {
     const { route, file } = filepaths[i];
-    const subRouter = await import(file);
+    const subRouter = await import(pathToFileURL(file).href);
     if (subRouter && subRouter.default) {
       router.use(`/${route}`, subRouter.default.routes());
     }

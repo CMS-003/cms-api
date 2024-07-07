@@ -10,7 +10,7 @@ class BaseModel {
   _init(opts) {
     const opt = {
       where: {},
-      order: {},
+      sort: {},
       attrs: {},
       lean: false,
       data: null,
@@ -61,8 +61,8 @@ class BaseModel {
       opt.data = opts.data;
     }
     // 排序
-    if (opts.order) {
-      opt.order = opts.order;
+    if (opts.sort) {
+      opt.sort = opts.sort;
     }
     // sum
     if (opts.sum) {
@@ -115,7 +115,7 @@ class BaseModel {
   }
   getAll(opts = {}) {
     const opt = this._init(opts);
-    return this.model.find(opt.where).select(opt.attrs).sort(opt.order).lean(opt.lean);
+    return this.model.find(opt.where).select(opt.attrs).sort(opt.sort).lean(opt.lean);
   }
   count(opts = {}) {
     const opt = this._init(opts);
@@ -130,11 +130,11 @@ class BaseModel {
   }
   getList(opts = {}) {
     const opt = this._init(opts);
-    return this.model.find(opt.where).select(opt.attrs).limit(opt.limit).skip(opt.offset).sort(opt.order).lean(opt.lean);
+    return this.model.find(opt.where).select(opt.attrs).limit(opt.limit).skip(opt.offset).sort(opt.sort).lean(opt.lean);
   }
   async getInfo(opts = {}) {
     const opt = this._init(opts);
-    const result = await this.model.findOne(opt.where).select(opt.attrs).skip(opt.offset).sort(opt.order).lean(opt.lean);
+    const result = await this.model.findOne(opt.where).select(opt.attrs).skip(opt.offset).sort(opt.sort).lean(opt.lean);
     return result;
   }
 }

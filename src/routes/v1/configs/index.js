@@ -5,8 +5,14 @@ import { v4 } from 'uuid'
 
 const ConfigRoute = new Router();
 
-ConfigRoute.get('/', async ({ models, response }) => {
-  const items = await models.Config.getList({});
+ConfigRoute.get('/', async ({ models, response, request }) => {
+  const hql = request.paging();
+  hql.sort = { type: 1 };
+  hql.lean = true;
+  if (request.query.type) {
+    hql.where = { type: request.query.type }
+  }
+  const items = await models.Config.getAll(hql);
   response.success({ items });
 })
 
