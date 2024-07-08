@@ -5,6 +5,8 @@ import User from './user.js'
 import Sns from './sns.js'
 import ComponentType from './componentType.js'
 import Template from './template.js'
+import Log from './log.js'
+import Code from './code.js'
 
 export default {
   Component,
@@ -14,4 +16,6 @@ export default {
   Sns,
   ComponentType,
   Template,
+  Log,
+  Code,
 }

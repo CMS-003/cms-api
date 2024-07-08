@@ -28,6 +28,19 @@ OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) 
     } else {
       response.throwBiz('AUTH.USER_NOTFOUND');
     }
+  } else if (type === 'email' || type === 'phone') {
+    const doc = await models.Code.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
+    if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
+      return response.fail({ message: '验证码已过期' });
+    }
+    const info = await models.User.getInfo({ where: { email: account }, lean: true });
+    if (info) {
+      await models.Code.update({ where: { method: type, receiver: account, code: value }, data: { $set: { status: 2 } } })
+      const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
+      response.success({ access_token, type: 'Bearer' });
+    } else {
+      return response.fail({ message: '账号不存在' });
+    }
   } else {
     const doc = await models.Sns.getInfo({ where: { _id: type, account } });
     if (doc) {
@@ -69,9 +82,34 @@ OauthRoute.post('/sign-up', async ({ request, models, response }) => {
     if (doc) {
       return response.throwBiz('USER.AccountExisted');
     }
-    await models.User.create({ _id: v4(), nickname: '游客', account: random(6, 'ichar') })
-    // TODO: 创建sns,并要求绑定
+    response.fail({ message: '不支持的注册类型' })
   }
+})
+
+OauthRoute.get('active', async ({ request, response, models }) => {
+  const code = request.query.code;
+  if (!code) {
+    return response.fail();
+  }
+  const doc = await models.Code.getInfo({ where: { method: 'email', type: 1, code }, lean: true });
+  if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
+    return response.fail({ message: '邮件已过期' });
+  }
+  const _id = v4();
+  const data = {
+    email: doc.receiver,
+    account: _id,
+    phone: '',
+    nickname: '小虎牙',
+    avatar: '',
+    pass: '',
+    salt: '',
+    createdAt: new Date(),
+    status: 1,
+  }
+  await models.User.create(data);
+  await models.Code.update({ where: { _id: doc._id }, data: { $set: { status: 2 } } });
+  response.body = `邮箱已激活,请使用邮箱登陆`
 })
 
 OauthRoute.get('/sns/:type', async ({ config, request, params, response }) => {

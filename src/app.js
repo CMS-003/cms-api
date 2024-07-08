@@ -16,6 +16,9 @@ import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
 import { BizError, genByBiz } from './utils/bizError.js'
 import mongoose from 'mongoose'
+import Mailer from './utils/mailer.js'
+import ejs from 'ejs'
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -97,6 +100,12 @@ async function run(cb) {
       console.warn(`config ${item.name} covered`);
     }
     app.context.config[item.name] = item.value;
+    if (item.name === 'email') {
+      app.context.mailer = new Mailer(item.value);
+    }
+    if (item.type === 'email_template') {
+      constant.emailTemplats[item.name] = ejs.compile(item.value.html);
+    }
   })
   if (typeof cb === 'function') {
     await cb(app);

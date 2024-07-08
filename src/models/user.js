@@ -10,6 +10,8 @@ class User extends BaseModel {
         type: String,
       },
       account: String,
+      email: String,
+      phone: String,
       nickname: {
         type: String,
         comment: '昵称'

@@ -23,21 +23,15 @@ ConfigRoute.get('/:id', async ({ params, models, response }) => {
 })
 
 ConfigRoute.post('/', async ({ request, response, models }) => {
-  const data = _.pick(request.body, ['_id', 'project_id', 'name', 'desc', 'type', 'value', 'order']);
-  if (_.isNil(data.project_id)) {
-    return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
-  }
+  const data = _.pick(request.body, ['_id', 'project_id', 'name', 'title', 'desc', 'type', 'value', 'order']);
   const item = await models.Config.create(data);
   response.success({ item });
 });
 
 ConfigRoute.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  const data = _.pick(request.body, ['project_id', 'name', 'desc', 'type', 'value', 'order']);
-  if (_.isNil(data.project_id)) {
-    return response.throwBiz('COMMON.NeedParam', { param: 'project_id' })
-  }
-  await models.Config.update({ where, data });
+  const data = _.pick(request.body, ['project_id', 'name', 'desc', 'title', 'type', 'value', 'order']);
+  await models.Config.update({ where, data: { $set: data } });
   response.success();
 });
 

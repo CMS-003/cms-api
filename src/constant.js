@@ -42,6 +42,8 @@ export default {
     '2022-10-06',
     '2022-10-07',
   ],
+  // email
+  emailTemplats: {},
   SYSTEM: {
     REQ_PAGE: 'page',
     REQ_LIMIT: 'size'

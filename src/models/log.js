@@ -1,7 +1,7 @@
-import BaseModel from '../utils/baseModel'
+import BaseModel from '../utils/baseModel.js'
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
-import uuid from 'uuid'
+import { v4 } from 'uuid'
 
 class Log extends BaseModel {
   constructor() {
@@ -9,7 +9,7 @@ class Log extends BaseModel {
     const schema = new mongoose.Schema({
       _id: {
         type: String, // 唯一名称
-        default: uuid.v4,
+        default: v4,
       },
       // log,info,error,
       type: {

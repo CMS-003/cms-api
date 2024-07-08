@@ -37,7 +37,7 @@ declare module 'koa' {
     models: {
       [k in keyof models]: BaseModel;
     };
-    Response: Response;
+    Response: BaseResponse;
   }
 
   interface BaseRequest {
@@ -46,7 +46,7 @@ declare module 'koa' {
 
   interface BaseResponse {
     success: (params?: { items?: Object[], item?: Object, count?: number } & any, extra?: { message?: string }) => void;
-    fail: Function;
+    fail: (params?: { code?: number, message?: string, status?: number }) => void;
     throwBiz: Function;
   }
 
@@ -57,5 +57,6 @@ declare module 'koa' {
     models: {
       [k in keyof models]: BaseModel;
     };
+    response: BaseResponse;
   }
 }

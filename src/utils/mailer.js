@@ -9,7 +9,7 @@ class EmailHelper {
    * @param {object} cfg 参数有host/port/user/pass
    */
   constructor(cfg) {
-    this.config = cfg.value;
+    this.config = cfg;
     // 开启一个SMTP连接池
     this.transport = nodemailer.createTransport(smtpTransport({
       service: this.config.service,
