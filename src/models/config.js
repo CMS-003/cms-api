@@ -2,6 +2,8 @@ import BaseModel from '../utils/baseModel.js'
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid';
+import constant from "../constant.js"
+import ejs from 'ejs'
 
 class Config extends BaseModel {
   constructor() {
@@ -25,7 +27,7 @@ class Config extends BaseModel {
         type: String,
       },
       type: {
-        type: String,
+        type: mongoose.Schema.Types.Mixed,
       },
       value: {
         type: Object,
@@ -47,8 +49,22 @@ class Config extends BaseModel {
       strict: true,
       collection: 'config_info',
     });
+    schema.statics.reaload = async (app) => {
+
+    }
     this.model = mongoose.model('Config', schema);
     BaseModel.models.Config = this.model;
+  }
+
+  async reload(app) {
+    console.log('reload config');
+    const config_items = await this.model.find({}).lean(true);
+    config_items.forEach(item => {
+      app.context.config[item.name] = item.value;
+      if (item.type === 'email_template') {
+        constant.emailTemplats[item.name] = ejs.compile(item.value.html);
+      }
+    })
   }
 }
 

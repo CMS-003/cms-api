@@ -7,6 +7,7 @@ import ComponentType from './componentType.js'
 import Template from './template.js'
 import Log from './log.js'
 import Code from './code.js'
+import Capsule from './capsule.js'
 
 export default {
   Component,
@@ -18,4 +19,5 @@ export default {
   Template,
   Log,
   Code,
+  Capsule,
 }
