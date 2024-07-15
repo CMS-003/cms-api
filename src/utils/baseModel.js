@@ -91,10 +91,6 @@ class BaseModel {
     return this.model;
   }
 
-  getAttributes() {
-
-  }
-
   create(data) {
     Object.assign(data, this.params);
     return this.model.create(data);
@@ -135,6 +131,18 @@ class BaseModel {
   async getInfo(opts = {}) {
     const opt = this._init(opts);
     const result = await this.model.findOne(opt.where).select(opt.attrs).skip(opt.offset).sort(opt.sort).lean(opt.lean);
+    return result;
+  }
+  getAttributes() {
+    const fields = this.model.schema.paths;
+    const result = [];
+    for (const field in fields) {
+      console.log(`字段: ${field}, 类型: ${fields[field].instance}`);
+      result.push({
+        field,
+        type: fields[field].instance
+      })
+    }
     return result;
   }
 }
