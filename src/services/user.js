@@ -5,7 +5,7 @@ import config from '../config/index.js'
 
 export default {
   genToken: (user) => {
-    const data = _.pick(user, ['_id', 'avatar', 'status', 'nickname', 'account', 'jti'])
+    const data = _.pick(user, ['id', 'avatar', 'status', 'nickname', 'account', 'jti'])
     data.jti = shortid.generate();
     // TODO: device_id 推送; 平台: android,web,ios,ipad,tv,watch
     const token = jwt.sign(data, config.USER_TOKEN_SECRET, { expiresIn: 86400 })

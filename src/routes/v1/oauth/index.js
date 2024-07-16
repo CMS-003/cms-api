@@ -12,13 +12,13 @@ const OauthRoute = new Router();
 OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) => {
   const { type, account, value } = request.body;
   if (type === 'account') {
-    const doc = await models.User.getInfo({ where: { account } });
+    const doc = await models.User.getInfo({ where: { name: account } });
     if (doc && (!doc.pass || !doc.salt)) {
       return response.throwBiz('AUTH.PassError');;
     }
     if (doc && doc.isEqual(value)) {
       try {
-        const info = _.pick(doc._doc, ['_id', 'nickname', 'account', 'avatar', 'status']);
+        const info = _.pick(doc._doc, ['id', 'nickname', 'account', 'avatar', 'status']);
         const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
         response.success({ access_token, type: 'Bearer' });
       } catch (e) {
@@ -29,59 +29,45 @@ OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) 
       response.throwBiz('AUTH.USER_NOTFOUND');
     }
   } else if (type === 'email' || type === 'phone') {
-    const doc = await models.Code.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
+    const doc = await models.Verification.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
     if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
       return response.fail({ message: '验证码已过期' });
     }
     const info = await models.User.getInfo({ where: { email: account }, lean: true });
     if (info) {
-      await models.Code.update({ where: { method: type, receiver: account, code: value }, data: { $set: { status: 2 } } })
+      await models.Verification.update({ where: { method: type, receiver: account, code: value }, data: { $set: { status: 2 } } })
       const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
       response.success({ access_token, type: 'Bearer' });
     } else {
       return response.fail({ message: '账号不存在' });
     }
   } else {
-    const doc = await models.Sns.getInfo({ where: { _id: type, account } });
-    if (doc) {
-      const user = await models.User.getInfo({ where: { _id: doc.user_id } });
-      if (user.isEqual(value)) {
-        const access_token = jwt.sign(_.pick(user, ['_id', 'nickname', 'account', 'avatar', 'status']), config.USER_TOKEN_SECRET, { expiresIn: '2w', issuer: 'cms-manage' });
-        response.success({ access_token, type: 'Bearer' });
-      } else {
-        response.throwBiz('AUTH.PassError');
-      }
-    } else {
-      response.throwBiz('AUTH.USER_NOTFOUND');
-    }
+    response.fail();
   }
-})
+});
 
 OauthRoute.post('/sign-up', async ({ request, models, response }) => {
   const info = request.body;
   const { type, account, value } = info;
   if (type === 'account') {
-    const doc = await models.User.getInfo({ where: { account }, lean: true });
+    const doc = await models.User.getInfo({ where: { name: account }, lean: true });
     if (doc) {
       return response.throwBiz('USER.AccountExisted');
     }
     const salt = randomstring.generate({ length: 10, charset: 'hex' });
-    const hmac = crypto.createHmac('sha1', salt);
-    hmac.update(value);
-    const pass = hmac.digest('hex').toString();
+    const pass = crypto.createHmac('sha1', salt).update(value).digest('hex').toString();
     const data = {
       _id: v4(),
-      account: account,
+      name: account,
       pass,
-      salt
+      salt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 1,
     }
     await models.User.create(data);
     response.success(null, { message: '注册成功,请登录' });
   } else {
-    const doc = await models.Sns.getInfo({ where: { _id: type, account } });
-    if (doc) {
-      return response.throwBiz('USER.AccountExisted');
-    }
     response.fail({ message: '不支持的注册类型' })
   }
 })

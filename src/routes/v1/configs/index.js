@@ -23,15 +23,18 @@ ConfigRoute.get('/:id', async ({ params, models, response }) => {
 })
 
 ConfigRoute.post('/', async ({ app, request, response, models }) => {
-  const data = _.pick(request.body, ['_id', 'project_id', 'name', 'title', 'desc', 'type', 'value', 'order']);
+  const data = _.pick(request.body, ['id', 'project_id', 'title', 'desc', 'type', 'value', 'order', 'createdAt', 'updatedAt']);
+  data.createdAt = new Date();
+  data.updatedAt = new Date();
   const item = await models.Config.create(data);
-  await models.Config.reload(app);
+  // await models.Config.reload(app);
   response.success({ item });
 });
 
 ConfigRoute.put('/:id', async ({ app, params, request, response, models }) => {
   const where = { _id: params.id };
-  const data = _.pick(request.body, ['project_id', 'name', 'desc', 'title', 'type', 'value', 'order']);
+  const data = _.pick(request.body, ['project_id', 'name', 'desc', 'title', 'type', 'value', 'order', 'updatedAt']);
+  data.updatedAt = new Date();
   await models.Config.update({ where, data: { $set: data } });
   await models.Config.reload(app);
   response.success();
