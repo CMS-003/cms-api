@@ -19,9 +19,9 @@ import {
   MTask,
 } from 'schema'
 
-const db_manage = mongoose.createConnection(config.mongo_manage_url);
-const db_content = mongoose.createConnection(config.mongo_content_url);
-const db_download = mongoose.createConnection(config.mongo_download_url);
+const manager = mongoose.createConnection(config.mongo_manager_url);
+const content = mongoose.createConnection(config.mongo_content_url);
+const crawler = mongoose.createConnection(config.mongo_crawler_url);
 
 class MConfig2 extends MConfig {
   constructor(db) {
@@ -43,8 +43,8 @@ class MUser2 extends MUser {
     super(db, params);
   }
 }
-const Config = new MConfig2(db_manage);
-const User = new MUser2(db_manage, {
+const Config = new MConfig2(manager);
+const User = new MUser2(manager, {
   methods: {
     isEqual: function (password) {
       return this._doc.pass === this.caculate(password);
@@ -56,18 +56,23 @@ const User = new MUser2(db_manage, {
     }
   }
 });
-const Log = new MLog(db_manage);
-const Sns = new MSns(db_manage);
-const Component = new MComponent(db_manage);
-const ComponentType = new MComponentType(db_manage);
-const Project = new MProject(db_manage);
-const Template = new MTemplate(db_manage);
-const Widget = new MWidget(db_manage);
-const Capsule = new MCapsule(db_manage);
-const Counter = new MCounter(db_content);
-const Task = new MTask(db_download);
+const Log = new MLog(manager);
+const Sns = new MSns(manager);
+const Component = new MComponent(manager);
+const ComponentType = new MComponentType(manager);
+const Project = new MProject(manager);
+const Template = new MTemplate(manager);
+const Widget = new MWidget(manager);
+const Capsule = new MCapsule(manager);
+const Counter = new MCounter(content);
+const Task = new MTask(crawler);
 
 export default {
+  dbs: {
+    manager,
+    content,
+    crawler,
+  },
   Config,
   User,
   Log,

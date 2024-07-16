@@ -18,7 +18,7 @@ OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) 
     }
     if (doc && doc.isEqual(value)) {
       try {
-        const info = _.pick(doc._doc, ['id', 'nickname', 'account', 'avatar', 'status']);
+        const info = _.pick(doc, ['id', 'nickname', 'account', 'avatar', 'status']);
         const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
         response.success({ access_token, type: 'Bearer' });
       } catch (e) {
@@ -117,7 +117,7 @@ OauthRoute.post('/bind', async ({ query, request, response }) => {
   if (access_token) {
     response.success({ access_token, type: 'Bearer' });
   } else {
-    response.fail('fail');
+    response.fail();
   }
 })
 

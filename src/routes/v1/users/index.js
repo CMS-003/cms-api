@@ -8,8 +8,8 @@ UserRoute.post('/sign-out', async ({ models, response }) => {
   response.success({ items });
 })
 
-UserRoute.get('/self', verify, async ({ params, req, response }) => {
-  const { Project } = ctx.models;
+UserRoute.get('/self', verify, async ({ models, params, req, response }) => {
+  const { Project } = models;
   const where = { _id: params._id };
   const item = await Project.getInfo({ where });
   response.success({ item });

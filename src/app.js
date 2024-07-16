@@ -15,7 +15,6 @@ import models from './models/index.js'
 import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
 import { BizError, genByBiz } from './utils/bizError.js'
-import mongoose from 'mongoose'
 import Mailer from './utils/mailer.js'
 import ejs from 'ejs'
 
@@ -90,9 +89,9 @@ app.on('error', (err, ctx) => {
 })
 
 async function run(cb) {
+  app.context.dbs = models.dbs;
   const router = await getRoutes()
   app.use(router.routes());
-  app.context.db = await mongoose.connect(config.mongo_url);
   // 连接数据库后,启动前加载配置
   const config_items = await app.context.models.Config.getAll({ lean: true })
   config_items.forEach(item => {

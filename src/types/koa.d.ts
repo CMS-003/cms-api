@@ -1,43 +1,41 @@
 import { Model, Schema, Document } from 'mongoose';
 import models from '../models/index'
 import mongoose from 'mongoose';
+import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
+import Application from 'koa';
+import { Base, OPT, IUser } from 'schema/dist/@types/types'
+import { MUser } from 'schema'
 
-interface OPT {
-  where?: { [key: string]: any },
-  sort?: { [key: string]: any } | string,
-  attrs?: { [key: string]: number },
-  lean?: boolean,
-  data?: any,
-  options?: object,
-  page?: number,
-  offset?: number,
-  limit?: number,
+declare module 'schema' {
+  export class MUser {
+    getInfo(opt: OPT): Promise<IUser & { isEqual: (pass: string) => boolean }>;
+  }
 }
-interface BaseModel {
-  model: Model<Document>,
-  _init: (opt: any) => OPT;
-  query: (sql) => any;
-  aggregate: (query: any) => any;
-  getModel: () => Model;
-  destroy: (opt: OPT) => void;
-  update: (opt: OPT) => void;
-  getAll: (opt: OPT) => Model[];
-  count: (opt: OPT) => number;
-  getList: (opt: OPT) => Model[];
-  getInfo: (opt: OPT) => Model;
-  create: (data: any) => Document;
+interface IUser {
+  isEqual: (pass: string) => boolean;
 }
 
 declare module 'koa' {
 
+  export interface ExtendableContext {
+    config: {
+      [key: string]: any;
+    };
+    models: typeof models;
+  };
+  export interface context {
+    config: {
+      [key: string]: any;
+    };
+    models: typeof models;
+  }
   interface DefaultContext {
     config: {
       [key: string]: any;
     };
-    models: {
-      [k in keyof models]: BaseModel;
-    };
+    models: typeof models;
     Response: BaseResponse;
+    dbs: typeof models.dbs;
   }
 
   interface BaseRequest {
@@ -50,13 +48,4 @@ declare module 'koa' {
     throwBiz: Function;
   }
 
-  interface ExtendableContext {
-    config: {
-      [key: string]: any;
-    };
-    models: {
-      [k in keyof models]: BaseModel;
-    };
-    response: BaseResponse;
-  }
 }
