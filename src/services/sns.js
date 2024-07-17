@@ -121,7 +121,7 @@ export default {
       }
     } else if (type === 'sns_alipay') {
       const authCode = ctx.query.auth_code;
-      const alipaySdk = new AlipaySdk.AlipaySdk({
+      const alipaySdk = new AlipaySdk({
         appId: sns_config.app_id,
         privateKey: sns_config.app_secret_key,
         alipayPublicKey: sns_config.alipay_public_key,
@@ -213,7 +213,7 @@ export default {
       await oauth2Client.revokeToken(sns_info.access_token)
       return;
     } else if (type === 'alipay') {
-      const alipaySdk = new AlipaySdk.AlipaySdk({
+      const alipaySdk = new AlipaySdk({
         appId: sns_config.app_id,
         privateKey: sns_config.app_secret_key,
         alipayPublicKey: sns_config.alipay_public_key,

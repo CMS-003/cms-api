@@ -102,8 +102,10 @@ router.get('/sns/:type', async ({ config, request, params, response }) => {
   const token = request.get('authorization') || request.query.authorization || '';
   let user_id = 'none';
   try {
-    const user = jwt.verify(_.isArray(token) ? token[0] : token || '', config.USER_TOKEN_SECRET)
-    user_id = typeof user === 'string' ? '' : user._id;
+    const user = jwt.decode(_.isArray(token) ? token[0] : token || '', config.USER_TOKEN_SECRET)
+    if (user) {
+      user_id = typeof user.payload === 'string' ? '' : user.payload._id;
+    }
   } catch (e) {
     console.log(e);
   }
