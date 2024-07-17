@@ -3,11 +3,11 @@ import _ from 'lodash'
 import { v4 } from 'uuid'
 
 
-const ComponentRoute = new Router({
+const router = new Router({
   prefix: '',
 });
 
-ComponentRoute.get('/', async ({ models, state, request, response }) => {
+router.get('/', async ({ models, state, request, response }) => {
   const hql = request.paging()
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id;
@@ -17,13 +17,13 @@ ComponentRoute.get('/', async ({ models, state, request, response }) => {
   response.success({ items });
 })
 
-ComponentRoute.get('/:id', async ({ params, req, models, response }) => {
+router.get('/:id', async ({ params, req, models, response }) => {
   const where = { _id: params.id };
   const item = await models.Component.getInfo({ where });
   response.success({ item });
 })
 
-ComponentRoute.post('/', async ({ state, request, response, models }) => {
+router.post('/', async ({ state, request, response, models }) => {
   const data = request.body;
   data._id = v4();
   data.project_id = state.project_id
@@ -31,7 +31,7 @@ ComponentRoute.post('/', async ({ state, request, response, models }) => {
   response.success({ item });
 });
 
-ComponentRoute.post('/batch', async ({ request, response, models }) => {
+router.post('/batch', async ({ request, response, models }) => {
   const info = request.body;
   const arr = info.map(({ _id, ...data }) => {
     data.updatedAt = new Date();
@@ -50,18 +50,18 @@ ComponentRoute.post('/batch', async ({ request, response, models }) => {
   response.success();
 });
 
-ComponentRoute.put('/:id', async ({ params, request, response, models }) => {
+router.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs']);
+  const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs', 'updatedAt']);
   data.updatedAt = new Date();
   const item = await models.Component.update({ where, data });
   response.success(item);
 });
 
-ComponentRoute.delete('/:id', async ({ params, request, response, models }) => {
+router.delete('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   await models.Component.destroy({ where });
   response.success();
 });
 
-export default ComponentRoute
+export default router

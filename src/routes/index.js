@@ -1,6 +1,5 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import Mailer from '../utils/mailer.js'
 
 const home = new Router();
 
@@ -10,7 +9,6 @@ home.get('/', async (ctx) => {
 })
 
 home.post('test/email', async (ctx) => {
-  const config = await ctx.models.Config.getInfo({ where: { name: 'email' } });
   const data = _.pick(ctx.request.body, ['users', 'subject', 'html']);
   if (_.isEmpty(data.users)) {
     return ctx.response.throwBiz('COMMON.NeedParam', { param: 'users' })
@@ -21,9 +19,8 @@ home.post('test/email', async (ctx) => {
   if (_.isEmpty(data.html)) {
     return ctx.response.throwBiz('COMMON.NeedParam', { param: 'html' })
   }
-  if (config) {
-    const mailer = new Mailer(config)
-    mailer.sendMail(data.users, data.subject, data.html)
+  if (ctx.mailer) {
+    ctx.mailer.sendMail(data.users, data.subject, data.html);
     ctx.response.success()
   } else {
     ctx.response.throwBiz('COMMON.NeedParam', { param: 'config' })

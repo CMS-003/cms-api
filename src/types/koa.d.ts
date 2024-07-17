@@ -3,16 +3,21 @@ import models from '../models/index'
 import mongoose from 'mongoose';
 import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
-import { Base, OPT, IUser } from 'schema/dist/@types/types'
+import Mailer from '../utils/mailer'
+import { Base, OPT, IUser, IConfig } from 'schema/dist/@types/types'
 import { MUser } from 'schema'
 
 declare module 'schema' {
-  export class MUser {
-    getInfo(opt: OPT): Promise<IUser & { isEqual: (pass: string) => boolean }>;
+  export class MUser extends Base<IUser & { isEqual: (pass: string) => boolean; }> {
+    constructor(db: mongoose.Connection, params?: {
+      methods?: {
+        [key: string]: Function;
+      };
+      statics?: {
+        [key: string]: (this: Model<IUser & { isEqual: (pass: string) => boolean; }>) => any;
+      };
+    })
   }
-}
-interface IUser {
-  isEqual: (pass: string) => boolean;
 }
 
 declare module 'koa' {
@@ -22,13 +27,10 @@ declare module 'koa' {
       [key: string]: any;
     };
     models: typeof models;
+    loadConfig: Function;
+    mailer: Mailer
   };
-  export interface context {
-    config: {
-      [key: string]: any;
-    };
-    models: typeof models;
-  }
+
   interface DefaultContext {
     config: {
       [key: string]: any;
@@ -36,6 +38,8 @@ declare module 'koa' {
     models: typeof models;
     Response: BaseResponse;
     dbs: typeof models.dbs;
+    loadConfig: Function;
+    mailer: Mailer;
   }
 
   interface BaseRequest {

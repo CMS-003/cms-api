@@ -1,7 +1,9 @@
 import _ from 'lodash'
+import path from 'path'
 import nodemailer from 'nodemailer'
 import smtpTransport from 'nodemailer-smtp-transport'
 import constant from '../constant.js'
+import ejs from 'ejs';
 
 class EmailHelper {
   /**

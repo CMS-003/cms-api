@@ -3,14 +3,14 @@ import Router from 'koa-router'
 import _ from 'lodash'
 
 
-const route = new Router();
+const router = new Router();
 
-route.get('/', async ({ models, response, request }) => {
+router.get('/', async ({ models, response, request }) => {
   const hql = request.paging();
   hql.sort = { createdAt: -1 };
   hql.lean = true;
   hql.where = _.pick(request.query, ['receiver', 'name']);
-  if (request.query.date) {
+  if (request.query.date && typeof request.query.date === 'string') {
     const start = dayjs(request.query.date).startOf('day').toDate();
     const end = dayjs(start).endOf('day').toDate();
     hql.where.createdAt = { $gt: start, $lt: end };
@@ -19,7 +19,7 @@ route.get('/', async ({ models, response, request }) => {
   response.success({ items });
 })
 
-route.get('/:id', async ({ params, models, response }) => {
+router.get('/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
   const item = await models.Capsule.getInfo({ where, lean: true });
   if (item) {
@@ -29,7 +29,7 @@ route.get('/:id', async ({ params, models, response }) => {
   }
 })
 
-route.post('/', async ({ request, response, models }) => {
+router.post('/', async ({ request, response, models }) => {
   const data = _.pick(request.body, ['name', 'receiver', 'desc', 'content', 'createdAt', 'expiredAt']);
   data.createdAt = new Date();
   if (dayjs(data.expiredAt).isBefore(data.createdAt)) {
@@ -39,4 +39,4 @@ route.post('/', async ({ request, response, models }) => {
   response.success({ id: item._id });
 });
 
-export default route
+export default router

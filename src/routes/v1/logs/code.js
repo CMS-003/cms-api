@@ -5,38 +5,38 @@ import random from '../../../utils/random.js';
 import constant from '../../../constant.js';
 
 
-const route = new Router();
+const router = new Router();
 
-route.get('/codes/', async ({ models, response, request }) => {
+router.get('/codes', async ({ models, response, request }) => {
   const hql = request.paging();
   hql.sort = { createdAt: 1 };
   hql.lean = true;
-  hql.where = _.pick(request.query, ['type', 'user_id', 'method', 'receiver']);
   if (hql.where.type) {
-    hql.where.type = parseInt(request.query.type);
+    hql.where.type = _.isArray(request.query.type) ? request.query.type.map(t => parseInt(t)) : parseInt(request.query.type);
   }
   if (request.query.user_id) {
-    hql.where = { type: request.query.user_id }
+    hql.where = { user_id: request.query.user_id }
   }
   if (request.query.method) {
     hql.where = { method: request.query.method }
   }
-  const items = await models.Code.getList(hql);
+  const items = await models.Verification.getList(hql);
   response.success({ items });
 })
 
-route.get('/codes/:id', async ({ params, models, response }) => {
+router.get('/codes/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
-  const item = await models.Code.getInfo({ where });
+  const item = await models.Verification.getInfo({ where });
   response.success({ item });
 })
 
-route.post('/codes', async ({ request, mailer, response, models }) => {
+router.post('/codes', async ({ request, mailer, response, models, }) => {
   const data = request.body;
   data.code = random(6);
   data.user_id = '';
   data.status = 1;
-  data.create = new Date();
+  data.createdAt = new Date();
+  data._id = v4();
   try {
     if (data.method === 'email') {
       const user = await models.User.getInfo({ where: { email: data.receiver }, lean: true });
@@ -45,7 +45,7 @@ route.post('/codes', async ({ request, mailer, response, models }) => {
         if (constant.emailTemplats.email_template_login) {
           data.content = constant.emailTemplats.email_template_login({ name: user.nickname, code: data.code });
         }
-        await models.Code.create(data);
+        await models.Verification.create(data);
         if (mailer) {
           mailer.sendMail([{ name: user.nickname, email: user.email }], '验证帐户', data.content).then(() => {
             console.log('send');
@@ -57,9 +57,8 @@ route.post('/codes', async ({ request, mailer, response, models }) => {
           return response.fail({ message: '此邮箱已被注册' });
         }
         if (constant.emailTemplats.email_template_register) {
-          data.code = v4();
           data.content = constant.emailTemplats.email_template_register({ code: data.code });
-          await models.Code.create(data);
+          await models.Verification.create(data);
           if (mailer) {
             mailer.sendMail([{ name: user.nickname, email: user.email }], '注册帐户', data.content).then(() => {
               console.log('send');
@@ -73,21 +72,21 @@ route.post('/codes', async ({ request, mailer, response, models }) => {
     }
     response.fail()
   } catch (e) {
-    response(e);
+    response.fail(e);
   }
 });
 
-route.put('/codes/:id', async ({ params, request, response, models }) => {
+router.put('/codes/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   const data = request.body
-  await models.Code.update({ where, data });
+  await models.Verification.update({ where, data });
   response.success();
 });
 
-route.del('/codes/:id', async ({ params, request, response, models }) => {
+router.del('/codes/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  await models.Code.destroy({ where });
+  await models.Verification.destroy({ where });
   response.success();
 });
 
-export default route
+export default router

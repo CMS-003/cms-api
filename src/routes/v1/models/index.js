@@ -1,15 +1,12 @@
 import Router from 'koa-router'
 import _ from 'lodash'
 
+const router = new Router();
 
-const route = new Router();
-
-route.get('/:name', async ({ params, response, models }) => {
-  let name = params.name.toLowerCase()
-  name = name[0].toUpperCase() + name.substring(1);
-  console.log(models[name], name)
+router.get('/:name', async ({ params, response, models }) => {
+  const name = _.upperFirst(params.name)
   const fields = models[name].getAttributes();
   response.success(fields);
 });
 
-export default route
+export default router

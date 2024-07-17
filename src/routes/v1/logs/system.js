@@ -1,11 +1,9 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import { v4 } from 'uuid'
 
+const router = new Router();
 
-const route = new Router();
-
-route.get('/system', async ({ models, response, request }) => {
+router.get('/system', async ({ models, response, request }) => {
   const hql = request.paging();
   hql.sort = { createdAt: -1 };
   hql.lean = true;
@@ -16,10 +14,10 @@ route.get('/system', async ({ models, response, request }) => {
   response.success({ items });
 })
 
-route.del('/system/:id', async ({ params, request, response, models }) => {
+router.del('/system/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   await models.Log.destroy({ where });
   response.success();
 });
 
-export default route
+export default router

@@ -44,8 +44,8 @@ app.response.throwBiz = function (bizName, params) {
 
 app.request.paging = function () {
   const qs = app.request.query, hql = {};
-  const page = qs[constant.SYSTEM.REQ_PAGE]
-  const limit = qs[constant.SYSTEM.REQ_LIMIT];
+  const page = qs[constant.SYSTEM.REQ_PAGE] || '1';
+  const limit = qs[constant.SYSTEM.REQ_LIMIT] || '20';
   hql.page = Math.max(parseInt(_.isArray(page) ? page[0] : page), 1);
   hql.limit = Math.max(parseInt(_.isArray(limit) ? limit[0] : limit), 100);
   hql.where = {};
@@ -55,6 +55,18 @@ app.request.paging = function () {
 // 加载model和业务逻辑层
 app.context.config = config;
 app.context.models = models;
+app.context.loadConfig = async function () {
+  const docs = await models.Config.getAll({ lean: true });
+  docs.forEach(item => {
+    if (app.context.config[item.name]) {
+      console.warn(`config ${item.name} covered`);
+    }
+    app.context.config[item.name] = item.value;
+    if (item.type === 'email_template') {
+      constant.emailTemplats[item.name] = ejs.compile(item.value.html);
+    }
+  })
+}
 
 app.use(bizError);
 app.use(needProject);
@@ -90,22 +102,13 @@ app.on('error', (err, ctx) => {
 
 async function run(cb) {
   app.context.dbs = models.dbs;
+  // 连接数据库后,启动前加载配置
+  await app.context.loadConfig();
+  if (app.context.config.email) {
+    app.context.mailer = new Mailer(app.context.config.email);
+  }
   const router = await getRoutes()
   app.use(router.routes());
-  // 连接数据库后,启动前加载配置
-  const config_items = await app.context.models.Config.getAll({ lean: true })
-  config_items.forEach(item => {
-    if (app.context.config[item.name]) {
-      console.warn(`config ${item.name} covered`);
-    }
-    app.context.config[item.name] = item.value;
-    if (item.name === 'email') {
-      app.context.mailer = new Mailer(item.value);
-    }
-    if (item.type === 'email_template') {
-      constant.emailTemplats[item.name] = ejs.compile(item.value.html);
-    }
-  })
   if (typeof cb === 'function') {
     await cb(app);
   }

@@ -4,12 +4,12 @@ import { v4 } from 'uuid'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import randomstring from 'randomstring'
-import random from '../../../utils/random.js'
 import snsService from '../../../services/sns.js'
+import constant from '../../../constant.js'
 
-const OauthRoute = new Router();
+const router = new Router();
 
-OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) => {
+router.post('/sign-in', async ({ models, response, request, config }, next) => {
   const { type, account, value } = request.body;
   if (type === 'account') {
     const doc = await models.User.getInfo({ where: { name: account } });
@@ -18,7 +18,7 @@ OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) 
     }
     if (doc && doc.isEqual(value)) {
       try {
-        const info = _.pick(doc, ['id', 'nickname', 'account', 'avatar', 'status']);
+        const info = _.pick(doc, ['_id', 'nickname', 'account', 'avatar', 'status']);
         const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
         response.success({ access_token, type: 'Bearer' });
       } catch (e) {
@@ -46,7 +46,7 @@ OauthRoute.post('/sign-in', async ({ models, response, request, config }, next) 
   }
 });
 
-OauthRoute.post('/sign-up', async ({ request, models, response }) => {
+router.post('/sign-up', async ({ request, models, response }) => {
   const info = request.body;
   const { type, account, value } = info;
   if (type === 'account') {
@@ -72,7 +72,7 @@ OauthRoute.post('/sign-up', async ({ request, models, response }) => {
   }
 })
 
-OauthRoute.get('active', async ({ request, response, models }) => {
+router.get('active', async ({ request, response, models }) => {
   const code = request.query.code;
   if (!code) {
     return response.fail();
@@ -98,7 +98,7 @@ OauthRoute.get('active', async ({ request, response, models }) => {
   response.body = `邮箱已激活,请使用邮箱登陆`
 })
 
-OauthRoute.get('/sns/:type', async ({ config, request, params, response }) => {
+router.get('/sns/:type', async ({ config, request, params, response }) => {
   const token = request.get('authorization') || request.query.authorization || '';
   let user_id = 'none';
   try {
@@ -111,7 +111,34 @@ OauthRoute.get('/sns/:type', async ({ config, request, params, response }) => {
   response.redirect(url);
 });
 
-OauthRoute.post('/bind', async ({ query, request, response }) => {
+router.get('/sns/:type/callback', async (ctx) => {
+  await snsService.callback(ctx, 'sns_' + ctx.params.type);
+  // TODO: 返回result结果页面 成功,失败,取消 (如果强制绑定,则需要先跳绑定账号页面)
+})
+
+router.post('/code', async ({ mailer, models, request, response }) => {
+  const { method, type, account } = request.body;
+  if (method === 1 && mailer) {
+    let template_name = '';
+    switch (type) {
+      case 1: template_name = 'register'; break;
+      case 2: template_name = 'login'; break;
+      default: template_name = 'default'; break;
+    }
+    if (constant.emailTemplats['email_template_' + template_name]) {
+      const user = type === 1 ? { nickname: '用户' } : await models.User.getInfo({ where: { email: account } });
+      await mailer.sendMail([{ email: account, name: user.nickname }], '', constant.emailTemplats['email_template_' + template_name]);
+      return response.success();
+    } else {
+      return response.fail({ message: '模板不存在' });
+    }
+  } else if (method === 2) {
+    return response.fail({ message: '暂不支持发送短信' });
+  }
+  response.fail({ message: '验证方式不支持' });
+})
+
+router.post('/bind', async ({ query, request, response }) => {
   const { bind_token, ...data } = request.body;
   const access_token = await snsService.bind(bind_token, data)
   if (access_token) {
@@ -121,9 +148,4 @@ OauthRoute.post('/bind', async ({ query, request, response }) => {
   }
 })
 
-OauthRoute.get('/sns/:type/callback', async (ctx) => {
-  await snsService.callback(ctx, 'sns_' + ctx.params.type);
-  // TODO: 返回result结果页面 成功,失败,取消 (如果强制绑定,则需要先跳绑定账号页面)
-})
-
-export default OauthRoute
+export default router

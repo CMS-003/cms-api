@@ -3,9 +3,9 @@ import _ from 'lodash'
 import { v4 } from 'uuid'
 
 
-const ConfigRoute = new Router();
+const router = new Router();
 
-ConfigRoute.get('/', async ({ models, response, request }) => {
+router.get('/', async ({ models, response, request }) => {
   const hql = request.paging();
   hql.sort = { type: 1 };
   hql.lean = true;
@@ -16,34 +16,34 @@ ConfigRoute.get('/', async ({ models, response, request }) => {
   response.success({ items });
 })
 
-ConfigRoute.get('/:id', async ({ params, models, response }) => {
+router.get('/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
   const item = await models.Config.getInfo({ where });
   response.success({ item });
 })
 
-ConfigRoute.post('/', async ({ app, request, response, models }) => {
+router.post('/', async ({ loadConfig, request, response, models }) => {
   const data = _.pick(request.body, ['id', 'project_id', 'title', 'desc', 'type', 'value', 'order', 'createdAt', 'updatedAt']);
   data.createdAt = new Date();
   data.updatedAt = new Date();
   const item = await models.Config.create(data);
-  // await models.Config.reload(app);
+  await loadConfig();
   response.success({ item });
 });
 
-ConfigRoute.put('/:id', async ({ app, params, request, response, models }) => {
+router.put('/:id', async ({ loadConfig, params, request, response, models }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['project_id', 'name', 'desc', 'title', 'type', 'value', 'order', 'updatedAt']);
   data.updatedAt = new Date();
   await models.Config.update({ where, data: { $set: data } });
-  await models.Config.reload(app);
+  await loadConfig();
   response.success();
 });
 
-ConfigRoute.del('/:id', async ({ params, request, response, models }) => {
+router.del('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   await models.Config.destroy({ where });
   response.success();
 });
 
-export default ConfigRoute
+export default router

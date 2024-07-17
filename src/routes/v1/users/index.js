@@ -1,28 +1,28 @@
 import Router from 'koa-router'
 import verify from '../../../middleware/verify.js'
 
-const UserRoute = new Router();
+const router = new Router();
 
-UserRoute.post('/sign-out', async ({ models, response }) => {
+router.post('/sign-out', async ({ models, response }) => {
   const items = await models.Project.getList({});
   response.success({ items });
 })
 
-UserRoute.get('/self', verify, async ({ models, params, req, response }) => {
+router.get('/self', verify, async ({ models, params, req, response }) => {
   const { Project } = models;
   const where = { _id: params._id };
   const item = await Project.getInfo({ where });
   response.success({ item });
 })
 
-UserRoute.get('/profile', verify, async ({ models, params, req, response, state }) => {
+router.get('/profile', verify, async ({ models, params, req, response, state }) => {
   const { User } = models;
   const where = { _id: state.user._id };
   const item = await User.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
   response.success({ item });
 })
 
-UserRoute.get('/menu', verify, async ({ models, params, req, response }) => {
+router.get('/menu', verify, async ({ models, params, req, response }) => {
   const { Component } = models;
   const where = { tree_id: 'bc2753d5-2af0-4bba-8eef-b2b5cdba2caf' };
   const items = await Component.getList({ where, sort: 'order', lean: true });
@@ -42,4 +42,4 @@ UserRoute.get('/menu', verify, async ({ models, params, req, response }) => {
   response.success(tree);
 })
 
-export default UserRoute
+export default router
