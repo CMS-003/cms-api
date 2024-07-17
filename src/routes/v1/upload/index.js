@@ -6,14 +6,17 @@ import verify from '../../../middleware/verify.js'
 import constant from '../../../constant.js'
 import mime from 'mime'
 
-const templateRoute = new Router();
+const router = new Router();
 
-templateRoute.post('/image', verify, async ({ request, response }) => {
+router.post('/image', async ({ request, response }) => {
   const file = request.files.image
-  const filepath = `/upload/${shortid.generate()}.${mime.getExtension(file.mimetype)}`
-  fs.renameSync(file.filepath, constant.PATH.STATIC + filepath)
-  // fs.unlinkSync(file.filepath)
-  response.success({ filepath })
+  if (_.isArray(file)) {
+    return response.fail({ code: 400, message: '不支持上传多个文件' });
+  } else {
+    const filepath = `/upload/${shortid.generate()}.${mime.getExtension(file.mimetype)}`
+    fs.renameSync(file.filepath, constant.PATH.STATIC + filepath)
+  }
+  response.success({})
 })
 
-export default templateRoute
+export default router
