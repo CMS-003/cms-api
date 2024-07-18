@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import componentService from '../../../services/component.js'
+import componentService from '#services/component.js'
 
 const router = new Router({
   prefix: '',

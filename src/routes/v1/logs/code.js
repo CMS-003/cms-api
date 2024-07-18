@@ -1,8 +1,8 @@
 import Router from 'koa-router'
 import _ from 'lodash'
 import { v4 } from 'uuid'
-import random from '../../../utils/random.js';
-import constant from '../../../constant.js';
+import random from '#utils/random.js';
+import constant from '#constant.js';
 
 
 const router = new Router();

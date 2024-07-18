@@ -4,9 +4,12 @@
   "description": "",
   "type": "module",
   "main": "src/index.js",
-  "types": "src/types/koa.d.ts",
+  "types": "src/@types/koa.d.ts",
   "resolutions": {
     "koa": "2.13.4"
+  },
+  "imports": {
+    "#*": "./src/*"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production HTTPS_PROXY='http://192.168.0.125:8888' HTTP_PROXY='http://192.168.0.125:8888' node ./src/server.js",
@@ -18,8 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/mime": "^4.0.0",
     "alipay-sdk": "^3.6.2",
+    "cron": "^3.1.7",
     "dayjs": "^1.11.2",
     "ejs": "^3.1.8",
     "googleapis": "^140.0.0",
@@ -43,7 +46,8 @@
     "shortid": "^2.2.16",
     "superagent": "^8.1.2",
     "superagent-proxy": "^3.0.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "vm2": "^3.9.19"
   },
   "devDependencies": {
     "@types/koa-router": "^7.4.8",

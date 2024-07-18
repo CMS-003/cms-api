@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import verify from '../../../middleware/verify.js'
-import snsService from '../../../services/sns.js'
+import verify from '#middleware/verify.js'
+import snsService from '#services/sns.js'
 
 const router = new Router();
 

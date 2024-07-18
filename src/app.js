@@ -11,11 +11,12 @@ import log4js from 'log4js'
 import Logger from './utils/logger.js'
 import constant from './constant.js';
 import getRoutes from './router.js'
-import models from './models/index.js'
+import models, { dbs } from './models/index.js'
 import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
 import { BizError, genByBiz } from './utils/bizError.js'
 import Mailer from './utils/mailer.js'
+import Scheduler from './utils/scheduler.js';
 import ejs from 'ejs'
 
 
@@ -53,8 +54,10 @@ app.request.paging = function () {
 }
 
 // 加载model和业务逻辑层
+app.context.dbs = dbs;
 app.context.config = config;
 app.context.models = models;
+app.context.scheduler = Scheduler;
 app.context.loadConfig = async function () {
   const docs = await models.Config.getAll({ lean: true });
   docs.forEach(item => {

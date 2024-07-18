@@ -4,8 +4,8 @@ import { v4 } from 'uuid'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import randomstring from 'randomstring'
-import snsService from '../../../services/sns.js'
-import constant from '../../../constant.js'
+import snsService from '#services/sns.js'
+import constant from '#constant.js'
 
 const router = new Router();
 

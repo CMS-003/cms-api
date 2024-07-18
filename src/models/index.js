@@ -18,24 +18,20 @@ import {
   MCounter,
   MCapsule,
   MTask,
+  MSchedule,
 } from 'schema'
 
 const manager = mongoose.createConnection(config.mongo_manager_url);
 const content = mongoose.createConnection(config.mongo_content_url);
 const crawler = mongoose.createConnection(config.mongo_crawler_url);
 
-class MUser2 extends MUser {
-  constructor(db, params) {
-    super(db, params);
-  }
-}
-const User = new MUser2(manager, {
+const User = new MUser(manager, {
   methods: {
     isEqual: function (password) {
-      return this._doc.pass === this.caculate(password);
+      return this.pass === this.caculate(password);
     },
     caculate: function (pass) {
-      const hmac = crypto.createHmac('sha1', this._doc.salt);
+      const hmac = crypto.createHmac('sha1', this.salt);
       hmac.update(pass);
       return hmac.digest('hex').toString();
     }
@@ -53,13 +49,15 @@ const Capsule = new MCapsule(manager);
 const Counter = new MCounter(content);
 const Task = new MTask(crawler);
 const Verification = new MVerification(manager);
+const Schedule = new MSchedule(manager);
+
+export const dbs = {
+  manager,
+  content,
+  crawler,
+}
 
 export default {
-  dbs: {
-    manager,
-    content,
-    crawler,
-  },
   Config,
   User,
   Log,
@@ -73,4 +71,5 @@ export default {
   Counter,
   Task,
   Verification,
+  Schedule,
 }

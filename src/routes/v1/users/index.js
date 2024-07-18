@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import verify from '../../../middleware/verify.js'
+import verify from '#middleware/verify.js'
 
 const router = new Router();
 

@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import superagent from 'superagent'
-import config from '../../../config/index.js'
+import config from '#config/index.js'
 
 const ResourceRoute = new Router({
   prefix: '',

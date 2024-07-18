@@ -2,8 +2,8 @@ import Router from 'koa-router'
 import _ from 'lodash'
 import fs from 'fs'
 import shortid from 'shortid'
-import verify from '../../../middleware/verify.js'
-import constant from '../../../constant.js'
+import verify from '#middleware/verify.js'
+import constant from '#constant.js'
 import mime from 'mime'
 
 const router = new Router();

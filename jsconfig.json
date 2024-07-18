@@ -6,12 +6,12 @@
     "checkJs": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": [
+      "#*": [
         "./*"
       ]
     },
     "typeRoots": [
-      "./types",
+      "./@types",
       "./node_modules/@types"
     ]
   }
