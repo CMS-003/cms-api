@@ -18,4 +18,14 @@ router.get('/:name', async ({ params, response, models }) => {
   response.success(fields);
 });
 
+router.get('/:name/json-schema', async ({ params, models, response }) => {
+  const model = models[_.upperFirst(params.name)];
+  if (model) {
+    const json = model.getJsonSchema();
+    response.success(json);
+  } else {
+    response.fail();
+  }
+})
+
 export default router
