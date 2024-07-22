@@ -19,6 +19,7 @@ import {
   MCapsule,
   MTask,
   MSchedule,
+  MView,
 } from 'schema'
 
 const manager = mongoose.createConnection(config.mongo_manager_url);
@@ -50,6 +51,7 @@ const Counter = new MCounter(content);
 const Task = new MTask(crawler);
 const Verification = new MVerification(manager);
 const Schedule = new MSchedule(manager);
+const View = new MView(manager);
 
 export const dbs = {
   manager,
@@ -72,4 +74,5 @@ export default {
   Task,
   Verification,
   Schedule,
+  View,
 }
