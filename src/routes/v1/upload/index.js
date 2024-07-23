@@ -15,8 +15,8 @@ router.post('/image', async ({ request, response }) => {
   } else {
     const filepath = `/upload/${shortid.generate()}.${mime.getExtension(file.mimetype)}`
     fs.renameSync(file.filepath, constant.PATH.STATIC + filepath)
+    return response.success(filepath);
   }
-  response.success({})
 })
 
 export default router

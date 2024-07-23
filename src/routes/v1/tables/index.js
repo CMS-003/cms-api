@@ -27,7 +27,7 @@ router.get('/views', async ({ response, models }) => {
   response.success({ items: tables });
 });
 
-router.get('/:name', async ({ params, response, models }) => {
+router.get('/:name/fields', async ({ params, response, models }) => {
   const name = _.upperFirst(params.name)
   const fields = models[name].getAttributes();
   response.success(fields);
