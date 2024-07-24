@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import _ from 'lodash'
 import { getTableViews } from '#services/table.js'
+import shortid from 'shortid';
 
 const router = new Router();
 
@@ -27,6 +28,14 @@ router.get('/views', async ({ response, models }) => {
   response.success({ items: tables });
 });
 
+router.post('/views', async ({ request, models, response }) => {
+  const data = request.body;
+  data._id = shortid.generate();
+  data.order = 1;
+  const result = await models.View.create(request.body);
+  response.success(result);
+})
+
 router.get('/:name/fields', async ({ params, response, models }) => {
   const name = _.upperFirst(params.name)
   const fields = models[name].getAttributes();
@@ -39,6 +48,16 @@ router.get('/:name/views', async ({ params, response, models }) => {
   result.forms = views.filter(view => view.type === 'form');
   result.lists = views.filter(view => view.type === 'list');
   response.success(result);
+});
+
+router.get('/:table/views/:_id', async ({ params, response, models }) => {
+  const doc = await models.View.getInfo({ where: params, lean: true });
+  console.log(doc, params)
+  if (doc) {
+    response.success(doc);
+  } else {
+    response.fail();
+  }
 });
 
 router.get('/:name/json-schema', async ({ params, models, response }) => {
