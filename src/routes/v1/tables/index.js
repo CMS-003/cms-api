@@ -42,6 +42,16 @@ router.get('/:name/fields', async ({ params, response, models }) => {
   response.success(fields);
 });
 
+router.get('/:name/list', async ({ params, response, models }) => {
+  const name = _.upperFirst(params.name);
+  if (models[name]) {
+    const items = await models[name].getList({ where: {}, lean: true });
+    response.success({ items });
+  } else {
+    response.fail();
+  }
+});
+
 router.get('/:name/views', async ({ params, response, models }) => {
   const result = { name: params.name, forms: [], lists: [] };
   const views = await getTableViews(params.name);
@@ -52,13 +62,18 @@ router.get('/:name/views', async ({ params, response, models }) => {
 
 router.get('/:table/views/:_id', async ({ params, response, models }) => {
   const doc = await models.View.getInfo({ where: params, lean: true });
-  console.log(doc, params)
   if (doc) {
     response.success(doc);
   } else {
     response.fail();
   }
 });
+
+router.put('/:table/views/:_id', async ({ params, request, response, models }) => {
+  await models.View.update({ where: params, data: request.body });
+  response.success();
+});
+
 
 router.get('/:name/json-schema', async ({ params, models, response }) => {
   const model = models[_.upperFirst(params.name)];
