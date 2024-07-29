@@ -42,11 +42,24 @@ router.get('/:name/fields', async ({ params, response, models }) => {
   response.success(fields);
 });
 
-router.get('/:name/list', async ({ params, response, models }) => {
+router.get('/:name/list', async ({ params, request, response, models }) => {
   const name = _.upperFirst(params.name);
+  const hql = request.paging();
+  hql.lean = true;
   if (models[name]) {
-    const items = await models[name].getList({ where: {}, lean: true });
+    const items = await models[name].getList(hql);
     response.success({ items });
+  } else {
+    response.fail();
+  }
+});
+
+router.put('/:name/data', async ({ params, request, response, models }) => {
+  const name = _.upperFirst(params.name);
+  const { _id, ...data } = request.body;
+  if (_id && models[name]) {
+    await models[name].update({ where: { _id }, data: { $set: data } });
+    response.success();
   } else {
     response.fail();
   }
