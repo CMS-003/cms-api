@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import _ from 'lodash'
 import { getTableViews } from '#services/table.js'
 import shortid from 'shortid';
+import { v4 } from 'uuid';
 
 const router = new Router();
 
@@ -54,8 +55,22 @@ router.get('/:name/list', async ({ params, request, response, models }) => {
   }
 });
 
+router.post('/:name/data', async ({ params, request, response, models }) => {
+  const name = _.upperFirst(params.name);
+  request.body._id = v4();
+  request.body.createdAt = new Date();
+  request.body.updatedAt = new Date();
+  if (models[name]) {
+    await models[name].create(request.body);
+    response.success({ _id: request.body._id });
+  } else {
+    response.fail();
+  }
+});
+
 router.put('/:name/data', async ({ params, request, response, models }) => {
   const name = _.upperFirst(params.name);
+  request.body.updatedAt = new Date();
   const { _id, ...data } = request.body;
   if (_id && models[name]) {
     await models[name].update({ where: { _id }, data: { $set: data } });
