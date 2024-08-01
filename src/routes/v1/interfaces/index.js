@@ -12,6 +12,8 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
 });
 
 router.post('/', async ({ models, request, response }) => {
+  const total = await models.Interface.sum();
+  request.body._id = (total + 100001).toString();
   const doc = await models.Interface.create(request.body);
   response.success(doc);
 });

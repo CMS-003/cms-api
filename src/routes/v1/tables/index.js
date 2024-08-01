@@ -80,6 +80,16 @@ router.put('/:name/data', async ({ params, request, response, models }) => {
   }
 });
 
+router.del('/:name/data/:_id', async ({ params, response, models }) => {
+  const name = _.upperFirst(params.name);
+  if (models[name]) {
+    await models[name].destroy({ where: { _id: params._id } });
+    response.success();
+  } else {
+    response.fail();
+  }
+});
+
 router.get('/:name/views', async ({ params, response, models }) => {
   const result = { name: params.name, forms: [], lists: [] };
   const views = await getTableViews(params.name);
