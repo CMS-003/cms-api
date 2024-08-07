@@ -1,5 +1,5 @@
 import config from '../config/index.js'
-import models from '../models/index.js'
+import models from '../utils/getModels.js'
 import userService from '../services/user.js'
 import superagent from 'superagent'
 import superagentProxy from "superagent-proxy"

@@ -3,7 +3,7 @@ import path from 'path'
 import log4js from "log4js"
 import config from '../config/index.js'
 import { v4 } from 'uuid'
-import models from '../models/index.js'
+import models from '../utils/getModels.js'
 
 const mongoModule = {
   configure: (config, layouts, findAppender, levels) => {

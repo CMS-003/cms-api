@@ -16,7 +16,7 @@ router.post('/sign-in', async ({ models, response, request, config }, next) => {
     if (doc && (!doc.pass || !doc.salt)) {
       return response.throwBiz('AUTH.PassError');;
     }
-    if (doc && doc.isEqual(value)) {
+    if (doc && doc.pass === crypto.createHmac('sha1', doc.salt).update(value).digest('hex').toString()) {
       try {
         const info = _.pick(doc, ['_id', 'nickname', 'account', 'avatar', 'status']);
         const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });

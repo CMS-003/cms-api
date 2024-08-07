@@ -1,19 +1,21 @@
-import { Model, Schema, Document } from 'mongoose';
-import models, { dbs } from '../models/index'
+import { Model, Schema, Document, Connection } from 'mongoose';
+import getModels from '../models/index'
 import mongoose from 'mongoose';
 import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
 
+type dbs = { [key: string]: Connection };
+type models = { [key: string]: Model }
 declare module 'koa' {
 
   export interface ExtendableContext {
     config: {
       [key: string]: any;
     };
-    dbs: typeof dbs;
-    models: typeof models;
+    dbs: dbs;
+    models: models;
     loadConfig: Function;
     mailer: Mailer;
     scheduler: Scheduler;
@@ -23,9 +25,9 @@ declare module 'koa' {
     config: {
       [key: string]: any;
     };
-    models: typeof models;
+    models: Partial<models>;
     Response: BaseResponse;
-    dbs: typeof dbs;
+    dbs: dbs;
     loadConfig: Function;
     mailer: Mailer;
     scheduler: Scheduler;

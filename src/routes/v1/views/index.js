@@ -1,7 +1,5 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import { getTableViews } from '#services/table.js'
-import shortid from 'shortid';
 
 const router = new Router();
 

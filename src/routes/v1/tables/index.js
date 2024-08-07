@@ -1,6 +1,5 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import { getTableViews } from '#services/table.js'
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
@@ -21,7 +20,7 @@ router.get('/views', async ({ response, models }) => {
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
     const table = { name, forms: [], lists: [] };
-    const views = await getTableViews(name);
+    const views = await models.View.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
     table.lists = views.filter(view => view.type === 'list');
     tables.push(table);
@@ -92,7 +91,7 @@ router.del('/:name/data/:_id', async ({ params, response, models }) => {
 
 router.get('/:name/views', async ({ params, response, models }) => {
   const result = { name: params.name, forms: [], lists: [] };
-  const views = await getTableViews(params.name);
+  const views = await models.View.getAll({ where: { table: params.name }, lean: true });
   result.forms = views.filter(view => view.type === 'form');
   result.lists = views.filter(view => view.type === 'list');
   response.success(result);

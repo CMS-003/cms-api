@@ -17,7 +17,7 @@ router.get('/:id/components', async ({ params, request, models, response }) => {
   hql.sort = { order: 1 }
   const items = await models.Component.getList(hql);
   for (let i = 0; i < items.length; i++) {
-    const tree = await componentService.getTree(items[i]._id);
+    const tree = await componentService.getTree(models.Component, items[i]._id);
     if (tree) {
       items[i].children = tree.children;
     }

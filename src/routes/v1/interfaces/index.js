@@ -7,6 +7,7 @@ const router = new Router({
 });
 router.get('/', async ({ models, scheduler, config, state, request, response }) => {
   const hql = request.paging();
+  hql.where.status = { status: { $not: 0 } }
   const results = models.Interface.getList(hql)
   response.success({ items: results });
 });
@@ -28,7 +29,7 @@ router.put('/:_id', async (ctx) => {
 router.del('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
-  await models.Interface.destroy({ where });
+  await models.Interface.update({ where, data: { $set: { status: 0 } } });
   response.success();
 });
 
