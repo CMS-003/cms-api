@@ -43,6 +43,7 @@
     "nodemailer": "^6.7.5",
     "nodemailer-smtp-transport": "^2.7.4",
     "randomstring": "^1.2.2",
+    "schema": "github:CMS-003/schema",
     "shortid": "^2.2.16",
     "superagent": "^8.1.2",
     "superagent-proxy": "^3.0.0",
