@@ -9,7 +9,8 @@ router.get('/', async ({ response, models }) => {
   const tables = [];
   Object.keys(models).forEach(table => {
     const fields = models[table].getAttributes();
-    tables.push({ table, fields });
+    const data = { table, fields };
+    tables.push(data);
   });
   response.success(tables);
 });
@@ -17,15 +18,23 @@ router.get('/', async ({ response, models }) => {
 router.get('/views', async ({ response, models }) => {
   const tables = [];
   const names = Object.keys(models);
+  const schemas = await models.JsonSchema.getAll({ lean: true });
+  const map = _.keyBy(schemas, 'name');
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
-    const table = { name, forms: [], lists: [] };
+    const table = { name, forms: [], lists: [], visible: 1, title: '' };
     const views = await models.View.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
     table.lists = views.filter(view => view.type === 'list');
+    if (map[name]) {
+      table.title = map[name].title;
+      if (_.isNumber(map[name].visible)) {
+        table.visible = map[name].visible;
+      }
+    }
     tables.push(table);
   }
-  response.success({ items: tables });
+  response.success({ items: tables.filter(t => t.visible === 1) });
 });
 
 router.post('/views', async ({ request, models, response }) => {
@@ -56,7 +65,12 @@ router.get('/:name/list', async ({ params, request, response, models }) => {
 
 router.post('/:name/data', async ({ params, request, response, models }) => {
   const name = _.upperFirst(params.name);
-  request.body._id = v4();
+  if (name === 'Interface') {
+    const total = await models.Interface.sum();
+    request.body._id = (total + 100001).toString();
+  } else {
+    request.body._id = v4();
+  }
   request.body.createdAt = new Date();
   request.body.updatedAt = new Date();
   if (models[name]) {

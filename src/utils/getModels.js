@@ -4,6 +4,7 @@ import Base, { getMongoSchema } from "schema/dist/base.js";
 const models = {};
 
 export async function init(dbs, JsonSchema) {
+  models.JsonSchema = JsonSchema;
   const schemas = await JsonSchema.getAll({ where: { status: 1 }, lean: true })
   schemas.forEach(schema => {
     if (dbs[schema.db]) {
