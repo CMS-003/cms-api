@@ -15,13 +15,13 @@ router.get('/', async ({ models, response, request }) => {
     const end = dayjs(start).endOf('day').toDate();
     hql.where.createdAt = { $gt: start, $lt: end };
   }
-  const items = await models.Capsule.getList(hql);
+  const items = await models.MCapsule.getList(hql);
   response.success({ items });
 })
 
 router.get('/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
-  const item = await models.Capsule.getInfo({ where, lean: true });
+  const item = await models.MCapsule.getInfo({ where, lean: true });
   if (item) {
     response.success(item);
   } else {
@@ -35,7 +35,7 @@ router.post('/', async ({ request, response, models }) => {
   if (dayjs(data.expiredAt).isBefore(data.createdAt)) {
     return response.fail({ message: '打开时间不能是过去的时间' })
   }
-  const item = await models.Capsule.create(data);
+  const item = await models.MCapsule.create(data);
   response.success({ id: item._id });
 });
 

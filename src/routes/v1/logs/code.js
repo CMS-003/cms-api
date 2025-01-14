@@ -20,13 +20,13 @@ router.get('/codes', async ({ models, response, request }) => {
   if (request.query.method) {
     hql.where = { method: request.query.method }
   }
-  const items = await models.Verification.getList(hql);
+  const items = await models.MVerification.getList(hql);
   response.success({ items });
 })
 
 router.get('/codes/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
-  const item = await models.Verification.getInfo({ where });
+  const item = await models.MVerification.getInfo({ where });
   response.success({ item });
 })
 
@@ -39,13 +39,13 @@ router.post('/codes', async ({ request, mailer, response, models, }) => {
   data._id = v4();
   try {
     if (data.method === 'email') {
-      const user = await models.User.getInfo({ where: { email: data.receiver }, lean: true });
+      const user = await models.MUser.getInfo({ where: { email: data.receiver }, lean: true });
       if (user && data.type === 2) {
         data.user_id = user._id;
         if (constant.emailTemplats.email_template_login) {
           data.content = constant.emailTemplats.email_template_login({ name: user.nickname, code: data.code });
         }
-        await models.Verification.create(data);
+        await models.MVerification.create(data);
         if (mailer) {
           mailer.sendMail([{ name: user.nickname, email: user.email }], '验证帐户', data.content).then(() => {
             console.log('send');
@@ -58,7 +58,7 @@ router.post('/codes', async ({ request, mailer, response, models, }) => {
         }
         if (constant.emailTemplats.email_template_register) {
           data.content = constant.emailTemplats.email_template_register({ code: data.code });
-          await models.Verification.create(data);
+          await models.MVerification.create(data);
           if (mailer) {
             mailer.sendMail([{ name: user.nickname, email: user.email }], '注册帐户', data.content).then(() => {
               console.log('send');
@@ -79,13 +79,13 @@ router.post('/codes', async ({ request, mailer, response, models, }) => {
 router.put('/codes/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   const data = request.body
-  await models.Verification.update({ where, data });
+  await models.MVerification.update({ where, data });
   response.success();
 });
 
 router.del('/codes/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  await models.Verification.destroy({ where });
+  await models.MVerification.destroy({ where });
   response.success();
 });
 

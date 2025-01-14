@@ -5,7 +5,7 @@ export default async (ctx, next) => {
   try {
     await next()
   } catch (e) {
-    console.log(e.message, 'interrept')
+    console.log(e, 'interrept')
     const lang = ctx.state.lang || 'zh-CN';
     if (e instanceof BizError !== true) {
       e.bizName = 'UNKNOWN';

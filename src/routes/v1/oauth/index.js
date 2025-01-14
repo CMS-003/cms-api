@@ -12,7 +12,7 @@ const router = new Router();
 router.post('/sign-in', async ({ models, response, request, config }, next) => {
   const { type, account, value } = request.body;
   if (type === 'account') {
-    const doc = await models.User.getInfo({ where: { name: account } });
+    const doc = await models.MUser.getInfo({ where: { name: account } });
     if (doc && (!doc.pass || !doc.salt)) {
       return response.throwBiz('AUTH.PassError');;
     }
@@ -29,13 +29,13 @@ router.post('/sign-in', async ({ models, response, request, config }, next) => {
       response.throwBiz('AUTH.USER_NOTFOUND');
     }
   } else if (type === 'email' || type === 'phone') {
-    const doc = await models.Verification.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
+    const doc = await models.MVerification.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
     if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
       return response.fail({ message: '验证码已过期' });
     }
-    const info = await models.User.getInfo({ where: { email: account }, lean: true });
+    const info = await models.MUser.getInfo({ where: { email: account }, lean: true });
     if (info) {
-      await models.Verification.update({ where: { method: type, receiver: account, code: value }, data: { $set: { status: 2 } } })
+      await models.MVerification.update({ where: { method: type, receiver: account, code: value }, data: { $set: { status: 2 } } })
       const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
       response.success({ access_token, type: 'Bearer' });
     } else {
@@ -50,7 +50,7 @@ router.post('/sign-up', async ({ request, models, response }) => {
   const info = request.body;
   const { type, account, value } = info;
   if (type === 'account') {
-    const doc = await models.User.getInfo({ where: { name: account }, lean: true });
+    const doc = await models.MUser.getInfo({ where: { name: account }, lean: true });
     if (doc) {
       return response.throwBiz('USER.AccountExisted');
     }
@@ -65,7 +65,7 @@ router.post('/sign-up', async ({ request, models, response }) => {
       updatedAt: new Date(),
       status: 1,
     }
-    await models.User.create(data);
+    await models.MUser.create(data);
     response.success(null, { message: '注册成功,请登录' });
   } else {
     response.fail({ message: '不支持的注册类型' })
@@ -77,7 +77,7 @@ router.get('active', async ({ request, response, models }) => {
   if (!code) {
     return response.fail();
   }
-  const doc = await models.Code.getInfo({ where: { method: 'email', type: 1, code }, lean: true });
+  const doc = await models.MCode.getInfo({ where: { method: 'email', type: 1, code }, lean: true });
   if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
     return response.fail({ message: '邮件已过期' });
   }
@@ -93,8 +93,8 @@ router.get('active', async ({ request, response, models }) => {
     createdAt: new Date(),
     status: 1,
   }
-  await models.User.create(data);
-  await models.Code.update({ where: { _id: doc._id }, data: { $set: { status: 2 } } });
+  await models.MUser.create(data);
+  await models.MCode.update({ where: { _id: doc._id }, data: { $set: { status: 2 } } });
   response.body = `邮箱已激活,请使用邮箱登陆`
 })
 
@@ -128,7 +128,7 @@ router.post('/code', async ({ mailer, models, request, response }) => {
       default: template_name = 'default'; break;
     }
     if (constant.emailTemplats['email_template_' + template_name]) {
-      const user = type === 1 ? { nickname: '用户' } : await models.User.getInfo({ where: { email: account } });
+      const user = type === 1 ? { nickname: '用户' } : await models.MUser.getInfo({ where: { email: account } });
       await mailer.sendMail([{ email: account, name: user.nickname }], '', constant.emailTemplats['email_template_' + template_name]);
       return response.success();
     } else {

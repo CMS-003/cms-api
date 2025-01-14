@@ -14,25 +14,25 @@ router.get('/', verify, async ({ models, request, state, response }) => {
     hql.where.project_id = request.query.project_id
   }
   hql.sort = { order: 1 }
-  const items = await models.Template.getList(hql);
+  const items = await models.MTemplate.getList(hql);
   response.success({ items })
 })
 
 router.post('/', verify, async ({ models, state, request, response }) => {
   request.body._id = v4()
   request.body.project_id = state.project_id
-  await models.Template.create(request.body)
+  await models.MTemplate.create(request.body)
   response.success()
 })
 
 router.put('/:template_id', verify, async ({ models, params, request, response }) => {
-  await models.Template.update({ where: { _id: params.template_id }, data: request.body })
+  await models.MTemplate.update({ where: { _id: params.template_id }, data: request.body })
   response.success()
 })
 
 router.get('/:template_id/fields', verify, async ({ models, params, request, response }) => {
   const hql = { where: { _id: params.template_id }, lean: true }
-  const item = await models.Template.getInfo(hql);
+  const item = await models.MTemplate.getInfo(hql);
   response.success({ items: item ? (item.fields || []) : [] })
 })
 

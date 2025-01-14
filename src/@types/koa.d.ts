@@ -5,11 +5,16 @@ import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
+import schema from 'schema'
 
 type dbs = { [key: string]: Connection };
-type models = { [key: string]: Model }
+type models = {
+  [K in keyof typeof schema]: typeof schema[K] extends new (...args: any[]) => infer Instance ? Instance : never;
+};
 declare module 'koa' {
-
+  declare const MODEL: {
+    [K in keyof typeof schema]: typeof schema[K] extends new (...args: any[]) => infer Instance ? Instance : never;
+  };
   export interface ExtendableContext {
     config: {
       [key: string]: any;
@@ -25,7 +30,7 @@ declare module 'koa' {
     config: {
       [key: string]: any;
     };
-    models: Partial<models>;
+    models: MODEL;
     Response: BaseResponse;
     dbs: dbs;
     loadConfig: Function;

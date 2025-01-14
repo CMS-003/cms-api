@@ -6,14 +6,14 @@ import snsService from '#services/sns.js'
 const router = new Router();
 
 router.post('/sns/:type', async ({ models, response }) => {
-  const items = await models.Project.getList({});
+  const items = await models.MProject.getList({});
   response.success({ items });
 })
 
 router.get('/sns', verify, async ({ models, params, req, response, state }) => {
-  const { User, Sns } = models;
+  const { MUser, MSns } = models;
   const where = { user_id: state.user._id };
-  const docs = await Sns.getList({ where, lean: true, attrs: { detail: 0 } });
+  const docs = await MSns.getList({ where, lean: true, attrs: { detail: 0 } });
   const map = _.keyBy(docs, 'sns_type');
   const items = [];
   ['alipay', 'github', 'google', 'weibo', 'apple', 'wechat'].forEach(type => {

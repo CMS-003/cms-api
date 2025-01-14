@@ -18,12 +18,12 @@ router.get('/', async ({ response, models }) => {
 router.get('/views', async ({ response, models }) => {
   const tables = [];
   const names = Object.keys(models);
-  const schemas = await models.JsonSchema.getAll({ lean: true });
+  const schemas = await models.MJsonSchema.getAll({ lean: true });
   const map = _.keyBy(schemas, 'name');
   for (let i = 0; i < names.length; i++) {
     const name = names[i];
     const table = { name, forms: [], lists: [], visible: 1, title: '' };
-    const views = await models.View.getAll({ where: { table: name }, lean: true });
+    const views = await models.MView.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
     table.lists = views.filter(view => view.type === 'list');
     if (map[name]) {
@@ -41,7 +41,7 @@ router.post('/views', async ({ request, models, response }) => {
   const data = request.body;
   data._id = shortid.generate();
   data.order = 1;
-  const result = await models.View.create(request.body);
+  const result = await models.MView.create(request.body);
   response.success(result);
 })
 
@@ -66,7 +66,7 @@ router.get('/:name/list', async ({ params, request, response, models }) => {
 router.post('/:name/data', async ({ params, request, response, models }) => {
   const name = _.upperFirst(params.name);
   if (name === 'Interface') {
-    const total = await models.Interface.sum();
+    const total = await models.MInterface.sum();
     request.body._id = (total + 100001).toString();
   } else {
     request.body._id = v4();
@@ -105,14 +105,14 @@ router.del('/:name/data/:_id', async ({ params, response, models }) => {
 
 router.get('/:name/views', async ({ params, response, models }) => {
   const result = { name: params.name, forms: [], lists: [] };
-  const views = await models.View.getAll({ where: { table: params.name }, lean: true });
+  const views = await models.MView.getAll({ where: { table: params.name }, lean: true });
   result.forms = views.filter(view => view.type === 'form');
   result.lists = views.filter(view => view.type === 'list');
   response.success(result);
 });
 
 router.get('/:table/views/:_id', async ({ params, response, models }) => {
-  const doc = await models.View.getInfo({ where: params, lean: true });
+  const doc = await models.MView.getInfo({ where: params, lean: true });
   if (doc) {
     response.success(doc);
   } else {
@@ -121,7 +121,7 @@ router.get('/:table/views/:_id', async ({ params, response, models }) => {
 });
 
 router.put('/:table/views/:_id', async ({ params, request, response, models }) => {
-  await models.View.update({ where: params, data: request.body });
+  await models.MView.update({ where: params, data: request.body });
   response.success();
 });
 

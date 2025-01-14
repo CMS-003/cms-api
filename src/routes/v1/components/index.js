@@ -13,13 +13,13 @@ router.get('/', async ({ models, state, request, response }) => {
     hql.where.project_id = request.query.project_id;
   }
   hql.sort = { sort: 1, updatedAt: -1 }
-  const items = await models.Component.getList(hql);
+  const items = await models.MComponent.getList(hql);
   response.success({ items });
 })
 
 router.get('/:id', async ({ params, req, models, response }) => {
   const where = { _id: params.id };
-  const item = await models.Component.getInfo({ where });
+  const item = await models.MComponent.getInfo({ where });
   response.success({ item });
 })
 
@@ -27,7 +27,7 @@ router.post('/', async ({ state, request, response, models }) => {
   const data = request.body;
   data._id = v4();
   data.project_id = state.project_id
-  const item = await models.Component.create(data);
+  const item = await models.MComponent.create(data);
   response.success({ item });
 });
 
@@ -44,7 +44,7 @@ router.post('/batch', async ({ request, response, models }) => {
     }
   });
   if (arr.length) {
-    const r = await models.Component.model.bulkWrite(arr);
+    const r = await models.MComponent.model.bulkWrite(arr);
     console.log(r)
   }
   response.success();
@@ -54,13 +54,13 @@ router.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs', 'updatedAt']);
   data.updatedAt = new Date();
-  const item = await models.Component.update({ where, data });
+  const item = await models.MComponent.update({ where, data });
   response.success(item);
 });
 
 router.delete('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  await models.Component.destroy({ where });
+  await models.MComponent.destroy({ where });
   response.success();
 });
 

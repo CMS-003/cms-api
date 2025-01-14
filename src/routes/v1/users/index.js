@@ -4,28 +4,28 @@ import verify from '#middleware/verify.js'
 const router = new Router();
 
 router.post('/sign-out', async ({ models, response }) => {
-  const items = await models.Project.getList({});
+  const items = await models.MProject.getList({});
   response.success({ items });
 })
 
 router.get('/self', verify, async ({ models, params, req, response }) => {
-  const { Project } = models;
+  const { MProject } = models;
   const where = { _id: params._id };
-  const item = await Project.getInfo({ where });
+  const item = await MProject.getInfo({ where });
   response.success({ item });
 })
 
 router.get('/profile', verify, async ({ models, params, req, response, state }) => {
-  const { User } = models;
+  const { MUser } = models;
   const where = { _id: state.user._id };
-  const item = await User.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
+  const item = await MUser.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
   response.success({ item });
 })
 
 router.get('/menu', verify, async ({ models, params, req, response }) => {
-  const { Component } = models;
+  const { MComponent } = models;
   const where = { tree_id: 'bc2753d5-2af0-4bba-8eef-b2b5cdba2caf' };
-  const items = await Component.getList({ where, sort: 'order', lean: true });
+  const items = await MComponent.getList({ where, sort: 'order', lean: true });
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     item.children = [];

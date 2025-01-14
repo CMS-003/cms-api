@@ -10,13 +10,13 @@ router.get('/system', async ({ models, response, request }) => {
   if (request.query.type) {
     hql.where = { type: request.query.type }
   }
-  const items = await models.Log.getList(hql);
+  const items = await models.MLog.getList(hql);
   response.success({ items });
 })
 
 router.del('/system/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  await models.Log.destroy({ where });
+  await models.MLog.destroy({ where });
   response.success();
 });
 
