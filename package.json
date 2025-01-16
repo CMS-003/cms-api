@@ -12,8 +12,8 @@
     "#*": "./src/*"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production HTTPS_PROXY='http://192.168.0.125:8888' HTTP_PROXY='http://192.168.0.125:8888' node ./src/server.js",
-    "dev": "cross-env NODE_ENV=development HTTPS_PROXY='http://10.0.15.126:8899' HTTP_PROXY='http://10.0.15.126:8899'  nodemon ./src/server.js",
+    "start": "cross-env NODE_ENV=production node ./src/server.js",
+    "dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
     "auto-deploy": "git pull && docker-compose restart"

@@ -1,5 +1,5 @@
 export default {
-  PORT: 3334,
+  PORT: 3333,
   timezone: process.env.timezone || '+08:00',
   language: process.env.language || 'zh-CN',
   mongo_system_url: process.env.mongo_system_url,

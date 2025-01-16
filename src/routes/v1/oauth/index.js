@@ -26,7 +26,7 @@ router.post('/sign-in', async ({ models, response, request, config }, next) => {
         response.throwBiz('AUTH.VERIFY_FAIL');
       }
     } else {
-      response.throwBiz('AUTH.USER_NOTFOUND');
+      response.throwBiz('USER.AccountError');
     }
   } else if (type === 'email' || type === 'phone') {
     const doc = await models.MVerification.getInfo({ where: { method: type, receiver: account, code: value, status: 1 }, lean: true });
@@ -77,7 +77,7 @@ router.get('active', async ({ request, response, models }) => {
   if (!code) {
     return response.fail();
   }
-  const doc = await models.MCode.getInfo({ where: { method: 'email', type: 1, code }, lean: true });
+  const doc = await models.MVerification.getInfo({ where: { method: 'email', type: 1, code }, lean: true });
   if (!doc || Date.now() - new Date(doc.createdAt).getTime() > 1000 * 600) {
     return response.fail({ message: '邮件已过期' });
   }
@@ -94,7 +94,7 @@ router.get('active', async ({ request, response, models }) => {
     status: 1,
   }
   await models.MUser.create(data);
-  await models.MCode.update({ where: { _id: doc._id }, data: { $set: { status: 2 } } });
+  await models.MVerification.update({ where: { _id: doc._id }, data: { $set: { status: 2 } } });
   response.body = `邮箱已激活,请使用邮箱登陆`
 })
 

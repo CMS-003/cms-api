@@ -1,17 +1,19 @@
 version: "3"
 services: 
-  manage:
-    container_name: "manage"
+  manager-api:
+    container_name: "manager-api"
     image: node:lts-alpine
     env_file:
       - .env
-    working_dir: "/home/manage/"
+    working_dir: "/home/manager-api/"
+    environment:
+      mongo_system_url: mongodb://127.0.0.1:27017/schema?authSource=admin
     networks: 
       - allinone
     volumes:
-      - ./:/home/manage/
+      - ./:/home/manager-api/
     ports:
-      - "3334:3334"
+      - "3333:3333"
     command: "npm start"
 networks: 
   allinone:

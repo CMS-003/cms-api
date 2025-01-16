@@ -59,7 +59,7 @@ app.request.paging = function () {
 app.context.config = config;
 app.context.scheduler = Scheduler;
 app.context.loadConfig = async function () {
-  const docs = await app.context.models.Config.getAll({ lean: true });
+  const docs = await app.context.models.MConfig.getAll({ lean: true });
   docs.forEach(item => {
     if (app.context.config[item.name]) {
       console.warn(`config ${item.name} covered`);

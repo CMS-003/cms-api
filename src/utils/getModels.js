@@ -4,7 +4,7 @@ import Base, { getMongoSchema } from "schema/dist/base.js";
 const models = {};
 
 export async function init(dbs, JsonSchema) {
-  models.JsonSchema = JsonSchema;
+  models.MJsonSchema = JsonSchema;
   const schemas = await JsonSchema.getAll({ where: { status: 1 }, lean: true })
   schemas.forEach(schema => {
     if (dbs[schema.db]) {
@@ -19,7 +19,7 @@ export async function init(dbs, JsonSchema) {
           timestamps: false,
         }),
       );
-      models[schema.name] = CModel;
+      models['M' + schema.name] = CModel;
     }
   });
   return models;

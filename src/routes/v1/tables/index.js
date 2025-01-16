@@ -21,7 +21,7 @@ router.get('/views', async ({ response, models }) => {
   const schemas = await models.MJsonSchema.getAll({ lean: true });
   const map = _.keyBy(schemas, 'name');
   for (let i = 0; i < names.length; i++) {
-    const name = names[i];
+    const name = names[i].replace(/^M/, '');
     const table = { name, forms: [], lists: [], visible: 1, title: '' };
     const views = await models.MView.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
@@ -52,7 +52,7 @@ router.get('/:name/fields', async ({ params, response, models }) => {
 });
 
 router.get('/:name/list', async ({ params, request, response, models }) => {
-  const name = _.upperFirst(params.name);
+  const name = 'M' + _.upperFirst(params.name);
   const hql = request.paging();
   hql.lean = true;
   if (models[name]) {
