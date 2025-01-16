@@ -10,4 +10,4 @@ ENV mongo_system_url mongodb://root:123456@192.168.0.124:27017/schema?authSource
 
 CMD [ "npm", "start" ]
 
-EXPOSE 3334
+EXPOSE 3333
