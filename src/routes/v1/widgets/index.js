@@ -7,7 +7,7 @@ const router = new Router({
 });
 
 router.get('/', async ({ models, request, response }) => {
-  const hql = request.paging()
+  const hql = request.paginate()
   hql.sort = { order: 1, updatedAt: -1 }
   const items = await models.MWidget.getAll(hql);
   response.success({ items });

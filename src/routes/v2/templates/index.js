@@ -7,7 +7,7 @@ const router = new Router({
 });
 
 router.get('/:id/components', async ({ params, request, models, response }) => {
-  const hql = request.paging();
+  const hql = request.paginate();
   const template = await models.MTemplate.getInfo({ where: { $or: [{ _id: params.id }, { name: params.id }] }, lean: true });
   if (!template) {
     return response.throwBiz('COMMON.NotFound')

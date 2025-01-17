@@ -3,7 +3,7 @@ import path from 'path'
 import log4js from "log4js"
 import config from '../config/index.js'
 import { v4 } from 'uuid'
-import models from '../utils/getModels.js'
+import models from '../mongodb.js'
 
 const mongoModule = {
   configure: (config, layouts, findAppender, levels) => {
@@ -13,8 +13,8 @@ const mongoModule = {
       const createdAt = event.startTime;
       const content = event.data.join('\n');
       const data = { _id: v4(), type, group, createdAt, content };
-      if (models.Log) {
-        models.Log.create(data).then(() => { });
+      if (models.MLog) {
+        models.MLog.create(data).then(() => { });
       }
     }
   },

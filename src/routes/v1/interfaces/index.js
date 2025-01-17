@@ -6,7 +6,7 @@ const router = new Router({
   prefix: '',
 });
 router.get('/', async ({ models, scheduler, config, state, request, response }) => {
-  const hql = request.paging();
+  const hql = request.paginate();
   hql.where.status = { status: { $not: 0 } }
   const results = models.MInterface.getList(hql)
   response.success({ items: results });

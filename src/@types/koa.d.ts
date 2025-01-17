@@ -1,5 +1,4 @@
 import { Model, Schema, Document, Connection } from 'mongoose';
-import getModels from '../models/index'
 import mongoose from 'mongoose';
 import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
@@ -15,6 +14,9 @@ declare module 'koa' {
   declare const MODEL: {
     [K in keyof typeof schema]: typeof schema[K] extends new (...args: any[]) => infer Instance ? Instance : never;
   };
+  declare const DBS: {
+    [key: string]: Connection
+  }
   export interface ExtendableContext {
     config: {
       [key: string]: any;
@@ -30,16 +32,16 @@ declare module 'koa' {
     config: {
       [key: string]: any;
     };
+    dbs: DBS;
     models: MODEL;
     Response: BaseResponse;
-    dbs: dbs;
     loadConfig: Function;
     mailer: Mailer;
     scheduler: Scheduler;
   }
 
   interface BaseRequest {
-    paging: () => OPT;
+    paginate: () => OPT;
   }
 
   interface BaseResponse {

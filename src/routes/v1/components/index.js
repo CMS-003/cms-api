@@ -8,7 +8,7 @@ const router = new Router({
 });
 
 router.get('/', async ({ models, state, request, response }) => {
-  const hql = request.paging()
+  const hql = request.paginate()
   if (request.query.project_id) {
     hql.where.project_id = request.query.project_id;
   }

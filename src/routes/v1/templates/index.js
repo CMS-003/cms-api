@@ -6,7 +6,7 @@ import verify from '#middleware/verify.js'
 const router = new Router();
 
 router.get('/', verify, async ({ models, request, state, response }) => {
-  const hql = request.paging()
+  const hql = request.paginate()
   if (request.query.type) {
     hql.where.type = request.query.type;
   }

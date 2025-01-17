@@ -53,7 +53,7 @@ router.get('/:name/fields', async ({ params, response, models }) => {
 
 router.get('/:name/list', async ({ params, request, response, models }) => {
   const name = 'M' + _.upperFirst(params.name);
-  const hql = request.paging();
+  const hql = request.paginate();
   hql.lean = true;
   if (models[name]) {
     const items = await models[name].getList(hql);

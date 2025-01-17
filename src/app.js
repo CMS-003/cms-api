@@ -11,15 +11,13 @@ import log4js from 'log4js'
 import Logger from './utils/logger.js'
 import constant from './constant.js';
 import getRoutes from './router.js'
-import { MConnection, MJsonSchema } from 'schema';
 import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
 import { BizError, genByBiz } from './utils/bizError.js'
 import Mailer from './utils/mailer.js'
 import Scheduler from './utils/scheduler.js';
-import { init } from './utils/getModels.js';
+import models, { dbs, initMongo } from './mongodb.js';
 import ejs from 'ejs'
-import mongoose from 'mongoose';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,7 +43,7 @@ app.response.throwBiz = function (bizName, params) {
   throw new BizError(bizName, params);
 }
 
-app.request.paging = function () {
+app.request.paginate = function () {
   const qs = app.request.query, hql = {};
   const page = qs[constant.SYSTEM.REQ_PAGE] || '1';
   const limit = qs[constant.SYSTEM.REQ_LIMIT] || '20';
@@ -104,16 +102,9 @@ app.on('error', (err, ctx) => {
 })
 
 async function run(cb) {
-  const system = mongoose.createConnection(config.mongo_system_url);
-  const Connection = new MConnection(system);
-  const JsonSchema = new MJsonSchema(system);
-  const connections = await Connection.getAll({ where: { status: 1 }, lean: true });
-  const dbs = { system };
-  connections.forEach(connection => {
-    dbs[connection._id] = mongoose.createConnection(connection.url);
-  });
+  await initMongo(config.mongo_system_url);
   app.context.dbs = dbs;
-  app.context.models = await init(dbs, JsonSchema);
+  app.context.models = models;
   // 连接数据库后,启动前加载配置
   await app.context.loadConfig();
   if (app.context.config.email) {

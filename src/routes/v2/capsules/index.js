@@ -6,7 +6,7 @@ import _ from 'lodash'
 const router = new Router();
 
 router.get('/', async ({ models, response, request }) => {
-  const hql = request.paging();
+  const hql = request.paginate();
   hql.sort = { createdAt: -1 };
   hql.lean = true;
   hql.where = _.pick(request.query, ['receiver', 'name']);

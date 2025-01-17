@@ -8,7 +8,7 @@ import constant from '#constant.js';
 const router = new Router();
 
 router.get('/codes', async ({ models, response, request }) => {
-  const hql = request.paging();
+  const hql = request.paginate();
   hql.sort = { createdAt: 1 };
   hql.lean = true;
   if (hql.where.type) {

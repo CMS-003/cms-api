@@ -6,7 +6,7 @@ import { v4 } from 'uuid'
 const router = new Router();
 
 router.get('/', async ({ models, response, request }) => {
-  const hql = request.paging();
+  const hql = request.paginate();
   hql.sort = { type: 1 };
   hql.lean = true;
   if (request.query.type) {
