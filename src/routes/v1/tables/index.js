@@ -21,7 +21,7 @@ router.get('/views', async ({ response, models }) => {
   const schemas = await models.MJsonSchema.getAll({ lean: true });
   const map = _.keyBy(schemas, 'name');
   for (let i = 0; i < names.length; i++) {
-    const name = names[i].replace(/^M/, '');
+    const name = names[i];
     const table = { name, forms: [], lists: [], visible: 1, title: '' };
     const views = await models.MView.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
@@ -46,13 +46,13 @@ router.post('/views', async ({ request, models, response }) => {
 })
 
 router.get('/:name/fields', async ({ params, response, models }) => {
-  const name = _.upperFirst(params.name)
+  const name = params.name
   const fields = models[name].getAttributes();
   response.success(fields);
 });
 
 router.get('/:name/list', async ({ params, request, response, models }) => {
-  const name = 'M' + _.upperFirst(params.name);
+  const name = params.name;
   const hql = request.paginate();
   hql.lean = true;
   if (models[name]) {
@@ -64,7 +64,7 @@ router.get('/:name/list', async ({ params, request, response, models }) => {
 });
 
 router.post('/:name/data', async ({ params, request, response, models }) => {
-  const name = _.upperFirst(params.name);
+  const name = params.name;
   if (name === 'Interface') {
     const total = await models.MInterface.sum();
     request.body._id = (total + 100001).toString();
@@ -82,7 +82,7 @@ router.post('/:name/data', async ({ params, request, response, models }) => {
 });
 
 router.put('/:name/data', async ({ params, request, response, models }) => {
-  const name = _.upperFirst(params.name);
+  const name = params.name;
   request.body.updatedAt = new Date();
   const { _id, ...data } = request.body;
   if (_id && models[name]) {
@@ -94,7 +94,7 @@ router.put('/:name/data', async ({ params, request, response, models }) => {
 });
 
 router.del('/:name/data/:_id', async ({ params, response, models }) => {
-  const name = _.upperFirst(params.name);
+  const name = params.name;
   if (models[name]) {
     await models[name].destroy({ where: { _id: params._id } });
     response.success();
