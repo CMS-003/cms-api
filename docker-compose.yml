@@ -7,7 +7,8 @@ services:
       - .env
     working_dir: "/home/manager-api/"
     environment:
-      mongo_system_url: mongodb://127.0.0.1:27017/schema?authSource=admin
+      mongo_system_url: mongodb://root:123456@mongo-demo:27017/schema?authSource=admin
+      proxy_host: 127.0.0.1:3333
     networks: 
       - allinone
     volumes:
