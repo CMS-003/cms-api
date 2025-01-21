@@ -53,7 +53,16 @@ router.get('/schemas', async ({ response, models, config }) => {
   response.success(schemas);
 });
 
-router.put('/schemas/:_id', async ({ params, request, response, dbs, models }) => {
+router.get('/schemas/:name', async ({ params, response, models }) => {
+  const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
+  if (doc) {
+    response.success(doc.schema);
+  } else {
+    response.fail({ message: 'NotFound' });
+  }
+});
+
+router.put('/schemas/:name', async ({ params, request, response, dbs, models }) => {
   await models.MJsonSchema.update({ where: params, data: { $set: request.body } });
   const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
   if (doc && dbs[doc.db]) {
