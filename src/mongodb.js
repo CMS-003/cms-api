@@ -5,6 +5,24 @@ import { MConnection, MJsonSchema } from 'schema';
 export const dbs = {};
 const models = {};
 
+export function initTable(db, doc) {
+  if (db.models[doc.table]) {
+    delete db.models[doc.table];
+  }
+  const CModel = new Base();
+  CModel.model = db.model(
+    doc.table,
+    getMongoSchema(doc.schema, {
+      strict: true,
+      versionKey: false,
+      excludeIndexes: true,
+      collection: doc.table,
+      timestamps: false,
+    }),
+  );
+  models[doc.name] = CModel;
+}
+
 export async function initMongo(mongo_url) {
   const system = mongoose.createConnection(mongo_url);
   const Connection = new MConnection(system);
@@ -16,20 +34,9 @@ export async function initMongo(mongo_url) {
     dbs[connection._id] = mongoose.createConnection(mongo_url.replace('schema', connection._id));
   });
   const schemas = await JsonSchema.getAll({ where: { status: 1 }, lean: true })
-  schemas.forEach(schema => {
-    if (dbs[schema.db]) {
-      const CModel = new Base();
-      CModel.model = dbs[schema.db].model(
-        schema.table,
-        getMongoSchema(schema.schema, {
-          strict: true,
-          versionKey: false,
-          excludeIndexes: true,
-          collection: schema.table,
-          timestamps: false,
-        }),
-      );
-      models[schema.name] = CModel;
+  schemas.forEach(doc => {
+    if (dbs[doc.db]) {
+      initTable(dbs[doc.db], doc);
     }
   });
   return

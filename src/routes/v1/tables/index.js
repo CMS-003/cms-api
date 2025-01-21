@@ -1,5 +1,7 @@
+import { initMongo, initTable } from '#mongodb.js';
 import Router from 'koa-router'
 import _ from 'lodash'
+import { getJsonSchema } from 'schema/dist/base.js';
 import shortid from 'shortid';
 import { v4 } from 'uuid';
 
@@ -43,7 +45,22 @@ router.post('/views', async ({ request, models, response }) => {
   data.order = 1;
   const result = await models.MView.create(request.body);
   response.success(result);
-})
+});
+
+router.get('/schemas', async ({ response, models, config }) => {
+  await initMongo(config.mongo_system_url);
+  const schemas = await models.MJsonSchema.getAll({ lean: true });
+  response.success(schemas);
+});
+
+router.put('/schemas/:_id', async ({ params, request, response, dbs, models }) => {
+  await models.MJsonSchema.update({ where: params, data: { $set: request.body } });
+  const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
+  if (doc && dbs[doc.db]) {
+    await initTable(dbs[doc.db], doc);
+  }
+  response.success();
+});
 
 router.get('/:name/fields', async ({ params, response, models }) => {
   const name = params.name
