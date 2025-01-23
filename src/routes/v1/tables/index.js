@@ -1,9 +1,8 @@
 import { initMongo, initTable } from '#mongodb.js';
 import Router from 'koa-router'
 import _ from 'lodash'
-import { getJsonSchema } from 'schema/dist/base.js';
 import shortid from 'shortid';
-import { v4 } from 'uuid';
+import { v4, v7 } from 'uuid';
 
 const router = new Router();
 
@@ -22,21 +21,18 @@ router.get('/views', async ({ response, models }) => {
   const names = Object.keys(models);
   const schemas = await models.MJsonSchema.getAll({ lean: true });
   const map = _.keyBy(schemas, 'name');
-  for (let i = 0; i < names.length; i++) {
-    const name = names[i];
-    const table = { name, forms: [], lists: [], visible: 1, title: '' };
+  for (let i = 0; i < schemas.length; i++) {
+    const name = schemas[i].name;
+    const table = { name, forms: [], lists: [], title: '' };
     const views = await models.MView.getAll({ where: { table: name }, lean: true });
     table.forms = views.filter(view => view.type === 'form');
     table.lists = views.filter(view => view.type === 'list');
     if (map[name]) {
       table.title = map[name].title;
-      if (_.isNumber(map[name].visible)) {
-        table.visible = map[name].visible;
-      }
     }
     tables.push(table);
   }
-  response.success({ items: tables.filter(t => t.visible === 1) });
+  response.success({ items: tables });
 });
 
 router.post('/views', async ({ request, models, response }) => {
@@ -65,10 +61,25 @@ router.get('/schemas/:name', async ({ params, response, models }) => {
 router.put('/schemas/:name', async ({ params, request, response, dbs, models }) => {
   await models.MJsonSchema.update({ where: params, data: { $set: request.body } });
   const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
-  if (doc && dbs[doc.db]) {
-    await initTable(dbs[doc.db], doc);
+  if (doc && doc.status === 1 && dbs[doc.db]) {
+    if(doc.status === 1) {
+      await initTable(dbs[doc.db], doc);
+    }else {
+      delete models[doc.name]
+      dbs[doc.db].deleteModel(doc.name)
+    }
   }
   response.success();
+});
+
+router.post('/schemas/:name', async ({ params, request, response, dbs, models }) => {
+  if (!request.body.table || !request.body.db) {
+    return response.fail({ message: '参数错误' });
+  }
+  request.body._id = v7();
+  await models.MJsonSchema.create(request.body);
+  const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
+  response.success(doc);
 });
 
 router.get('/:name/fields', async ({ params, response, models }) => {
@@ -150,7 +161,6 @@ router.put('/:table/views/:_id', async ({ params, request, response, models }) =
   await models.MView.update({ where: params, data: request.body });
   response.success();
 });
-
 
 router.get('/:name/json-schema', async ({ params, models, response }) => {
   const model = models[_.upperFirst(params.name)];
