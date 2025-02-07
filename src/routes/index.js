@@ -1,5 +1,6 @@
 import Router from 'koa-router'
 import http from 'http'
+import https from 'https'
 import _ from 'lodash'
 import config from '#config/index.js';
 
@@ -31,17 +32,26 @@ home.post('test/email', async (ctx) => {
 
 const proxy = new Router();
 proxy.all('/(.*)', async (ctx) => {
-  const [hostname = '127.0.0.1', port = 80] = config.proxy_host.split(':');
+  const [protocal, hostname, port] = config.proxy_host.split(':');
+  const is_https = protocal === 'https';
   const proxy_url = ctx.url.substring(10)
   const options = {
-    hostname, // 目标服务器地址
-    port,              // 目标服务器端口
+    hostname: hostname.replace(/^\/\//, ''),       // 目标服务器地址
+    port: port || (is_https ? 443 : 80),// 目标服务器端口
     path: proxy_url,          // 保留原始请求路径
-    method: ctx.method,     // 保留原始请求方法
-    headers: ctx.headers    // 转发原始请求头
+    method: ctx.method,       // 保留原始请求方法
+    headers: ctx.headers      // 转发原始请求头
   };
+  if (is_https) {
+    options.agent = new https.Agent({
+      rejectUnauthorized: false
+    })
+  }
+  options.headers['host'] = options.hostname;
+  console.log(options)
+  const net = is_https ? https : http;
   await new Promise((resolve, reject) => {
-    const proxyReq = http.request(options, (proxyRes) => {
+    const proxyReq = net.request(options, (proxyRes) => {
       // 设置返回的状态码和头部
       ctx.status = proxyRes.statusCode;
       ctx.set(proxyRes.headers);

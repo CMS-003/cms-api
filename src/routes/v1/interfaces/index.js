@@ -7,8 +7,8 @@ const router = new Router({
 });
 router.get('/', async ({ models, scheduler, config, state, request, response }) => {
   const hql = request.paginate();
-  hql.where.status = { status: { $not: 0 } }
-  const results = models.MInterface.getList(hql)
+  // hql.where.status = { $not: 0 };
+  const results = await models.MInterface.getList(hql)
   response.success({ items: results });
 });
 
@@ -52,7 +52,7 @@ router.get('/:_id', async (ctx) => {
         builtin: ['*'],
       }
     }).run(code, {});
-    fn(ctx);
+    await fn(ctx);
   } else {
     response.fail();
   }
