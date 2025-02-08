@@ -8,7 +8,7 @@ const router = new Router({
 
 router.get('/', async ({ models, request, response }) => {
   const hql = request.paginate()
-  hql.sort = { order: 1, updatedAt: -1 }
+  hql.sort = { order: 1, level: 1 }
   const items = await models.MComponentType.getAll(hql);
   response.success({ items });
 })
