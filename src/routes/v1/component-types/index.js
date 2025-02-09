@@ -29,7 +29,7 @@ router.post('/', async ({ request, response, models }) => {
 router.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   request.body.updatedAt = new Date()
-  const data = request.body;
+  const data = { $set: request.body };
   const item = await models.MComponentType.update({ where, data });
   response.success({ item });
 });

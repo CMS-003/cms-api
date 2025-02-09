@@ -48,7 +48,6 @@ proxy.all('/(.*)', async (ctx) => {
     })
   }
   options.headers['host'] = options.hostname;
-  console.log(options)
   const net = is_https ? https : http;
   await new Promise((resolve, reject) => {
     const proxyReq = net.request(options, (proxyRes) => {
