@@ -22,6 +22,8 @@ router.get('/:id', async ({ params, req, models, response }) => {
 router.post('/', async ({ request, response, models }) => {
   const data = request.body;
   data._id = v4();
+  data.createdAt = new Date();
+  data.updatedAt = new Date();
   const item = await models.MComponentType.create(data);
   response.success({ item });
 });

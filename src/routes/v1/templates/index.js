@@ -21,6 +21,8 @@ router.get('/', verify, async ({ models, request, state, response }) => {
 router.post('/', verify, async ({ models, state, request, response }) => {
   request.body._id = v4()
   request.body.project_id = state.project_id
+  request.body.createdAt = new Date();
+  request.body.updatedAt = new Date();
   await models.MTemplate.create(request.body)
   response.success()
 })
