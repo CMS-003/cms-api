@@ -14,7 +14,7 @@ router.get('/', verify, async ({ models, request, state, response }) => {
     hql.where.project_id = request.query.project_id
   }
   hql.sort = { order: 1 }
-  const items = await models.MTemplate.getList(hql);
+  const items = await models.MTemplate.getAll(hql);
   response.success({ items })
 })
 
@@ -28,7 +28,8 @@ router.post('/', verify, async ({ models, state, request, response }) => {
 })
 
 router.put('/:template_id', verify, async ({ models, params, request, response }) => {
-  await models.MTemplate.update({ where: { _id: params.template_id }, data: request.body })
+  request.body.updatedAt = new Date();
+  await models.MTemplate.update({ where: { _id: params.template_id }, data: { $set: request.body } })
   response.success()
 })
 
