@@ -45,8 +45,13 @@ router.post('/batch', async ({ request, response, models }) => {
   });
   if (arr.length) {
     const r = await models.MComponent.model.bulkWrite(arr);
-    console.log(r)
   }
+  response.success();
+});
+
+router.delete('/batch', async ({ request, response, models }) => {
+  const ids = request.query.ids.toString().split(',');
+  await models.MComponent.model.deleteMany({ _id: { $in: ids } });
   response.success();
 });
 
