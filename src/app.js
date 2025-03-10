@@ -43,13 +43,16 @@ app.response.throwBiz = function (bizName, params) {
   throw new BizError(bizName, params);
 }
 
-app.request.paginate = function () {
+app.request.paginate = function (fn) {
   const qs = app.request.query, hql = {};
   const page = qs[constant.SYSTEM.REQ_PAGE] || '1';
   const limit = qs[constant.SYSTEM.REQ_LIMIT] || '20';
   hql.page = Math.max(parseInt(_.isArray(page) ? page[0] : page), 1);
   hql.limit = Math.max(parseInt(_.isArray(limit) ? limit[0] : limit), 100);
   hql.where = {};
+  if(fn) {
+    fn(hql);
+  }
   return hql;
 }
 

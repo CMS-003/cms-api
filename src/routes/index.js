@@ -2,6 +2,8 @@ import Router from 'koa-router'
 import http from 'http'
 import https from 'https'
 import _ from 'lodash'
+import { VMScript, NodeVM } from 'vm2';
+import constant from '#constant.js';
 import config from '#config/index.js';
 
 const home = new Router();
@@ -27,6 +29,31 @@ home.post('test/email', async (ctx) => {
     ctx.response.success()
   } else {
     ctx.response.throwBiz('COMMON.NeedParam', { param: 'config' })
+  }
+})
+
+home.use('gatling/:_id', async(ctx)=>{
+  const { params, models, response } = ctx;
+  const where = { _id: params._id };
+  const api = await models.MInterface.getInfo({ where, lean: true });
+  if (api) {
+    const code = new VMScript(api.script).compile();
+    const fn = new NodeVM({
+      console: 'inherit',
+      sandbox: {
+        process: {
+          env: process.env,
+        }
+      },
+      require: {
+        external: true,
+        root: constant.PATH.ROOT,
+        builtin: ['*'],
+      }
+    }).run(code, {});
+    await fn(ctx);
+  } else {
+    response.fail();
   }
 })
 

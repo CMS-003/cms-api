@@ -41,7 +41,7 @@ declare module 'koa' {
   }
 
   interface BaseRequest {
-    paginate: () => OPT;
+    paginate: (fn?: (hql: OPT) => void) => OPT;
   }
 
   interface BaseResponse {

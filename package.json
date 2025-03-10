@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./src/server.js",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/server.js",
+    "dev": "cross-env NODE_ENV=development nodemon --watch src/ ./src/server.js",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
     "auto-deploy": "git pull && docker-compose restart"
