@@ -8,7 +8,7 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
     if (request.query.status) {
       opt.where.status = parseInt(request.query.status.toString(), 10)
     } else {
-      opt.where.status = { $ne: 0 }
+      opt.where.status = { $ne: 2 }
     }
   });
   const results = await models.MInterface.getList(hql)
@@ -18,6 +18,8 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
 router.post('/', async ({ models, request, response }) => {
   const total = await models.MInterface.count();
   request.body._id = (total + 100001).toString();
+  request.body.createdAt = new Date();
+  request.body.updatedAt = new Date();
   const doc = await models.MInterface.create(request.body);
   response.success(doc);
 });
@@ -25,6 +27,7 @@ router.post('/', async ({ models, request, response }) => {
 router.put('/:_id', async (ctx) => {
   const { params, models, request, response } = ctx;
   const where = { _id: params._id };
+  request.body.updatedAt = new Date();
   await models.MInterface.update({ where, data: { $set: request.body } });
   const result = await models.MInterface.getInfo({ where, lean: true })
   response.success(result);
@@ -33,7 +36,7 @@ router.put('/:_id', async (ctx) => {
 router.del('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
-  await models.MInterface.update({ where, data: { $set: { status: 0 } } });
+  await models.MInterface.update({ where, data: { $set: { status: 2 } } });
   response.success();
 });
 

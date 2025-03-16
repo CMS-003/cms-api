@@ -32,7 +32,8 @@ home.post('test/email', async (ctx) => {
   }
 })
 
-home.use('gatling/:_id', async(ctx)=>{
+const gatling = new Router();
+gatling.all('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
   const api = await models.MInterface.getInfo({ where, lean: true });
@@ -55,7 +56,8 @@ home.use('gatling/:_id', async(ctx)=>{
   } else {
     response.fail();
   }
-})
+});
+home.use('gatling', gatling.routes(), gatling.allowedMethods());
 
 const proxy = new Router();
 proxy.all('/(.*)', async (ctx) => {
