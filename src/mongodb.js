@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import Base, { getMongoSchema } from "schema/dist/base.js";
 import { MConnection, MJsonSchema } from 'schema';
+import { VMScript, NodeVM } from 'vm2';
+import constant from '#constant.js';
 
 export const dbs = {};
 const models = {};
@@ -10,15 +12,37 @@ export function initTable(db, doc) {
     delete db.models[doc.table];
   }
   const CModel = new Base();
+  const schema = getMongoSchema(doc.schema, {
+    strict: true,
+    versionKey: false,
+    excludeIndexes: true,
+    collection: doc.table,
+    timestamps: false,
+  });
+  doc.methods.forEach(v => {
+    const { name, script } = v;
+    const code = new VMScript(script).compile();
+    const fn = new NodeVM({
+      console: 'inherit',
+      sandbox: {
+        process: {
+          env: process.env,
+        },
+      },
+      require: {
+        external: true,
+        root: constant.PATH.ROOT,
+        builtin: ['*']
+      }
+    }).run(code, {});
+    if (v.group === 1) {
+      schema.method(name, fn);
+    }
+  })
+
   CModel.model = db.model(
     doc.table,
-    getMongoSchema(doc.schema, {
-      strict: true,
-      versionKey: false,
-      excludeIndexes: true,
-      collection: doc.table,
-      timestamps: false,
-    }),
+    schema,
   );
   models[doc.name] = CModel;
 }
