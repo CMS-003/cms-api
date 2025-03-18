@@ -3,6 +3,7 @@ FROM node:alpine
 WORKDIR /cms/api
 
 COPY ./ /cms/api
+VOLUME ["/cms/api/static/downloads", "/cms/api/static/upload", "/cms/api/static/images", "/cms/api/static/proxy", "/cms/api/static/nas"]
 
 RUN npm install --omit=dev
 
