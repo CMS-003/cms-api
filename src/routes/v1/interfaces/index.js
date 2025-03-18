@@ -1,4 +1,5 @@
 import Router from 'koa-router'
+import shortid from 'shortid';
 
 const router = new Router({
   prefix: '',
@@ -16,8 +17,7 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
 });
 
 router.post('/', async ({ models, request, response }) => {
-  const total = await models.MInterface.count();
-  request.body._id = (total + 100001).toString();
+  request.body._id = request.body._id || shortid.generate();
   request.body.createdAt = new Date();
   request.body.updatedAt = new Date();
   const doc = await models.MInterface.create(request.body);

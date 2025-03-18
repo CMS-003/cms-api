@@ -2,9 +2,8 @@ import Router from 'koa-router'
 import http from 'http'
 import https from 'https'
 import _ from 'lodash'
-import { VMScript, NodeVM } from 'vm2';
-import constant from '#constant.js';
 import config from '#config/index.js';
+import vmRunCode from '#utils/vmRunCode.js';
 
 const home = new Router();
 
@@ -38,21 +37,8 @@ gatling.all('/:_id', async (ctx) => {
   const where = { _id: params._id };
   const api = await models.MInterface.getInfo({ where, lean: true });
   if (api) {
-    const code = new VMScript(api.script).compile();
-    const fn = new NodeVM({
-      console: 'inherit',
-      sandbox: {
-        process: {
-          env: process.env,
-        }
-      },
-      require: {
-        external: true,
-        root: constant.PATH.ROOT,
-        builtin: ['*'],
-      }
-    }).run(code, {});
-    await fn(ctx);
+    const sandbox = await vmRunCode(api.script);
+    await sandbox.context.module.exports(ctx);
   } else {
     response.fail();
   }
