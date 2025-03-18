@@ -9,7 +9,7 @@ const route = new Router();
 
 route.patch('/crawl', async ({ request, params, models, response }) => {
   const u = new URL(request.body.url);
-  const rules = await models.MSpider.getAll({ where: { status: 2, pattern: { $regex: u.origin } }, lean: false })
+  const rules = await models.MSpider.getAll({ where: { status: 3, pattern: { $regex: u.origin } }, lean: false })
   let rule = null, param;
   for (let i = 0; i < rules.length; i++) {
     rule = rules[i];
@@ -42,7 +42,7 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
           break;
       }
     }
-    response.success({ code, message, data: { record: { source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toObject(), ['script', 'urls']) } });
+    response.success({ code, message, data: { record: { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toJSON(), ['headers', 'script', 'urls']) } });
   } else {
     response.success({ code: 1000, message: '未匹配到规则' })
   }
