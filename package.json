@@ -12,7 +12,7 @@
     "#*": "./src/*"
   },
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./src/server.js",
+    "start": "node ./src/server.js",
     "dev": "cross-env NODE_ENV=development nodemon --experimental-vm-modules --watch src/ ./src/server.js ",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
