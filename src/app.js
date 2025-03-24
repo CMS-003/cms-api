@@ -50,7 +50,7 @@ app.request.paginate = function (fn) {
   hql.page = Math.max(parseInt(_.isArray(page) ? page[0] : page), 1);
   hql.limit = Math.max(parseInt(_.isArray(limit) ? limit[0] : limit), 100);
   hql.where = {};
-  if(fn) {
+  if (fn) {
     fn(hql);
   }
   return hql;
@@ -118,6 +118,11 @@ async function run(cb) {
   if (typeof cb === 'function') {
     await cb(app);
   }
+  // 加载定时任务
+  const schedules = await models.MSchedule.getAll({ lean: true });
+  schedules.forEach(v => {
+    Scheduler.load(v, app.context);
+  })
   return app;
 }
 export {

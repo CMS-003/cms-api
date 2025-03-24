@@ -20,8 +20,17 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
 });
 
 router.post('/', async ({ models, request, response }) => {
-  const doc = await models.MSchedule.create(request.body);
+  const doc = await models.MSchedule.model.create(request.body);
   response.success(doc);
+});
+
+router.get('/:_id', async ({ models, request, params, response }) => {
+  const item = await models.MSchedule.getInfo({ where: { _id: params._id }, lean: true });
+  if (item) {
+    response.success(item);
+  } else {
+    response.fail();
+  }
 });
 
 router.put('/:_id', async (ctx) => {

@@ -42,7 +42,7 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
           break;
       }
     }
-    response.success({ code, message, data: { record: { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toJSON(), ['headers', 'script', 'urls']) } });
+    response.success({ record: { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toJSON(), ['headers', 'script', 'urls']) }, { code, message });
   } else {
     response.success({ code: 1000, message: '未匹配到规则' })
   }
@@ -54,14 +54,13 @@ route.post('/crawl/:_id', async (ctx) => {
   if (!rule) {
     return response.fail({ message: 'NotFound' })
   }
+  if (rule.status !== constant.STATUS.SUCCESS) {
+    return response.fail({ message: 'NotReady' })
+  }
   const url = rule.getPureUrl(request.body.url);
   const param = rule.getParams(url);
   if (!param) {
     return response.fail({ message: '格式不匹配' })
-  }
-  const record = await models.MRecord.getInfo({ where: { spider_id: rule._id, source_id: param.id }, lean: true });
-  if (record) {
-    return response.fail({ message: '数据已存在' });
   }
   const sandbox = await vmRunCode(rule.script);
   const fn = sandbox.context.module.exports;

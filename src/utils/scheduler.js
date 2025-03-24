@@ -27,7 +27,7 @@ class Scheduler {
     }
     const job = new CronJob(cron, function () {
       const task = Scheduler.tasks[_id];
-      task.running = false;
+      task.running = true;
       console.log(`${new Date().toISOString()} run task: ${_id}`);
       tick(context).then(() => {
         task.running = false;
@@ -37,7 +37,7 @@ class Scheduler {
       });
     }, null, status === 2, 'Asia/Shanghai');
     Scheduler.tasks[_id] = {
-      active: status === 1 || status === 2,
+      active: status === 2 || status === 3,
       running: false,
       name,
       cron,
