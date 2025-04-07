@@ -1,6 +1,5 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import utils from '#services/component.js'
 import { URL } from 'url'
 import constant from 'const'
 import vmRunCode from '#utils/vmRunCode.js'

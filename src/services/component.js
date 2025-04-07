@@ -1,4 +1,6 @@
-async function getTree(Component, tree_id) {
+import _ from 'lodash'
+
+export async function getTree(Component, tree_id) {
   const items = await Component.getAll({ where: { tree_id }, sort: { order: 1 }, lean: true })
   items.forEach(v => v.children = []);
   for (let i = 0; i < items.length; i++) {
@@ -15,6 +17,29 @@ async function getTree(Component, tree_id) {
   return tree;
 }
 
-export default {
-  getTree,
+export function collectionResourceID(tree) {
+  const ids = [];
+  if (_.isArray(tree.resources)) {
+    tree.resources.map(v => {
+      v._id && ids.push(v._id)
+    })
+  }
+  if (_.isArray(tree.children)) {
+    for (let i = 0; i < tree.children.length; i++) {
+      const results = collectionResourceID(tree.children[i]);
+      ids.push(...results)
+    }
+  }
+  return ids;
+}
+
+export function fillResources(tree, map) {
+  if (_.isArray(tree.resources)) {
+    tree.resources = tree.resources.map(v => map[v._id] || v);
+  }
+  if (_.isArray(tree.children)) {
+    tree.children.forEach(child => {
+      fillResources(child, map);
+    })
+  }
 }

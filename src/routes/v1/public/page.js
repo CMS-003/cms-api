@@ -1,8 +1,28 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import utils from '#services/component.js'
+import { getTree, collectionResourceID, fillResources } from '#services/component.js'
 
 const route = new Router();
+
+route.get('/page/:name', async ({ request, params, models, response }) => {
+  const where = { $or: [{ name: params.name }, { _id: params.name }] }
+  const page = await models.MTemplate.getInfo({ where, lean: true });
+  if (!page) {
+    return response.fail();
+  }
+  page.children = [];
+  const components = await models.MComponent.getAll({ where: { template_id: page._id, parent_id: '' }, sort: { order: 1 }, lean: true })
+  for (let i = 0; i < components.length; i++) {
+    const tree = await getTree(models.MComponent, components[i].tree_id);
+    if (tree) {
+      page.children.push(tree)
+    }
+  }
+  const ids = collectionResourceID(page);
+  const resources = await models.MResource.model.find({ _id: { $in: ids } }).lean(true);
+  fillResources(page, _.keyBy(resources, '_id'));
+  response.success(page)
+})
 
 route.get('/page/:name/components', async ({ request, params, models, response }) => {
   const query = request.paginate((hql) => {
@@ -21,7 +41,7 @@ route.get('/page/:name/components', async ({ request, params, models, response }
   }
   const components = await models.MComponent.getList({ where: { template_id: page._id, parent_id: '' }, page: query.page, limit: 6 })
   for (let i = 0; i < components.length; i++) {
-    const tree = await utils.getTree(models.MComponent, components[i].tree_id);
+    const tree = await getTree(models.MComponent, components[i].tree_id);
     if (tree) {
       data.items.push(tree)
     }
