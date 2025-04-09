@@ -47,6 +47,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "path-to-regexp": "8.2.0",
     "randomstring": "^1.2.2",
+    "redis": "^4.7.0",
     "schema": "github:CMS-003/schema",
     "shortid": "^2.2.16",
     "spark-md5": "3.0.2",

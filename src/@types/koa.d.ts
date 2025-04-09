@@ -25,7 +25,8 @@ declare module 'koa' {
     models: models;
     loadConfig: Function;
     mailer: Mailer;
-    scheduler: Scheduler;
+    scheduler: Scheduler;    
+    getResourceByCache: (_id: string, all?: boolean) => any;
   };
 
   interface DefaultContext {

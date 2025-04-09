@@ -3,13 +3,12 @@ import _ from 'lodash'
 
 const route = new Router();
 
-route.get('/resource/:_id', async ({ request, params, models, response }) => {
-  const where = { _id: params._id }
-  const doc = await models.MResource.getInfo({ where, lean: true });
+route.get('/resource/:_id', async (ctx) => {
+  const doc = await ctx.getResourceByCache(ctx.params._id, false);
   if (!doc) {
-    return response.fail();
+    return ctx.response.fail();
   }
-  response.success(doc)
+  ctx.response.success(doc)
 })
 
 route.get('/resources', async ({ request, params, models, response }) => {
