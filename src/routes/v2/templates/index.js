@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import { getTree } from '#services/component.js'
+import { getComponentTreeInfo } from '#services/component.js'
 
 const router = new Router({
   prefix: '',
@@ -17,7 +17,7 @@ router.get('/:id/components', async ({ params, request, models, response }) => {
   hql.sort = { order: 1 }
   const items = await models.MComponent.getList(hql);
   for (let i = 0; i < items.length; i++) {
-    const tree = await getTree(models.MComponent, items[i]._id);
+    const tree = await getComponentTreeInfo(items[i]._id);
     if (tree) {
       items[i].children = tree.children;
     }

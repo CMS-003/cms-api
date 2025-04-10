@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import _ from 'lodash'
-import { getTree, collectionResourceID, fillResources } from '#services/component.js'
+import { getComponentTreeInfo, collectionResourceID, fillResources } from '#services/component.js'
 
 const route = new Router();
 
@@ -13,7 +13,7 @@ route.get('/page/:name', async ({ request, params, models, response }) => {
   page.children = [];
   const components = await models.MComponent.getAll({ where: { template_id: page._id, parent_id: '' }, sort: { order: 1 }, lean: true })
   for (let i = 0; i < components.length; i++) {
-    const tree = await getTree(models.MComponent, components[i].tree_id);
+    const tree = await getComponentTreeInfo(components[i].tree_id);
     if (tree) {
       page.children.push(tree)
     }
@@ -41,7 +41,7 @@ route.get('/page/:name/components', async ({ request, params, models, response }
   }
   const components = await models.MComponent.getList({ where: { template_id: page._id, parent_id: '' }, page: query.page, limit: 6 })
   for (let i = 0; i < components.length; i++) {
-    const tree = await getTree(models.MComponent, components[i].tree_id);
+    const tree = await getComponentTreeInfo(components[i].tree_id);
     if (tree) {
       data.items.push(tree)
     }

@@ -1,7 +1,9 @@
+import { getRedis } from '#utils/redis.js';
 import _ from 'lodash'
+import models from '../mongodb.js';
 
-export async function getTree(Component, tree_id) {
-  const items = await Component.getAll({ where: { tree_id }, sort: { order: 1 }, lean: true })
+export async function getTree(tree_id) {
+  const items = await models.MComponent.getAll({ where: { tree_id }, sort: { order: 1 }, lean: true })
   items.forEach(v => v.children = []);
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -42,4 +44,58 @@ export function fillResources(tree, map) {
       fillResources(child, map);
     })
   }
+}
+
+/**
+ * 获取(缓存)组件详情
+ * @param {string} _id 组件id
+ * @returns 
+ */
+export async function getComponentInfo(_id) {
+  const redis = getRedis();
+  let doc = null;
+  const key = `api:v1:component:${_id}:detail`
+  if (redis) {
+    const str = await redis.get(key);
+    try {
+      doc = JSON.parse(str);
+      return doc;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  doc = await models.MComponent.getInfo({ where: { _id }, lean: true })
+  if (doc) {
+    await redis.set(key, JSON.stringify(doc));
+    await redis.expire(key, 60 * 60 * 6)
+  }
+  return doc;
+}
+
+/**
+ * 获取(缓存)组件构成的模块详情
+ * @param {string} _id 
+ * @returns 
+ */
+export async function getComponentTreeInfo(_id) {
+  const redis = getRedis();
+  let doc = null;
+  const key = `api:v1:component_module:${_id}:detail`
+  if (redis) {
+    const str = await redis.get(key);
+    try {
+      if (str) {
+        doc = JSON.parse(str);
+        return doc;
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  doc = await getTree(_id)
+  if (redis && doc) {
+    await redis.set(key, JSON.stringify(doc));
+    await redis.expire(key, 60 * 60 * 6)
+  }
+  return doc;
 }
