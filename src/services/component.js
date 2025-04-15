@@ -99,3 +99,18 @@ export async function getComponentTreeInfo(_id) {
   }
   return doc;
 }
+
+export async function remCacheByIDs(ids) {
+  const redis = getRedis()
+  const tree_ids = (await models.MComponent.model.aggregate([
+    { $match: { _id: { $in: ids } } },
+    { $group: { _id: "$tree_id" } }
+  ]));
+  if (ids.length) {
+    let multi = redis.multi();
+    tree_ids.forEach(v => {
+      multi.del(`api:v1:component_module:${v._id}:detail`)
+    });
+    await multi.exec();
+  }
+}

@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import _ from 'lodash'
 import { v4 } from 'uuid'
-
+import { remCacheByIDs } from '#services/component.js';
 
 const router = new Router({
   prefix: '',
@@ -28,6 +28,7 @@ router.post('/', async ({ state, request, response, models }) => {
   data._id = v4();
   data.project_id = state.project_id
   const item = await models.MComponent.create(data);
+  await remCacheByIDs([data._id])
   response.success({ item });
 });
 
@@ -45,6 +46,7 @@ router.post('/batch', async ({ request, response, models }) => {
   });
   if (arr.length) {
     const r = await models.MComponent.model.bulkWrite(arr);
+    await remCacheByIDs(info.map(v => v._id))
   }
   response.success();
 });
@@ -52,6 +54,7 @@ router.post('/batch', async ({ request, response, models }) => {
 router.delete('/batch', async ({ request, response, models }) => {
   const ids = request.query.ids.toString().split(',');
   await models.MComponent.model.deleteMany({ _id: { $in: ids } });
+  await remCacheByIDs(ids)
   response.success();
 });
 
@@ -60,11 +63,13 @@ router.put('/:id', async ({ params, request, response, models }) => {
   const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs', 'updatedAt']);
   data.updatedAt = new Date();
   const item = await models.MComponent.update({ where, data });
+  await remCacheByIDs([params.id])
   response.success(item);
 });
 
 router.delete('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
+  await remCacheByIDs([params.id])
   await models.MComponent.destroy({ where });
   response.success();
 });

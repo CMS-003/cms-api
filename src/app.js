@@ -44,7 +44,7 @@ app.response.throwBiz = function (bizName, params) {
 }
 
 app.request.paginate = function (fn) {
-  const qs = app.request.query, hql = {};
+  const qs = this.query, hql = {};
   const page = qs[constant.SYSTEM.REQ_PAGE] || '1';
   const limit = qs[constant.SYSTEM.REQ_LIMIT] || '20';
   hql.page = Math.max(parseInt(_.isArray(page) ? page[0] : page), 1);
