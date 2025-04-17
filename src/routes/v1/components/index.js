@@ -53,8 +53,8 @@ router.post('/batch', async ({ request, response, models }) => {
 
 router.delete('/batch', async ({ request, response, models }) => {
   const ids = request.query.ids.toString().split(',');
-  await models.MComponent.model.deleteMany({ _id: { $in: ids } });
   await remCacheByIDs(ids)
+  await models.MComponent.model.deleteMany({ _id: { $in: ids } });
   response.success();
 });
 
@@ -62,8 +62,8 @@ router.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
   const data = _.pick(request.body, ['name', 'desc', 'cover', 'icon', 'title', 'available', 'status', 'order', 'type', 'project_id', 'template_id', 'parent_id', 'attrs', 'updatedAt']);
   data.updatedAt = new Date();
-  const item = await models.MComponent.update({ where, data });
   await remCacheByIDs([params.id])
+  const item = await models.MComponent.update({ where, data });
   response.success(item);
 });
 

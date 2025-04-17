@@ -9,9 +9,10 @@ const __filename = join(constant.PATH.SRC, 'server.js')
 const __dirname = constant.PATH.SRC;
 
 const require = module.createRequire(__filename);
+const defaultIdentifier = pathToFileURL(__filename).toString();
 
 
-export default async function vmRunCode(code, identifier = "vm://main") {
+export default async function vmRunCode(code, identifier = defaultIdentifier) {
   // 创建沙盒上下文
   const sandbox = {
     require,          // 注入 require 函数
