@@ -1,40 +1,24 @@
-/*
- * Node.js Base62 ID Generator
- * Format: <timestamp>-<machineId>-<random>-<checksum>
- *  - timestamp: Unix time in seconds encoded in Base62
- *  - machineId: integer machine identifier encoded in Base62
- *  - random: random Base62 string of defined length
- *  - checksum: single Base62 character, sum of all previous char indices mod 62
- */
 
-const crypto = require('crypto');
-
-// Base62 character set: 0-9, A-Z, a-z
+// Base62 字符集（0-9, A-Z, a-z）
 const BASE62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 const BASE = BASE62.length;
-const FIXED_LENGTH = 6; // Fixed length for Base62 encoding
 
-/**
- * Encode a non-negative integer to Base62 string, left-padded to 6 characters
- * @param {number} num - integer >= 0
- * @returns {string}
- */
-function encodeBase62(num, len = FIXED_LENGTH) {
-  if (num === 0) return BASE62[0].repeat(len);
+// 2000年1月1日 00:00:00 的 Unix 时间戳（毫秒）
+const EPOCH = 946684800000;
+
+// 将整数编码为 Base62 字符串
+function encodeBase62(num) {
+  if (num === 0) return BASE62[0];
   let result = '';
   while (num > 0) {
     const rem = num % BASE;
     result = BASE62[rem] + result;
     num = Math.floor(num / BASE);
   }
-  return result.padStart(len, BASE62[0]);
+  return result;
 }
 
-/**
- * Decode a Base62 string (assumed to be padded to 6 characters) back to integer
- * @param {string} str - Base62 encoded string
- * @returns {number}
- */
+// 将 Base62 字符串解码为整数
 function decodeBase62(str) {
   let num = 0;
   for (const char of str) {
@@ -45,77 +29,92 @@ function decodeBase62(str) {
   return num;
 }
 
-/**
- * Generate a secure random Base62 string of given length
- * @param {number} length
- * @returns {string}
- */
-function randomBase62(length) {
-  const bytes = crypto.randomBytes(length);
-  let str = '';
+// 生成 3 位的随机 Base62 字符串
+function generateRandomBase62(length = 3) {
+  let randStr = '';
   for (let i = 0; i < length; i++) {
-    // Map byte to 0..61
-    const idx = bytes[i] % BASE;
-    str += BASE62[idx];
+    randStr += BASE62[Math.floor(Math.random() * BASE)];
   }
-  return str;
+  return randStr;
 }
 
 /**
- * Generate an ID: <ts>-<machine>-<random>-<checksum>
- * @param {number} machineId - integer machine identifier
- * @param {number} randomLength - length of random segment (default 3)
- * @returns {string}
+ * 生成 ID
+ * @param {number} machineId 
+ * @param {Date|number} targetTime 
+ * @returns 
  */
-function suid(machineId = 1, randomLength = 3) {
-  // 1. timestamp in seconds
-  const ts = Math.floor(Date.now() / 1000);
-  const tsStr = encodeBase62(ts);
+export function suid(machineId = 1, targetTime = Date.now()) {
+  //const targetTime = Date.now(); // 默认使用当前时间
+  if (typeof targetTime === 'string') {
+    targetTime = new Date(targetTime).getTime();
+  }
+  // @ts-ignore
+  let timeDifference = targetTime - EPOCH;
 
-  // 2. machineId
-  const machineStr = encodeBase62(machineId, 2);
+  // 判断时间是否为负数
+  const isNegative = timeDifference < 0;
+  if (isNegative) {
+    timeDifference = Math.abs(timeDifference);
+  }
 
-  // 3. random part
-  const randStr = randomBase62(randomLength);
+  // 将时间差转为 Base62 字符串
+  const timeStr = encodeBase62(timeDifference);
 
-  // 4. checksum: sum of indices
-  const payload = tsStr + machineStr + randStr;
+  // 机器码转为 Base62
+  const machineStr = encodeBase62(machineId);
+
+  // 生成 3 位的随机数
+  const randomStr = generateRandomBase62(3);
+
+  // 校验位：计算校验位为所有字符的索引和 mod 62 后的字符
+  const payload = (isNegative ? '-' : '') + timeStr + '-' + machineStr + '-' + randomStr;
   let sum = 0;
-  for (const c of payload) sum += BASE62.indexOf(c);
-  const checksumChar = BASE62[sum % BASE];
+  for (const char of payload) {
+    sum += BASE62.indexOf(char);
+  }
+  const checksum = BASE62[sum % BASE];
 
-  return `${tsStr}${machineStr}${randStr}${checksumChar}`;
+  // 返回 ID
+  return `${(isNegative ? '-' : '')}${timeStr.split('').reverse().join('')}-${machineStr}${randomStr}${checksum}`;
 }
 
 /**
- * Parse ID string and return the original timestamp (in seconds)
- * Validates checksum
- * 需要修复,-连接符删除了
- * @param {string} idStr
- * @returns {number} timestamp in seconds
- * @throws {Error} if format or checksum invalid
+ * 解析 ID
+ * @param {string} id 
+ * @returns 
  */
-function parseId(idStr) {
-  const parts = idStr.split('-');
-  if (parts.length !== 4) {
+export function parseId(id) {
+  const regex = /^(-?)([A-Za-z0-9]+)-([A-Za-z0-9]+)([A-Za-z0-9]{3})([A-Za-z0-9])$/;
+  const match = id.match(regex);
+
+  if (!match) {
     throw new Error('Invalid ID format');
   }
 
-  const [tsStr, machineStr, randStr, checksumChar] = parts;
-  const payload = tsStr + machineStr + randStr;
-
-  // verify checksum
+  const [, negative, timeStr, machineStr, randomStr, checksum] = match;
+  const reverse_time = timeStr.split('').reverse().join('');
+  // 校验位验证
+  const payload = (negative ? '-' : '') + reverse_time + '-' + machineStr + '-' + randomStr;
   let sum = 0;
-  for (const c of payload) sum += BASE62.indexOf(c);
-  if (checksumChar !== BASE62[sum % BASE]) {
-    throw new Error('Checksum mismatch');
+  for (const char of payload) {
+    sum += BASE62.indexOf(char);
+  }
+  if (BASE62[sum % BASE] !== checksum) {
+    throw new Error('Invalid checksum');
   }
 
-  // decode timestamp
-  return decodeBase62(tsStr);
-}
+  // 解析时间
+  const time = decodeBase62(reverse_time);
+  const targetTime = EPOCH + time;
 
-// Export for reuse
-export {
-  suid
+  // 解析机器码和随机数
+  const machineId = decodeBase62(machineStr);
+  const randomNum = decodeBase62(randomStr);
+
+  return {
+    time: targetTime,
+    machine: machineId,
+    random: randomNum
+  };
 }
