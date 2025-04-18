@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import _ from 'lodash'
 import { v4 } from 'uuid'
 import verify from '#middleware/verify.js'
+import { getRedis } from '#utils/redis.js';
 
 const router = new Router();
 
@@ -30,6 +31,20 @@ router.post('/', verify, async ({ models, state, request, response }) => {
 router.put('/:template_id', verify, async ({ models, params, request, response }) => {
   request.body.updatedAt = new Date();
   await models.MTemplate.update({ where: { _id: params.template_id }, data: { $set: request.body } })
+  response.success()
+})
+
+router.del('/:template_id', verify, async ({ models, params, request, response }) => {
+  const tree_ids = await models.MComponent.aggregate([
+    { $match: { template_id: params.template_id } },
+    { $group: { _id: "$tree_id" } }
+  ]);
+  await models.MComponent.destroy({ where: { template_id: params.template_id } })
+  await models.MTemplate.destroy({ where: { _id: params.template_id } })
+  const redis = getRedis();
+  if (redis && tree_ids.length) {
+    await redis.del(tree_ids.map(v => `api:v1:component_module:${v._id}:detail`))
+  }
   response.success()
 })
 

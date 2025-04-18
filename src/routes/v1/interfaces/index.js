@@ -8,8 +8,6 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
   const hql = request.paginate(opt => {
     if (request.query.status) {
       opt.where.status = parseInt(request.query.status.toString(), 10)
-    } else {
-      opt.where.status = { $ne: 2 }
     }
   });
   const results = await models.MInterface.getList(hql)
@@ -36,7 +34,7 @@ router.put('/:_id', async (ctx) => {
 router.del('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
-  await models.MInterface.update({ where, data: { $set: { status: 2 } } });
+  await models.MInterface.destroy({ where });
   response.success();
 });
 

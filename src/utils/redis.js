@@ -12,7 +12,10 @@ export async function initRedis() {
   }).connect();
   return redis;
 }
-
+/**
+ * 创建一个 Redis 客户端
+ * @returns {ReturnType<typeof createClient> | null} Redis 客户端实例
+ */
 export function getRedis() {
   return redis;
 }
