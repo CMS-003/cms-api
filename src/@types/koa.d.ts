@@ -5,6 +5,7 @@ import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
 import schema from 'schema'
+import { OPT } from 'schema/dist/base';
 
 type dbs = { [key: string]: Connection };
 type models = {
@@ -25,7 +26,7 @@ declare module 'koa' {
     models: models;
     loadConfig: Function;
     mailer: Mailer;
-    scheduler: Scheduler;    
+    scheduler: Scheduler;
     getResourceByCache: (_id: string, all?: boolean) => any;
   };
 

@@ -15,11 +15,12 @@ router.get('/:id/components', async ({ params, request, models, response }) => {
   hql.where = { template_id: template._id, parent_id: '' };
   hql.lean = true;
   hql.sort = { order: 1 }
-  const items = await models.MComponent.getList(hql);
-  for (let i = 0; i < items.length; i++) {
-    const tree = await getComponentTreeInfo(items[i]._id);
+  const docs = await models.MComponent.getList(hql);
+  const items = [];
+  for (let i = 0; i < docs.length; i++) {
+    const tree = await getComponentTreeInfo(docs[i]._id);
     if (tree) {
-      items[i].children = tree.children;
+      items.push(tree)
     }
   }
   template.children = items;

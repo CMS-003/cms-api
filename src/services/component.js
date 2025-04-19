@@ -94,6 +94,9 @@ export async function getComponentTreeInfo(_id) {
   }
   doc = await getTree(_id)
   if (redis && doc) {
+    const ids = collectionResourceID(doc);
+    const resources = await models.MResource.model.find({ _id: { $in: ids } }).lean(true);
+    fillResources(doc, _.keyBy(resources, '_id'));
     await redis.set(key, JSON.stringify(doc));
     await redis.expire(key, 60 * 60 * 6)
   }

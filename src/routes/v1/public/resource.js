@@ -15,16 +15,21 @@ route.get('/resource/:_id', async (ctx) => {
 route.get('/resources', async ({ request, query, params, models, response }) => {
   // @ts-ignore
   const qid = query.qid.split(',');
-  const q = request.paginate((hql) => {
+
+  const sql = request.paginate((hql) => {
     hql.sort = { updatedAt: -1 }
   })
-  const queries = await models.MComponent.getAll({ where: { _id: { $in: qid } }, attrs: { query: 1 }, lean: true });
-  queries.forEach(v => {
-    if (v.query && !_.isEmpty(v.query.where)) {
-      _.assign(q.where, v.query.where)
+  const queries = await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true })
+  queries.forEach(q => {
+    if (q.type === 'where') {
+      Object.assign(sql.where, JSON.parse(q.value))
+    } else if (q.type === 'sort') {
+      sql.sort = JSON.parse(q.value)
+    } else if (q.type === 'limit') {
+      sql.limit = parseInt(q.value)
     }
-  });
-  const items = await models.MResource.getList(q)
+  })
+  const items = await models.MResource.getList(sql)
   response.success({ items })
 })
 
