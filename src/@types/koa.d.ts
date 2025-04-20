@@ -4,7 +4,7 @@ import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
-import schema from 'schema'
+import schema from './model'
 import { OPT } from 'schema/dist/base';
 
 type dbs = { [key: string]: Connection };

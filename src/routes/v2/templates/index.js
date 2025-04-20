@@ -23,6 +23,7 @@ router.get('/:id/components', async ({ params, request, models, response }) => {
       items.push(tree)
     }
   }
+  // @ts-ignore
   template.children = items;
   response.success(template);
 })
