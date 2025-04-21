@@ -173,6 +173,7 @@ export interface IUser {
 }
 export interface IResource {
   _id: string;
+  type: string;
   title: string;
   content: string;
   desc: string;
@@ -191,6 +192,12 @@ export interface IResource {
   createdAt: Date;
   updatedAt: Date;
   size: number;
+  chapters?: IMediaChapter[];
+  images?: IMediaImage[];
+  videos?: IMediaVideo[];
+  audios?: IMediaAudio[];
+  actors?: any[];
+  counter?: { [key: string]: number };
 }
 export interface IMediaChapter {
   _id: string;

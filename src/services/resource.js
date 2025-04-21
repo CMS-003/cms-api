@@ -14,17 +14,17 @@ export async function getResourceInfo(res_id, all = false) {
   } else {
     doc = await MResource.model.findOne({ _id: res_id }).lean(true);
     if (doc) {
-      if (doc.source_type !== 'novel') {
+      if (doc.type !== 'novel') {
         doc.chapters = await MMediaChapter.model.find({ res_id }, { content: 0 }).sort({ nth: 1 }).lean(true);
       } else {
         doc.chapters = [];
       }
-      if (doc.spider_id === 'pixiv_image') {
+      if (doc.type === 'pixiv') {
         doc.images = await MMediaPixiv.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       } else {
         doc.images = await MMediaImage.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       }
-      if (doc.source_type === 'movie' && !_.isEmpty(doc.actors)) {
+      if (doc.type === 'movie' && !_.isEmpty(doc.actors)) {
         const actors = await MUser.model.find({ _id: { $in: doc.actors.map(a => a._id) } }, { salt: 0, password: 0, source_id: 0, spider_id: 0 }).lean(true);
         doc.actors = actors.map(a => ({ _id: a._id, name: a.nickname, avatar: a.avatar }));
       }

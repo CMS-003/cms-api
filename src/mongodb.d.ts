@@ -1,6 +1,6 @@
 import { Connection } from 'mongoose';
-import schema from 'schema'
-import { IJsonSchema } from 'schema/dist/@types/schema';
+import schema from '#@types/model'
+import { IJsonSchema } from '#@types/document';
 
 declare const MODEL: {
   [K in keyof typeof schema]: typeof schema[K] extends new (...args: any[]) => infer Instance ? Instance : never;

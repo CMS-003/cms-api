@@ -6,7 +6,7 @@ import fsa from 'node:fs/promises'
 const file_doc = constant.PATH.SRC + '/@types/document.d.ts';
 const file_model = constant.PATH.SRC + '/@types/model.d.ts'
 
-function schema2type(schema, level = 1) {
+function schema2type(schema, Name, level = 1) {
   let text = '';
   const pad = ''.padStart(level * 2, ' ');
   if (schema.type === 'Object') {
@@ -14,7 +14,15 @@ function schema2type(schema, level = 1) {
       return 'object'
     } else {
       for (let k in schema.properties) {
-        text += pad + k + ': ' + schema2type(schema.properties[k], level + 1) + ';\n'
+        text += pad + k + ': ' + schema2type(schema.properties[k], '', level + 1) + ';\n'
+      }
+      if (Name === 'Resource') {
+        text += '  chapters?: IMediaChapter[];\n'
+        text += '  images?: IMediaImage[];\n'
+        text += '  videos?: IMediaVideo[];\n'
+        text += '  audios?: IMediaAudio[];\n'
+        text += '  actors?: any[];\n'
+        text += '  counter?: { [key: string]: number };\n'
       }
     }
   } else if (schema.type === 'String') {
@@ -28,7 +36,7 @@ function schema2type(schema, level = 1) {
   } else if (schema.type === 'Mixed') {
     return 'object';
   } else if (schema.type === 'Array') {
-    return schema2type(schema.items[0], level + 1) + '[]';
+    return schema2type(schema.items[0], '', level + 1) + '[]';
   }
   return `{\n${text.trimEnd()}\n${''.padStart((level - 1) * 2, ' ')}}${level === 1 ? '\n' : ''}`;
 }
@@ -57,7 +65,7 @@ declare class MConnection extends Base<IConnection> {
   for (let i = 0; i < schemas.length; i++) {
     const doc = schemas[i];
     const Name = doc.name.replace(/^M/, '');
-    fss.writeFileSync(file_doc, `export interface I${Name} ${schema2type(doc.schema)}`, { flag: 'a', encoding: 'utf-8' })
+    fss.writeFileSync(file_doc, `export interface I${Name} ${schema2type(doc.schema, Name)}`, { flag: 'a', encoding: 'utf-8' })
     fss.writeFileSync(file_model, `
 declare class M${Name} extends Base<I${Name}> {
   constructor(db: mongoose.Connection, params?: CustomParams<I${Name}>);
