@@ -39,6 +39,7 @@ export interface IComponent {
     };
     action: string;
     action_url: string;
+    in: string;
   };
   api: string;
   resources: {

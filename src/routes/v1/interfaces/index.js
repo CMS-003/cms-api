@@ -9,6 +9,7 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
     if (request.query.status) {
       opt.where.status = parseInt(request.query.status.toString(), 10)
     }
+    opt.sort = { updatedAt: -1 }
   });
   const results = await models.MInterface.getList(hql)
   response.success({ items: results });
@@ -25,7 +26,9 @@ router.post('/', async ({ models, request, response }) => {
 router.put('/:_id', async (ctx) => {
   const { params, models, request, response } = ctx;
   const where = { _id: params._id };
-  request.body.updatedAt = new Date();
+  if (request.query.update_time === '1') {
+    request.body.updatedAt = new Date();
+  }
   await models.MInterface.update({ where, data: { $set: request.body } });
   const result = await models.MInterface.getInfo({ where, lean: true })
   response.success(result);
