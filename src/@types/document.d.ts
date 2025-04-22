@@ -409,12 +409,6 @@ export interface ITemplate {
   order: number;
   attrs: object;
   style: object;
-  fields: {
-      widget: string;
-      field: string;
-      dataType: string;
-      dataValue: object;
-    }[];
   createdAt: Date;
   updatedAt: Date;
 }

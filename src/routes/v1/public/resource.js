@@ -12,7 +12,7 @@ route.get('/resource/:_id', async (ctx) => {
   ctx.response.success(doc)
 })
 
-route.get('/resources', async ({ request, query, params, models, response }) => {
+route.get('/:app/resources', async ({ request, query, params, models, response }) => {
   // @ts-ignore
   const qid = query.qid.split(',');
 
@@ -29,7 +29,11 @@ route.get('/resources', async ({ request, query, params, models, response }) => 
       sql.limit = parseInt(q.value)
     }
   })
-  const items = await models.MResource.getList(sql)
+  let model = models.MResource;
+  if (params.app === 'demo') {
+    model = models.MResourceDemo;
+  }
+  const items = await model.getList(sql)
   response.success({ items })
 })
 
