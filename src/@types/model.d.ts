@@ -13,7 +13,7 @@ declare class MConnection extends Base<IConnection> {
   constructor(db: mongoose.Connection, params?: CustomParams<IConnection>);
 }
 
-import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, ILog, ISns, IComponentType, IProject, ITemplate } from './document.d.js';
+import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, ILog, ISns, IComponentType, IProject, ITemplate, IResourceDemo } from './document.d.js';
 
 declare class MRecord extends Base<IRecord> {
   constructor(db: mongoose.Connection, params?: CustomParams<IRecord>);
@@ -138,4 +138,8 @@ declare class MProject extends Base<IProject> {
 declare class MTemplate extends Base<ITemplate> {
   constructor(db: mongoose.Connection, params?: CustomParams<ITemplate>);
 }
-export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MLog, MSns, MComponentType, MProject, MTemplate }
+
+declare class MResourceDemo extends Base<IResourceDemo> {
+  constructor(db: mongoose.Connection, params?: CustomParams<IResourceDemo>);
+}
+export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MLog, MSns, MComponentType, MProject, MTemplate, MResourceDemo }

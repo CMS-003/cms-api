@@ -16,7 +16,7 @@ function schema2type(schema, Name, level = 1) {
       for (let k in schema.properties) {
         text += pad + k + ': ' + schema2type(schema.properties[k], '', level + 1) + ';\n'
       }
-      if (Name === 'Resource') {
+      if (Name.startsWith('Resource')) {
         text += '  chapters?: IMediaChapter[];\n'
         text += '  images?: IMediaImage[];\n'
         text += '  videos?: IMediaVideo[];\n'

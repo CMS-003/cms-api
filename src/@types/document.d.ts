@@ -418,3 +418,31 @@ export interface ITemplate {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface IResourceDemo {
+  _id: string;
+  type: string;
+  title: string;
+  content: string;
+  desc: string;
+  tags: string[];
+  uid: string;
+  uname: string;
+  status: number;
+  publishedAt: Date;
+  country: string;
+  lang: string;
+  cspn: string;
+  types: string[];
+  poster: string;
+  thumbnail: string;
+  alias: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  size: number;
+  chapters?: IMediaChapter[];
+  images?: IMediaImage[];
+  videos?: IMediaVideo[];
+  audios?: IMediaAudio[];
+  actors?: any[];
+  counter?: { [key: string]: number };
+}
