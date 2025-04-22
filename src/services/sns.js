@@ -1,16 +1,15 @@
 import config from '../config/index.js'
 import models from '../mongodb.js'
 import userService from '../services/user.js'
-import superagent from 'superagent'
-import superagentProxy from "superagent-proxy"
+import got from 'got'
+import { HttpProxyAgent } from 'http-proxy-agent';
 import { google } from 'googleapis'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
-import AlipaySdk from 'alipay-sdk';
+import { AlipaySdk } from 'alipay-sdk';
 
-superagentProxy(superagent);
-
+const agent = new HttpProxyAgent(process.env.HTTP_PROXY);
 const scopes = [
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/youtube.readonly',
@@ -73,13 +72,33 @@ export default {
       let result;
       let detail;
       console.log('start get token')
-      const respToken = await superagent.post(`https://github.com/login/oauth/access_token?client_id=${sns_config.client_id}&client_secret=${sns_config.client_secret}&code=${ctx.query.code}`).proxy(process.env.HTTP_PROXY).set('accept', 'application/json');
+      const respToken = await got.post({
+        url: `https://github.com/login/oauth/access_token?client_id=${sns_config.client_id}&client_secret=${sns_config.client_secret}&code=${ctx.query.code}`,
+        responseType: 'json',
+        agent: {
+          http: agent,
+          https: agent,
+        },
+        headers: {
+          accept: 'application/json'
+        }
+      });
       if (respToken.statusCode === 200) {
         result = respToken.body;
       }
       console.log('got token start get detail')
       const access_token = result.access_token
-      const respDetail = await superagent.get('https://api.github.com/user').set({ accept: 'application/json', Authorization: `token ${access_token}`, Origin: config.page_public_url, 'User-Agent': 'max-89757' }).proxy(process.env.HTTP_PROXY);
+      const respDetail = await got.get({
+        url: 'https://api.github.com/user',
+        responseType: 'json',
+        agent: { http: agent, https: agent },
+        headers: {
+          accept: 'application/json',
+          Authorization: `token ${access_token}`,
+          Origin: config.page_public_url,
+          'User-Agent': 'max-89757',
+        }
+      })
       if (respDetail.statusCode === 200) {
         detail = respDetail.body;
       }
@@ -142,19 +161,29 @@ export default {
       }
     } else if (type === 'sns_weibo') {
       const code = ctx.query.code;
-      const resp = await superagent.post(`https://api.weibo.com/oauth2/access_token`).query({
-        client_id: sns_config.app_id,
-        client_secret: sns_config.app_secret,
-        grant_type: 'authorization_code',
-        code,
-        redirect_uri: sns_config.redirect_uri,
+      const resp = await got.post({
+        url: `https://api.weibo.com/oauth2/access_token`,
+        responseType: 'json',
+        agent: { http: agent, https: agent },
+        searchParams: {
+          client_id: sns_config.app_id,
+          client_secret: sns_config.app_secret,
+          grant_type: 'authorization_code',
+          code,
+          redirect_uri: sns_config.redirect_uri,
+        }
       });
       if (resp.statusCode === 200) {
-        const resp2 = await superagent.get(`https://api.weibo.com/2/users/show.json`).query({
-          access_token: resp.body.access_token,
-          uid: resp.body.uid,
+        const resp2 = await got.get({
+          url: `https://api.weibo.com/2/users/show.json`,
+          responseType: 'json',
+          agent: { http: agent, https: agent },
+          searchParams: {
+            access_token: resp.body.access_token,
+            uid: resp.body.uid,
+          }
         });
-        if (resp2.status === 200) {
+        if (resp2.statusCode === 200) {
           sns_info = {
             sns_id: resp2.body.id,
             sns_type: 'weibo',
@@ -200,12 +229,15 @@ export default {
       return;
     }
     if (type === 'github') {
-      const resp = await superagent.del(`https://api.github.com/applications/${sns_config.client_id}/grants/${sns_info.access_token}`)
-        .proxy(process.env.HTTP_PROXY)
-        .set({
+      const resp = await got.delete({
+        url: `https://api.github.com/applications/${sns_config.client_id}/grants/${sns_info.access_token}`,
+        responseType: 'json',
+        agent: { http: agent, https: agent },
+        headers: {
           Authorization: `Basic ${Buffer.from(`${sns_config.client_id}:${sns_config.client_secret}`).toString('base64')}`,
           Accept: 'application/vnd.github.v3+json',
-        });
+        },
+      })
       return;
     } else if (type === 'google') {
       const oauth2Client = new google.auth.OAuth2(sns_config.client_id, sns_config.client_secret, sns_config.redirect_uris[0]);
