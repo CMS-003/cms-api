@@ -6,6 +6,7 @@ import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
 import * as schema from './model.d.ts'
 import { OPT } from 'schema/dist/base';
+import { createClient } from 'redis'
 
 type dbs = { [key: string]: Connection };
 type models = {
@@ -24,6 +25,7 @@ declare module 'koa' {
     };
     dbs: dbs;
     models: models;
+    redis: ReturnType<createClient>;
     loadConfig: Function;
     mailer: Mailer;
     scheduler: Scheduler;
@@ -36,6 +38,7 @@ declare module 'koa' {
     };
     dbs: DBS;
     models: MODEL;
+    redis: ReturnType<createClient>;
     Response: BaseResponse;
     loadConfig: Function;
     mailer: Mailer;

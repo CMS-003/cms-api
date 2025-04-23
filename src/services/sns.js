@@ -1,6 +1,6 @@
 import config from '../config/index.js'
 import models from '../mongodb.js'
-import userService from '../services/user.js'
+import * as userService from '../services/user.js'
 import got from 'got'
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { google } from 'googleapis'
@@ -48,7 +48,7 @@ export default {
         const user = await models.MUser.getInfo({ where: { account: data.account } });
         if (user.isEqual(data.value)) {
           await models.MSns.update({ where: { sns_id: sns.sns_id, sns_type: sns.sns_type }, data: { $set: { user_id: user._id } } });
-          const access_token = userService.genToken(user);
+          const access_token = await userService.createTokens(user);
           return access_token;
         }
       } else if (data.type === 'phone') {
@@ -214,8 +214,8 @@ export default {
         return ctx.redirect(config.page_public_url + '/oauth/bind?bind_token=' + bind_token);
       }
       const user = await models.MUser.getInfo({ where: { _id: sns.user_id }, lean: true });
-      const token = await userService.genToken(user)
-      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + token);
+      const tokens = await userService.createTokens(user)
+      return ctx.redirect(config.page_public_url + '/oauth/success?access_token=' + tokens.access_token);
     } else {
       return ctx.redirect(config.page_public_url + '/oauth/fail')
     }
@@ -223,8 +223,8 @@ export default {
   cancel: async (ctx, type) => {
     const sns_config = config['sns_' + type];
     const user = ctx.state.user;
-    await models.MSns.model.updateOne({ user_id: user._id, sns_type: type }, { $set: { status: 0 } });
-    const sns_info = await models.MSns.getInfo({ where: { user_id: user._id, sns_type: type }, lean: true })
+    await models.MSns.model.updateOne({ user_id: user.id, sns_type: type }, { $set: { status: 0 } });
+    const sns_info = await models.MSns.getInfo({ where: { user_id: user.id, sns_type: type }, lean: true })
     if (!sns_config || !sns_info) {
       return;
     }

@@ -49,7 +49,7 @@ loader({ dir: path.join(__dirname, '../config/error-codes') }, (info) => {
     loader({ dir: fullpath }, (detail) => {
       if (detail.ext) {
         const name = detail.filename.toUpperCase();
-        import(pathToFileURL(detail.fullpath)).then(data => {
+        import(detail.fullpath).then(data => {
           lib[name] = data.default;
         })
       }

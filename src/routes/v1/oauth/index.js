@@ -4,6 +4,7 @@ import { v4 } from 'uuid'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import randomstring from 'randomstring'
+import * as userService from '#services/user.js'
 import snsService from '#services/sns.js'
 import constant from '#constant.js'
 
@@ -18,9 +19,8 @@ router.post('/sign-in', async ({ models, response, request, config }, next) => {
     }
     if (doc && doc.pass === crypto.createHmac('sha1', doc.salt).update(value).digest('hex').toString()) {
       try {
-        const info = _.pick(doc, ['_id', 'nickname', 'account', 'avatar', 'status']);
-        const access_token = jwt.sign(info, config.USER_TOKEN_SECRET, { expiresIn: '2h', issuer: 'cms-manage' });
-        response.success({ access_token, type: 'Bearer' });
+        const tokens = await userService.createTokens(doc)
+        response.success(tokens);
       } catch (e) {
         // TokenExpiredError,JsonWebTokenError
         response.throwBiz('AUTH.VERIFY_FAIL');
@@ -45,6 +45,23 @@ router.post('/sign-in', async ({ models, response, request, config }, next) => {
     response.fail();
   }
 });
+
+router.post('/refresh', async ({ config, request, response, models, redis }) => {
+  try {
+    if (!request.body.refresh_token) return response.fail({ message: "No refresh_token" });
+    const payload = jwt.verify(request.body.refresh_token, config.USER_RETOKEN_SECRET);
+    // @ts-ignore
+    const _id = payload._id;
+    const user = await models.MUser.getInfo({ where: { _id }, lean: true });
+    if (!user || user.status !== 1) {
+      return response.fail();
+    }
+    const tokens = await userService.refreshToken(payload, user, request.body.refresh_token);
+    response.success(tokens);
+  } catch (e) {
+    response.fail(e)
+  }
+})
 
 router.post('/sign-up', async ({ request, models, response }) => {
   const info = request.body;
@@ -142,12 +159,8 @@ router.post('/code', async ({ mailer, models, request, response }) => {
 
 router.post('/bind', async ({ query, request, response }) => {
   const { bind_token, ...data } = request.body;
-  const access_token = await snsService.bind(bind_token, data)
-  if (access_token) {
-    response.success({ access_token, type: 'Bearer' });
-  } else {
-    response.fail();
-  }
+  const tokens = await snsService.bind(bind_token, data)
+  response.success(tokens);
 })
 
 export default router

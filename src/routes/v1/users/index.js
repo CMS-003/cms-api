@@ -1,11 +1,17 @@
 import Router from 'koa-router'
 import verify from '#middleware/verify.js'
+import * as userService from '#services/user.js';
 
 const router = new Router();
 
-router.post('/sign-out', async ({ models, response }) => {
-  const items = await models.MProject.getList({});
-  response.success({ items });
+router.post('/sign-out', verify, async ({ models, state, request, response }) => {
+  await userService.signOut(state.user, request.body.refresh_token);
+  response.success();
+})
+
+router.post('/refresh', verify, async ({ request, state, response }) => {
+  const tokens = await userService.refreshToken(state.user, request.body.refresh_token)
+  response.success(tokens);
 })
 
 router.get('/self', verify, async ({ models, params, req, response }) => {
@@ -17,7 +23,7 @@ router.get('/self', verify, async ({ models, params, req, response }) => {
 
 router.get('/profile', verify, async ({ models, params, req, response, state }) => {
   const { MUser } = models;
-  const where = { _id: state.user._id };
+  const where = { _id: state.user.id };
   const item = await MUser.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
   response.success({ item });
 })

@@ -12,7 +12,7 @@ router.post('/sns/:type', async ({ models, response }) => {
 
 router.get('/sns', verify, async ({ models, params, req, response, state }) => {
   const { MUser, MSns } = models;
-  const where = { user_id: state.user._id };
+  const where = { user_id: state.user.id };
   const docs = await MSns.getList({ where, lean: true, attrs: { detail: 0 } });
   const map = _.keyBy(docs, 'sns_type');
   const items = [];

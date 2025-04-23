@@ -52,6 +52,7 @@ export interface IComponent {
   createdAt: Date;
   updatedAt: Date;
   queries: string[];
+  children: IComponent[];
 }
 export interface ICapsule {
   _id: string;

@@ -24,6 +24,9 @@ function schema2type(schema, Name, level = 1) {
         text += '  actors?: any[];\n'
         text += '  counter?: { [key: string]: number };\n'
       }
+      if (Name === 'Component') {
+        text += '  children: IComponent[];\n';
+      }
     }
   } else if (schema.type === 'String') {
     return 'string';
