@@ -10,8 +10,9 @@ router.get('/system', async ({ models, response, request }) => {
   if (request.query.type) {
     hql.where = { type: request.query.type }
   }
+  const total = await models.MLog.count(hql);
   const items = await models.MLog.getList(hql);
-  response.success({ items });
+  response.success({ items, total });
 })
 
 router.del('/system/:id', async ({ params, request, response, models }) => {
