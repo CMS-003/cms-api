@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import schema from '#@types/model'
+import * as schema from '#@types/model.d.ts'
 import { IJsonSchema } from '#@types/document';
 
 declare const MODEL: {

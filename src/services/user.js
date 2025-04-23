@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import config from '#config/index.js'
 import { getRedis } from '#utils/redis.js';
 import { BizError } from '#utils/bizError.js'
+import models from '#mongodb.js';
 
 /**
  * @typedef {import('jsonwebtoken').JwtPayload} JwtPayload
@@ -73,16 +74,29 @@ export async function verifyToken(access_token) {
     throw e;
   }
 }
-export async function refreshToken(payload, user, platform = 'web', device_id = '') {
+export async function refreshToken(refresh_token, platform = 'web', device_id = '') {
   const redis = getRedis();
+  const payload = jwt.decode(refresh_token, { json: true });
+  if (!payload || !payload.exp || !payload.user_id || !payload.jti) {
+    throw new BizError("AUTH.tokenFail");
+  }
+  // 判断是否过期
+  if (payload.exp < Math.floor(Date.now() / 1000)) {
+    throw new BizError("AUTH.tokenExpired")
+  }
   const map = await redis.hGetAll(`token:refresh:jti:${payload.jti}`);
-  if (_.isEmpty(map)) {
+  if (_.isEmpty(map) || !map.user_id) {
     throw new BizError('AUTH.tokenFail')
+  }
+  const user = await models.MUser.getInfo({ where: { _id: map.user_id }, lean: true });
+  if (!user || user.status !== 1) {
+    throw new BizError('USER.AccountNotFound')
   }
   // 刷新 access_token 时删除旧的
   if (map.access_jti) {
     await redis.del(`token:access:jti:${map.access_jti}`);
   }
+  await redis.del(`token:refresh:jti:${payload.jti}`);
   const tokens = await createTokens(user, platform, device_id)
   return tokens
 }

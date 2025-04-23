@@ -4,13 +4,13 @@ import * as userService from '#services/user.js';
 
 const router = new Router();
 
-router.post('/sign-out', verify, async ({ models, state, request, response }) => {
+router.post('/sign-out', verify, async ({ state, request, response }) => {
   await userService.signOut(state.user, request.body.refresh_token);
   response.success();
 })
 
-router.post('/refresh', verify, async ({ request, state, response }) => {
-  const tokens = await userService.refreshToken(state.user, request.body.refresh_token)
+router.post('/refresh', async ({ request, response }) => {
+  const tokens = await userService.refreshToken( request.body.refresh_token)
   response.success(tokens);
 })
 
