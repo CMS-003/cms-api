@@ -5,7 +5,7 @@ import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
 import * as schema from './model.d.ts'
-import { OPT } from 'schema/dist/base';
+import { OPT } from 'schema/dist/@types';
 import { createClient } from 'redis'
 
 type dbs = { [key: string]: Connection };

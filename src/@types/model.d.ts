@@ -1,9 +1,7 @@
 
 import mongoose from "mongoose";
-import Base, { CustomParams } from 'schema/dist/base.js';
-import MJsonSchema from 'schema/dist/database/schema/JsonSchema.js'
-import MConnection from 'schema/dist/database/schema/connection.js'
-import { IJsonSchema, IConnection } from 'schema/dist/@types/schema.js'
+import { Base, CustomParams, MConnection, MJsonSchema } from 'schema';
+import { IJsonSchema, IConnection } from 'schema/dist/@types'
 
 declare class MJsonSchema extends Base<IJsonSchema> {
   constructor(db: mongoose.Connection, params?: CustomParams<IJsonSchema>);

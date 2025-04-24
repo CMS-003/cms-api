@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import Base, { getMongoSchema } from "schema/dist/base.js";
-import { MConnection, MJsonSchema } from 'schema';
+import { Base, getMongoSchema, MConnection, MJsonSchema } from "schema";
 import { VMScript, NodeVM } from 'vm2';
 import constant from '#constant.js';
 import { pathToFileURL } from 'node:url';
