@@ -36,7 +36,7 @@ gatling.all('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
   const api = await models.MInterface.getInfo({ where, lean: true });
-  if (api) {
+  if (api && api.method === 'all' || api.method === ctx.request.method.toLocaleUpperCase()) {
     const sandbox = await vmRunCode(api.script);
     await sandbox.context.module.exports(ctx);
   } else {

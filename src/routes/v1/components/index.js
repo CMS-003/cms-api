@@ -13,8 +13,9 @@ router.get('/', async ({ models, state, request, response }) => {
     hql.where.project_id = request.query.project_id;
   }
   hql.sort = { sort: 1, updatedAt: -1 }
+  const total = await models.MComponent.count(hql);
   const items = await models.MComponent.getList(hql);
-  response.success({ items });
+  response.success({ total, items });
 })
 
 router.get('/:id', async ({ params, req, models, response }) => {

@@ -11,8 +11,9 @@ router.get('/', async ({ models, scheduler, config, state, request, response }) 
     }
     opt.sort = { updatedAt: -1 }
   });
+  const total = await models.MInterface.count(hql);
   const results = await models.MInterface.getList(hql)
-  response.success({ items: results });
+  response.success({ total, items: results });
 });
 
 router.post('/', async ({ models, request, response }) => {

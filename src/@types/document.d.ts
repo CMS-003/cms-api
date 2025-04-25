@@ -118,6 +118,7 @@ export interface IInterface {
   _id: string;
   name: string;
   desc: string;
+  method: string;
   status: number;
   script: string;
   createdAt: Date;
