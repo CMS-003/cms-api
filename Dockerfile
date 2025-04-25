@@ -10,6 +10,7 @@ RUN npm install --omit=dev
 ENV NODE_ENV=production
 ENV mongo_system_url=mongodb://root:123456@192.168.0.124:27017/schema?authSource=admin
 ENV proxy_host=http://192.168.0.124
+ENV redis_url=redis://192.168.0.124:6379
 
 CMD [ "npm", "start" ]
 
