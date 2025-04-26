@@ -27,6 +27,12 @@ function schema2type(schema, Name, level = 1) {
       if (Name === 'Component') {
         text += '  children: IComponent[];\n';
       }
+      if (Name === 'Spider') {
+        text += '  toJSON(): object;\n'
+        text += '  getParams(url: string): { [key:string]: any };\n'
+        text += '  getPureUrl(url: string): string;\n'
+        text += '  getResourceId(id: string): string;\n'
+      }
     }
   } else if (schema.type === 'String') {
     return 'string';

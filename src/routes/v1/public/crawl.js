@@ -8,7 +8,7 @@ const route = new Router();
 
 route.patch('/crawl', async ({ request, params, models, response }) => {
   const u = new URL(request.body.url);
-  const rules = await models.MSpider.getAll({ where: { status: 3, pattern: { $regex: u.origin } }, lean: false })
+  const rules = await models.MSpider.getAll({ where: { status: 4, pattern: { $regex: u.origin } }, lean: false })
   let rule = null, param;
   for (let i = 0; i < rules.length; i++) {
     rule = rules[i];
@@ -20,9 +20,11 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
   let code = 1001, message = '匹配到规则但没数据';
   if (param && param.id) {
     const url = rule.getPureUrl(request.body.url);
+    const resource_id = rule.getResourceId(param.id)
     const record = await models.MRecord.model.findOne({ source_id: param.id, spider_id: rule._id }).lean(true);
-    if (record) {
-      switch (record.status) {
+    const resource = await models.MResource.model.findOne({ _id: resource_id }).lean(true);
+    if (record && resource) {
+      switch (resource.status) {
         case constant.STATUS.FAILURE:
           code = 1004;
           message = '抓取失败';
@@ -41,9 +43,9 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
           break;
       }
     }
-    response.success({ record: { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toJSON(), ['headers', 'script', 'urls']) }, { code, message });
+    response.success({ record: { resource_id, source_id: param.id, spider_id: rule._id, origin: url, }, rule: _.omit(rule.toJSON(), ['headers', 'script', 'urls']) }, { code, message });
   } else {
-    response.success({ code: 1000, message: '未匹配到规则' })
+    response.success(null, { code: 1000, message: '未匹配到规则' })
   }
 })
 

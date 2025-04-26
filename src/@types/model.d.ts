@@ -11,7 +11,7 @@ declare class MConnection extends Base<IConnection> {
   constructor(db: mongoose.Connection, params?: CustomParams<IConnection>);
 }
 
-import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, ILog, ISns, IComponentType, IProject, ITemplate, IResourceDemo } from './document.d.js';
+import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, IResourceDemo, ILog, ISns, IComponentType, IProject, ITemplate } from './document.d.js';
 
 declare class MRecord extends Base<IRecord> {
   constructor(db: mongoose.Connection, params?: CustomParams<IRecord>);
@@ -117,6 +117,10 @@ declare class MMediaSegment extends Base<IMediaSegment> {
   constructor(db: mongoose.Connection, params?: CustomParams<IMediaSegment>);
 }
 
+declare class MResourceDemo extends Base<IResourceDemo> {
+  constructor(db: mongoose.Connection, params?: CustomParams<IResourceDemo>);
+}
+
 declare class MLog extends Base<ILog> {
   constructor(db: mongoose.Connection, params?: CustomParams<ILog>);
 }
@@ -136,8 +140,4 @@ declare class MProject extends Base<IProject> {
 declare class MTemplate extends Base<ITemplate> {
   constructor(db: mongoose.Connection, params?: CustomParams<ITemplate>);
 }
-
-declare class MResourceDemo extends Base<IResourceDemo> {
-  constructor(db: mongoose.Connection, params?: CustomParams<IResourceDemo>);
-}
-export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MLog, MSns, MComponentType, MProject, MTemplate, MResourceDemo }
+export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MResourceDemo, MLog, MSns, MComponentType, MProject, MTemplate }
