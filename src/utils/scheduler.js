@@ -1,25 +1,11 @@
 import { CronJob } from 'cron';
-import vm2, { VMScript, NodeVM } from 'vm2';
-import constant from '../constant.js';
+import vmRunCode from './vmRunCode.js';
 
 class Scheduler {
   static tasks = {};
-  static load(doc, context) {
+  static async load(doc, context) {
     const { _id, name, cron, script, status } = doc;
-    const code = new VMScript(script).compile();
-    const tick = new NodeVM({
-      console: 'inherit',
-      sandbox: {
-        process: {
-          env: process.env,
-        }
-      },
-      require: {
-        external: true,
-        root: constant.PATH.ROOT,
-        builtin: ['*'],
-      }
-    }).run(code, {});
+    const sandbox = await vmRunCode(script)
     const t = Scheduler.tasks[_id];
     if (t) {
       t.job.stop();
@@ -29,7 +15,7 @@ class Scheduler {
       const task = Scheduler.tasks[_id];
       task.running = true;
       console.log(`${new Date().toISOString()} run task: ${_id}`);
-      tick(context).then(() => {
+      sandbox.context.module.exports(context).then(() => {
         task.running = false;
       }).catch(e => {
         task.running = false;
