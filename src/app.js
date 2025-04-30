@@ -111,10 +111,15 @@ async function run(cb) {
   app.context.models = models;
   app.context.redis = await initRedis();
   try {
-
     const browser = await pptr.launch({
-      headless: false,
-      args: ['--no-sandbox'],
+      headless: true,
+      args: [
+        `--proxy-server=${config.proxy_agent}`, // HTTP/HTTPS/SOCKS 代理
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-setuid-sandbox',
+        '--headless=new'  // Puppeteer v21+ 推荐的新无头模式
+      ],
       executablePath: '/usr/bin/chromium'
     });
     app.context.browser = browser

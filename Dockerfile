@@ -1,4 +1,4 @@
-FROM node:20.19-alpine
+FROM ruanjiayou/node:amd64_20-chromium
 
 WORKDIR /cms/api
 
@@ -9,8 +9,8 @@ RUN npm install --omit=dev
 
 ENV NODE_ENV=production
 ENV mongo_system_url=mongodb://root:123456@192.168.0.124:27017/schema?authSource=admin
-ENV proxy_host=http://192.168.0.124
 ENV redis_url=redis://192.168.0.124:6379
+ENV proxy_agent=http://192.168.0.125:8888
 
 CMD [ "npm", "start" ]
 

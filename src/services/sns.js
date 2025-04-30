@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 import jwt from 'jsonwebtoken'
 import { AlipaySdk } from 'alipay-sdk';
 
-const agent = process.env.proxy_host ? new HttpProxyAgent(process.env.proxy_host + ':8888') : null;
+const agent = process.env.proxy_agent ? new HttpProxyAgent(process.env.proxy_agent) : null;
 const scopes = [
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/youtube.readonly',

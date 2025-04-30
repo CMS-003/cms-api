@@ -10,6 +10,9 @@ export async function initRedis() {
   redis = await createClient({
     url: config.redis_url,
   }).connect();
+  redis.once('connection', () => {
+    console.log('connected redis');
+  })
   return redis;
 }
 /**
