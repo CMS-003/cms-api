@@ -19,6 +19,7 @@ import Mailer from './utils/mailer.js'
 import Scheduler from './utils/scheduler.js';
 import models, { dbs, initMongo } from './mongodb.js';
 import ejs from 'ejs'
+import * as pptr from 'puppeteer'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -109,7 +110,21 @@ async function run(cb) {
   app.context.dbs = dbs;
   app.context.models = models;
   app.context.redis = await initRedis();
+  try {
 
+    const browser = await pptr.launch({
+      headless: false,
+      args: ['--no-sandbox'],
+      executablePath: '/usr/bin/chromium'
+    });
+    app.context.browser = browser
+    process.on('beforeExit', () => {
+      console.log('beforeExit')
+      browser && browser.close();
+    });
+  } catch (e) {
+    console.log(e, 'launch browser');
+  }
   // 连接数据库后,启动前加载配置
   await app.context.loadConfig();
   if (app.context.config.email) {

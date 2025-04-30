@@ -15,6 +15,17 @@ const defaultIdentifier = pathToFileURL(__filename).toString();
 export default async function vmRunCode(code, identifier = defaultIdentifier) {
   // 创建沙盒上下文
   const sandbox = {
+    process: {
+      env: { ...process.env }, // 浅拷贝环境变量
+      cwd: () => process.cwd() // 可选：注入其他 process 方法
+    },
+    // 注入定时器函数（但存在风险！）
+    setInterval: (fn, delay) => {
+      return setInterval(fn, delay);
+    },
+    clearInterval: (id) => {
+      clearInterval(id);
+    },
     require,          // 注入 require 函数
     module: { exports: null }, // 用于导出结果
     console,          // 允许使用 console

@@ -4,6 +4,7 @@ export interface IRecord {
   source_id: string;
   origin: string;
   original: object;
+  resource_id: string;
 }
 export interface IQuery {
   _id: string;
