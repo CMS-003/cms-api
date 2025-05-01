@@ -44,6 +44,13 @@ router.put('/:_id', async (ctx) => {
   response.success();
 });
 
+router.del('/:id', async (ctx) => {
+  const { models, params, response } = ctx;
+  await models.MSchedule.destroy({ where: { _id: params.id } });
+  Scheduler.remove(params.id)
+  response.success();
+})
+
 router.post('/:_id/status', async ({ params, models, request, response }) => {
   const where = { _id: params._id };
   await models.MSchedule.update({ where, data: { $set: request.body } });

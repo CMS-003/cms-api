@@ -65,6 +65,12 @@ class Scheduler {
       Scheduler.tasks[_id].job.stop();
     }
   }
+  static remove(_id) {
+    if (Scheduler.tasks[_id]) {
+      Scheduler.tasks[_id].job.stop();
+      delete Scheduler.tasks[_id];
+    }
+  }
 }
 
 export default Scheduler;

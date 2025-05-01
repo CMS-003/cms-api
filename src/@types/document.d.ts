@@ -274,6 +274,7 @@ export interface IMediaPixiv {
   status: number;
   createdAt: Date;
   more: object;
+  uid: string;
 }
 export interface IMediaCaption {
   _id: string;
