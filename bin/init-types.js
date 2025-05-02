@@ -22,7 +22,7 @@ function schema2type(schema, Name, level = 1) {
         text += '  videos?: IMediaVideo[];\n'
         text += '  audios?: IMediaAudio[];\n'
         text += '  actors?: any[];\n'
-        text += '  counter?: { [key: string]: number };\n'
+        text += '  counter?: { [key: string]: number | boolean };\n'
       }
       if (Name === 'Component') {
         text += '  children: IComponent[];\n';

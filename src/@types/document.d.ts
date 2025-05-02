@@ -204,7 +204,7 @@ export interface IResource {
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];
   actors?: any[];
-  counter?: { [key: string]: number };
+  counter?: { [key: string]: number | boolean };
 }
 export interface IMediaChapter {
   _id: string;

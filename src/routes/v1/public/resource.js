@@ -1,11 +1,19 @@
 import { getResourceInfo } from '#services/resource.js';
+import { verifyToken } from '#services/user.js';
 import Router from 'koa-router'
 import _ from 'lodash'
 
 const route = new Router();
 
 route.get('/resource/:_id', async (ctx) => {
-  const doc = await getResourceInfo(ctx.params._id, false);
+  let user_id = '';
+  try {
+    const user = await verifyToken(ctx.get('authorization') || '');
+    user_id = user.id;
+  } catch (e) {
+
+  }
+  const doc = await getResourceInfo(ctx.params._id, user_id, false);
   if (!doc) {
     return ctx.response.fail();
   }

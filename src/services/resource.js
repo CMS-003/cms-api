@@ -2,8 +2,15 @@ import { getRedis } from '#utils/redis.js';
 import _ from 'lodash'
 import models from '#mongodb.js';
 
-export async function getResourceInfo(res_id, all = false) {
-  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio } = models;
+/**
+ * 资源详情
+ * @param {string} res_id 
+ * @param {string} user_id 
+ * @param {boolean} all 
+ * @returns 
+ */
+export async function getResourceInfo(res_id, user_id, all = false) {
+  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MStar } = models;
   const key = `api:v1:resource:${res_id}:detail`;
   const redis = getRedis();
   let doc;
@@ -30,13 +37,16 @@ export async function getResourceInfo(res_id, all = false) {
       }
       doc.videos = await MMediaVideo.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       doc.audios = await MMediaAudio.model.find({ res_id }).sort({ nth: 1 }).lean(true);
+      const collects = await MStar.count({ where: { rid: res_id } });
+      const collected = await MStar.count({ where: { rid: res_id, uid: user_id } }) ? true : false;
       doc.counter = {
         chapters: doc.chapters.length,
         images: doc.images.length,
         videos: doc.videos.length,
         audios: doc.audios.length,
         comments: 0,
-        collections: 0,
+        collects,
+        collected,
       }
       if (redis) {
         await redis.set(key, JSON.stringify(doc));
