@@ -37,16 +37,12 @@ export async function getResourceInfo(res_id, user_id, all = false) {
       }
       doc.videos = await MMediaVideo.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       doc.audios = await MMediaAudio.model.find({ res_id }).sort({ nth: 1 }).lean(true);
-      const collects = await MStar.count({ where: { rid: res_id } });
-      const collected = await MStar.count({ where: { rid: res_id, uid: user_id } }) ? true : false;
       doc.counter = {
         chapters: doc.chapters.length,
         images: doc.images.length,
         videos: doc.videos.length,
         audios: doc.audios.length,
         comments: 0,
-        collects,
-        collected,
       }
       if (redis) {
         await redis.set(key, JSON.stringify(doc));
@@ -54,6 +50,11 @@ export async function getResourceInfo(res_id, user_id, all = false) {
       }
     }
   }
+
+  const collects = await MStar.count({ where: { rid: res_id } });
+  const collected = await MStar.count({ where: { rid: res_id, uid: user_id } }) ? true : false;
+  doc.counter.collects = collects;
+  doc.counter.collected = collected;
   if (!all && doc) {
     doc.chapters = doc.chapters.map(v => _.omit(v, ['url']));
     doc.videos = doc.videos.map(v => _.omit(v, ['url']));
