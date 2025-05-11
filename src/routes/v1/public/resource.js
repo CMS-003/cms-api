@@ -2,6 +2,7 @@ import { getResourceInfo } from '#services/resource.js';
 import { verifyToken } from '#services/user.js';
 import Router from 'koa-router'
 import _ from 'lodash'
+import CONST from 'const'
 
 const route = new Router();
 
@@ -18,6 +19,34 @@ route.get('/resource/:_id', async (ctx) => {
     return ctx.response.fail();
   }
   ctx.response.success(doc)
+})
+
+route.put('/resource/:_id', async (ctx) => {
+  const _id = ctx.params._id
+  const data = ctx.request.body;
+  const info = await ctx.models.MResource.getInfo({ where: { _id }, lean: true })
+  if (data.status === CONST.STATUS.SUCCESS && info.type !== 'novel' && info.type !== 'article') {
+    const videos = await ctx.models.MMediaVideo.getAll({ where: { res_id: _id, status: CONST.STATUS.SUCCESS }, lean: true });
+    let size = 0;
+    videos.forEach(v => {
+      // @ts-ignore
+      const duration = v.more.duration;
+      size += typeof duration === 'number' ? duration : parseFloat(duration) || 0;
+    });
+    data.size = size;
+  }
+  await ctx.models.MResource.update({ where: { _id }, data: { $set: data } })
+  await ctx.redis.del(`api:v1:resource:${_id}:detail`)
+  await getResourceInfo(_id, '', false)
+  ctx.response.success();
+})
+
+route.get('/resource/:id/origin', async (ctx) => {
+  const doc = await ctx.models.MRecord.getInfo({ where: { _id: ctx.params.id }, lean: true })
+  if (!doc) {
+    return ctx.response.fail();
+  }
+  ctx.redirect(doc.origin)
 })
 
 route.get('/:app/resources', async ({ request, query, params, models, response }) => {

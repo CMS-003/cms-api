@@ -21,3 +21,5 @@
 -  boot聚合接口
 -  ✅ form 模板页
 -  ✅ commonjs 改为 esm
+-  ✅ twitter爬取
+-  ✅ resource id 路由重定向到 record的url
