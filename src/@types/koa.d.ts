@@ -7,6 +7,7 @@ import Scheduler from '../utils/scheduler';
 import * as schema from './model.d.ts'
 import { OPT } from 'schema/dist/@types';
 import { createClient } from 'redis'
+import constant from '../constant.js';
 
 type dbs = { [key: string]: Connection };
 type models = {
@@ -20,6 +21,7 @@ declare module 'koa' {
     [key: string]: Connection
   }
   export interface ExtendableContext {
+    consts: typeof constant;
     config: {
       [key: string]: any;
     };
@@ -33,6 +35,7 @@ declare module 'koa' {
   };
 
   interface DefaultContext {
+    consts: typeof constant;
     config: {
       [key: string]: any;
     };

@@ -58,6 +58,7 @@ app.request.paginate = function (fn) {
 }
 
 // 加载model和业务逻辑层
+app.context.consts = constant;
 app.context.config = config;
 app.context.scheduler = Scheduler;
 app.context.loadConfig = async function () {
