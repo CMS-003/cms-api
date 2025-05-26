@@ -14,7 +14,7 @@ route.get('/resource/:_id', async (ctx) => {
   } catch (e) {
 
   }
-  const doc = await getResourceInfo(ctx.params._id, user_id, false);
+  const doc = await getResourceInfo(ctx.params._id, user_id, true);
   if (!doc) {
     return ctx.response.fail();
   }
@@ -51,15 +51,30 @@ route.get('/resource/:id/origin', async (ctx) => {
 
 route.get('/:app/resources', async ({ request, query, params, models, response }) => {
   // @ts-ignore
-  const qid = query.qid.split(',');
+  const qid = query.qid ? query.qid.split(',') : [];
 
   const sql = request.paginate((hql) => {
     hql.sort = { updatedAt: -1 }
+    if (query.search) {
+      hql.where.title = { $regex: query.search };
+    }
   })
-  const queries = await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true })
+  const queries = qid.length ? await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true }) : [];
   queries.forEach(q => {
     if (q.type === 'where') {
-      Object.assign(sql.where, JSON.parse(q.value))
+      const where = JSON.parse(q.value);
+      if (Object.keys(where).length === 1 && where.tags) {
+        if (!sql.where.tags) {
+          sql.where.tags = { $in: [] }
+        }
+        if (_.isArray(where.tags)) {
+          sql.where.tags.$in.push(...where.tags)
+        } else {
+          sql.where.tags.$in.push(where.tags);
+        }
+      } else {
+        Object.assign(sql.where, where)
+      }
     } else if (q.type === 'sort') {
       sql.sort = JSON.parse(q.value)
     } else if (q.type === 'limit') {

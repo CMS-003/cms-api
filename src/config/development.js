@@ -2,6 +2,7 @@ export default {
   PORT: 3333,
   timezone: 'Asia/Shanghai',
   language: 'zh-CN',
+  proxy_agent: 'http://192.168.0.125:8888',
   mongo_system_url: 'mongodb://root:123456@192.168.0.124:27017/schema?authSource=admin',
   redis_url: 'redis://192.168.0.124:6379',
   mq_url: 'http://guest:guest@10.0.15.240:5672',

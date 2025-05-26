@@ -26,7 +26,7 @@ route.get('/page/:name', async ({ request, params, models, response }) => {
 
 route.get('/page/:name/components', async ({ request, params, models, response }) => {
   const query = request.paginate((hql) => {
-
+    hql.sort = { order: 1 };
   })
   const where = { $or: [{ name: params.name }, { _id: params.name }] }
   const page = await models.MTemplate.getInfo({ where, lean: true });
@@ -39,7 +39,7 @@ route.get('/page/:name/components', async ({ request, params, models, response }
   if (query.page === 1) {
     data.item = page;
   }
-  const components = await models.MComponent.getList({ where: { template_id: page._id, parent_id: '' }, page: query.page, limit: 6 })
+  const components = await models.MComponent.getList({ where: { template_id: page._id, parent_id: '' }, page: query.page, limit: query.limit })
   for (let i = 0; i < components.length; i++) {
     const tree = await getComponentTreeInfo(components[i].tree_id);
     if (tree) {

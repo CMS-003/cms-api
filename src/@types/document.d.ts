@@ -39,10 +39,10 @@ export interface IComponent {
       value: string;
     };
     action: string;
-    action_url: string;
-    in: string;
+    method: string;
+    query: boolean;
   };
-  api: string;
+  url: string;
   resources: {
       _id: string;
       title: string;
@@ -148,11 +148,11 @@ export interface ISpider {
 }
 export interface IStar {
   _id: string;
-  user_id: string;
+  uid: string;
   title: string;
   cover: string;
-  resource_id: string;
-  resource_type: string;
+  rid: string;
+  type: string;
   createdAt: Date;
 }
 export interface IFeedback {
@@ -385,7 +385,7 @@ export interface IResourceDemo {
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];
   actors?: any[];
-  counter?: { [key: string]: number };
+  counter?: { [key: string]: number | boolean };
 }
 export interface ILog {
   _id: string;
