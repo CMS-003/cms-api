@@ -48,6 +48,8 @@ export async function getResourceInfo(res_id, user_id, all = false) {
         await redis.set(key, JSON.stringify(doc));
         await redis.expire(key, 3600 * 6);
       }
+    } else {
+      return null
     }
   }
 
