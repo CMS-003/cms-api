@@ -46,7 +46,9 @@ route.get('/resource/:id/origin', async (ctx) => {
   if (!doc) {
     return ctx.response.fail();
   }
-  ctx.redirect(doc.origin)
+  ctx.response.body = (`
+    <meta http-equiv="refresh" content="0; url=${doc.origin}">
+  `);
 })
 
 route.get('/:app/resources', async ({ request, query, params, models, response }) => {

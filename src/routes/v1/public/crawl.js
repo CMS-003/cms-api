@@ -22,7 +22,7 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
     const url = rule.getPureUrl(request.body.url);
     const resource_id = rule.getResourceId(param.id)
     const record = await models.MRecord.model.findOne({ source_id: param.id, spider_id: rule._id }).lean(true);
-    const resource = await models.MResource.model.findOne({ _id: resource_id }).lean(true);
+    const resource = await models.MResource.model.findOne({ _id: record ? { $in: [record._id, record.resource_id] } : resource_id }).lean(true);
     if (record && resource) {
       switch (resource.status) {
         case constant.STATUS.FAILURE:

@@ -25,6 +25,9 @@ router.post('/', verify, async ({ models, state, request, response }) => {
   request.body.project_id = state.project_id
   request.body.createdAt = new Date();
   request.body.updatedAt = new Date();
+  if (!request.body.attrs) {
+    request.body.attrs = {};
+  }
   await models.MTemplate.create(request.body)
   response.success()
 })
