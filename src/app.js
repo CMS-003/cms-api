@@ -69,7 +69,7 @@ app.context.loadConfig = async function () {
     }
     app.context.config[item.name] = item.value;
     if (item.type === 'email_template') {
-      constant.emailTemplats[item.name] = ejs.compile(item.value.html);
+      constant.emailTemplats[item.name] = ejs.compile(item.value);
     }
   })
 }

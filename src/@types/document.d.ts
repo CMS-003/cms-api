@@ -405,8 +405,8 @@ export interface ISns {
   detail: object;
   status: number;
   createdAt: Date;
-  access_token: object;
-  refresh_token: object;
+  access_token: string;
+  refresh_token: string;
   access_expired_at: Date;
   refresh_expired_at: Date;
 }
@@ -445,6 +445,13 @@ export interface ITemplate {
   order: number;
   attrs: object;
   style: object;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface IFollow {
+  _id: string;
+  followee_id: string;
+  follower_id: string;
   createdAt: Date;
   updatedAt: Date;
 }

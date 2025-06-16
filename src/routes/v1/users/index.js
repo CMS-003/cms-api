@@ -1,32 +1,7 @@
 import Router from 'koa-router'
 import verify from '#middleware/verify.js'
-import * as userService from '#services/user.js';
 
 const router = new Router();
-
-router.post('/sign-out', verify, async ({ state, request, response }) => {
-  await userService.signOut(state.user, request.body.refresh_token);
-  response.success();
-})
-
-router.post('/refresh', async ({ request, response }) => {
-  const tokens = await userService.refreshToken( request.body.refresh_token)
-  response.success(tokens);
-})
-
-router.get('/self', verify, async ({ models, params, req, response }) => {
-  const { MProject } = models;
-  const where = { _id: params._id };
-  const item = await MProject.getInfo({ where });
-  response.success({ item });
-})
-
-router.get('/profile', verify, async ({ models, params, req, response, state }) => {
-  const { MUser } = models;
-  const where = { _id: state.user.id };
-  const item = await MUser.getInfo({ where, lean: true, attrs: { salt: 0, pass: 0 } });
-  response.success({ item });
-})
 
 router.get('/menu', verify, async ({ models, params, req, response }) => {
   const { MComponent } = models;
