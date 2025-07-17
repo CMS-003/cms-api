@@ -10,7 +10,7 @@ import models from '#mongodb.js';
  * @returns 
  */
 export async function getResourceInfo(res_id, user_id, all = false) {
-  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MStar } = models;
+  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MStar, MHistory } = models;
   const key = `api:v1:resource:${res_id}:detail`;
   const redis = getRedis();
   let doc;
@@ -60,11 +60,15 @@ export async function getResourceInfo(res_id, user_id, all = false) {
   const collected = await MStar.count({ where: { rid: res_id, uid: user_id } }) ? true : false;
   doc.counter.collects = collects;
   doc.counter.collected = collected;
+  const history = await MHistory.getInfo({ where: { resource_id: res_id, user_id }, sort: { created_at: -1 }, lean: true })
   if (!all && doc) {
     doc.chapters = doc.chapters.map(v => _.omit(v, ['url']));
     doc.videos = doc.videos.map(v => _.omit(v, ['url']));
     doc.images = doc.images.map(v => _.omit(v, ['url']));
     doc.audios = doc.audios.map(v => _.omit(v, ['url']));
+  }
+  if (history) {
+    doc.detail = history;
   }
   return doc;
 }

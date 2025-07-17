@@ -457,3 +457,24 @@ export interface IFollow {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface IHistory {
+  _id: string;
+  user_id: string;
+  resource_id: string;
+  resource_type: string;
+  media_id: string;
+  media_type: string;
+  total: number;
+  watched: number;
+  ip: string;
+  device: string;
+  created_at: Date;
+}
+export interface IStat {
+  _id: string;
+  user_id: string;
+  type: number;
+  resource_id: string;
+  resource_type: string;
+  created_at: Date;
+}

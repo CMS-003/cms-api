@@ -88,6 +88,7 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
   })
   let model = models.MResource;
   if (params.app === 'demo') {
+    // @ts-ignore
     model = models.MResourceDemo;
   }
   const items = await model.getList(sql)

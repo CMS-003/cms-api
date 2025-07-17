@@ -11,7 +11,7 @@ declare class MConnection extends Base<IConnection> {
   constructor(db: mongoose.Connection, params?: CustomParams<IConnection>);
 }
 
-import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, IResourceDemo, ILog, ISns, IComponentType, IProject, ITemplate, IFollow } from './document.d.js';
+import { IRecord, IQuery, IComponent, ICapsule, ICounter, ITask, IVerification, ISchedule, IInterface, ISpider, IStar, IFeedback, IUser, IResource, IMediaChapter, IMediaAlbum, IMediaImage, IMediaVideo, IMediaPixiv, IMediaCaption, IVersion, IAccount, IConfig, IPass, IMediaAudio, IMediaSegment, IResourceDemo, ILog, ISns, IComponentType, IProject, ITemplate, IFollow, IHistory, IStat } from './document.d.js';
 
 declare class MRecord extends Base<IRecord> {
   constructor(db: mongoose.Connection, params?: CustomParams<IRecord>);
@@ -144,4 +144,12 @@ declare class MTemplate extends Base<ITemplate> {
 declare class MFollow extends Base<IFollow> {
   constructor(db: mongoose.Connection, params?: CustomParams<IFollow>);
 }
-export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MResourceDemo, MLog, MSns, MComponentType, MProject, MTemplate, MFollow }
+
+declare class MHistory extends Base<IHistory> {
+  constructor(db: mongoose.Connection, params?: CustomParams<IHistory>);
+}
+
+declare class MStat extends Base<IStat> {
+  constructor(db: mongoose.Connection, params?: CustomParams<IStat>);
+}
+export { MJsonSchema, MConnection, MRecord, MQuery, MComponent, MCapsule, MCounter, MTask, MVerification, MSchedule, MInterface, MSpider, MStar, MFeedback, MUser, MResource, MMediaChapter, MMediaAlbum, MMediaImage, MMediaVideo, MMediaPixiv, MMediaCaption, MVersion, MAccount, MConfig, MPass, MMediaAudio, MMediaSegment, MResourceDemo, MLog, MSns, MComponentType, MProject, MTemplate, MFollow, MHistory, MStat }

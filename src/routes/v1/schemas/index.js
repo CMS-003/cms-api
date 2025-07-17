@@ -39,6 +39,8 @@ router.post('/:name', async ({ params, request, response, dbs, models }) => {
   }
   request.body._id = v7();
   request.body.name = params.name;
+  request.body.createdAt = new Date();
+  request.body.updatedAt = new Date();
   await models.MJsonSchema.create(request.body);
   const doc = await models.MJsonSchema.getInfo({ where: params, lean: true });
   response.success(doc);
