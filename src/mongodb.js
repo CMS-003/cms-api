@@ -48,14 +48,14 @@ export function initTable(db, doc) {
 }
 
 export async function initMongo(mongo_url) {
-  const system = mongoose.createConnection(mongo_url);
+  const system = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, 'schema'));
   const Connection = new MConnection(system);
   const JsonSchema = new MJsonSchema(system);
   models.MJsonSchema = JsonSchema;
   const connections = await Connection.getAll({ where: { status: 1 }, lean: true });
   dbs.system = system;
   connections.forEach(connection => {
-    dbs[connection._id] = mongoose.createConnection(mongo_url.replace('schema', connection._id));
+    dbs[connection._id] = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, connection._id));
   });
   const schemas = await JsonSchema.getAll({ where: { status: 1 }, lean: true })
   if (process.env.NODE_ENV === 'development') {

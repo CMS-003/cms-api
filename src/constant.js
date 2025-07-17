@@ -10,6 +10,7 @@ export default {
     REQ_LIMIT: 'size',
     MAX_LIMIT: 100,
     DEFAULT_LIMIT: 20,
+    MONGO_HOLDER: '*',
   },
   PATH: {
     ROOT: root_path,

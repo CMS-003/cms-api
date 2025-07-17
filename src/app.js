@@ -36,9 +36,9 @@ app.response.success = function (data, params = {}) {
   this.body = body;
 }
 app.response.fail = function (params = {}) {
-  const { status = 200, code = -1, message = '' } = params;
+  const { status = 200, code = -1, message = '', data } = params;
   this.status = status;
-  this.body = { code, message };
+  this.body = { code, message, data };
 }
 app.response.throwBiz = function (bizName, params) {
   throw new BizError(bizName, params);
@@ -107,22 +107,43 @@ app.on('error', (err, ctx) => {
 })
 
 async function run(cb) {
-  await initMongo(config.mongo_system_url);
+  await initMongo(config.mongo_url);
   app.context.dbs = dbs;
   app.context.models = models;
   app.context.redis = await initRedis();
   try {
-    const browser = await pptr.launch({
-      headless: true,
-      args: [
-        `--proxy-server=${config.proxy_agent}`, // HTTP/HTTPS/SOCKS 代理
-        '--no-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--headless=new'  // Puppeteer v21+ 推荐的新无头模式
-      ],
-      executablePath: '/usr/bin/chromium'
-    });
+    let browser = null
+    if (process.env.NODE_ENV === 'production') {
+      browser = await pptr.launch({
+        headless: true,
+        args: [
+          `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
+          '--no-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-setuid-sandbox',
+          '--headless=new',  // Puppeteer v21+ 推荐的新无头模式
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-accelerated-2d-canvas',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-infobars',
+          '--single-process',
+          '--no-zygote',
+        ],
+        executablePath: '/usr/bin/chromium'
+      });
+    } else {
+      browser = await pptr.launch({
+        headless: false,
+        args: [
+          `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
+          '--no-sandbox',
+          // '--headless=new'
+        ],
+        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      });
+    }
     app.context.browser = browser
     process.on('beforeExit', () => {
       console.log('beforeExit')

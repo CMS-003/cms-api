@@ -18,6 +18,9 @@ export async function getResourceInfo(res_id, user_id, all = false) {
   console.log(str, res_id)
   if (str) {
     doc = JSON.parse(str);
+    if (doc.type !== 'post') {
+      doc.content = ''
+    }
   } else {
     doc = await MResource.model.findOne({ _id: res_id }).lean(true);
     if (doc) {

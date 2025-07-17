@@ -6,6 +6,15 @@ import vmRunCode from '#utils/vmRunCode.js'
 
 const route = new Router();
 
+route.get('/crawl', async ({ request, models, response }) => {
+  const rules = await models.MSpider.getAll({ where: { status: 4 }, lean: false })
+  const white_list = new Set();
+  rules.forEach(rule => {
+    white_list.add((new URL(rule.pattern)).origin)
+  });
+  response.body = Array.from(white_list);
+})
+
 route.patch('/crawl', async ({ request, params, models, response }) => {
   const u = new URL(request.body.url);
   const rules = await models.MSpider.getAll({ where: { status: 4, pattern: { $regex: u.origin } }, lean: false })
@@ -13,7 +22,7 @@ route.patch('/crawl', async ({ request, params, models, response }) => {
   for (let i = 0; i < rules.length; i++) {
     rule = rules[i];
     param = rule.getParams(request.body.url);
-    if (param) {
+    if (param && param.id) {
       break;
     }
   }
@@ -66,7 +75,7 @@ route.post('/crawl/:_id', async (ctx) => {
   const sandbox = await vmRunCode(rule.script);
   const fn = sandbox.context.module.exports;
   const { error, data, message } = await fn(ctx, rule, { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url });
-  error ? response.fail({ message }) : response.success({ data, message })
+  error ? response.fail({ message, data }) : response.success({ data, message })
 })
 
 export default route

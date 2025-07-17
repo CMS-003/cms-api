@@ -60,6 +60,9 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
     if (query.search) {
       hql.where.title = { $regex: query.search };
     }
+    if (query.uid) {
+      hql.where.uid = query.uid
+    }
   })
   const queries = qid.length ? await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true }) : [];
   queries.forEach(q => {
@@ -89,7 +92,11 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
   }
   const items = await model.getList(sql)
   for (let i = 0; i < items.length; i++) {
-    if (items[i].type !== 'post') continue;
+    if (items[i].type === 'post') continue;
+    if (items[i].type === 'article') {
+      items[i].content = '';
+      continue;
+    }
     const result = await getResourceInfo(items[i]._id, '', false);
     items[i] = result;
   }

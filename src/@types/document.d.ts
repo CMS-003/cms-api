@@ -199,6 +199,7 @@ export interface IResource {
   createdAt: Date;
   updatedAt: Date;
   size: number;
+  series: string;
   chapters?: IMediaChapter[];
   images?: IMediaImage[];
   videos?: IMediaVideo[];
@@ -421,6 +422,7 @@ export interface IComponentType {
   order: number;
   createdAt: Date;
   updatedAt: Date;
+  level: number;
 }
 export interface IProject {
   _id: string;
