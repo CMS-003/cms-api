@@ -93,7 +93,6 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
   }
   const items = await model.getList(sql)
   for (let i = 0; i < items.length; i++) {
-    if (items[i].type === 'post') continue;
     if (items[i].type === 'article') {
       items[i].content = '';
       continue;

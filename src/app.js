@@ -111,7 +111,7 @@ async function run(cb) {
   app.context.dbs = dbs;
   app.context.models = models;
   app.context.redis = await initRedis();
-  try {
+  app.context.getBrowser = async function () {
     let browser = null
     if (process.env.NODE_ENV === 'production') {
       browser = await pptr.launch({
@@ -145,13 +145,13 @@ async function run(cb) {
       });
     }
     app.context.browser = browser
-    process.on('beforeExit', () => {
-      console.log('beforeExit')
-      browser && browser.close();
-    });
-  } catch (e) {
-    console.log(e, 'launch browser');
+    return browser;
   }
+  await app.context.getBrowser();
+  process.on('beforeExit', () => {
+    console.log('beforeExit')
+    app.context.browser && app.context.browser.close();
+  });
   // 连接数据库后,启动前加载配置
   await app.context.loadConfig();
   if (app.context.config.email) {

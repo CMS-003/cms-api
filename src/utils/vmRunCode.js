@@ -20,12 +20,10 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
       cwd: () => process.cwd() // 可选：注入其他 process 方法
     },
     // 注入定时器函数（但存在风险！）
-    setInterval: (fn, delay) => {
-      return setInterval(fn, delay);
-    },
-    clearInterval: (id) => {
-      clearInterval(id);
-    },
+    setInterval,
+    setTimeout,
+    clearTimeout,
+    clearInterval,
     require,          // 注入 require 函数
     module: { exports: null }, // 用于导出结果
     console,          // 允许使用 console

@@ -37,11 +37,17 @@ router.put('/:_id', async (ctx) => {
   const { params, models, request, response } = ctx;
   const where = { _id: params._id };
   await models.MSchedule.update({ where, data: { $set: request.body } });
-  const task = await models.MSchedule.getInfo({ where, lean: true });
-  if (task) {
-    Scheduler.load(task, ctx)
+  const doc = await models.MSchedule.getInfo({ where, lean: true });
+  if (doc) {
+    Scheduler.load(doc, ctx)
   }
-  response.success();
+  const info = Scheduler.tasks[doc._id];
+  const task = { isActive: false, isRunning: false, ...doc };
+  if (doc) {
+    task.isActive = Scheduler.isActive(doc._id);
+    task.isRunning = Scheduler.isRunning(doc._id);
+  }
+  response.success(task);
 });
 
 router.del('/:id', async (ctx) => {
