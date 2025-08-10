@@ -75,7 +75,7 @@ route.post('/crawl/:_id', async (ctx) => {
   const sandbox = await vmRunCode(rule.script);
   const fn = sandbox.context.module.exports;
   const { error, data, message } = await fn(ctx, rule, { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url });
-  error ? response.fail({ message, data }) : response.success({ data, message })
+  response.body = { code: error ? -1 : 0, message, data }
 })
 
 export default route

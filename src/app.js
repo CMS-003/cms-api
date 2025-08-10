@@ -119,17 +119,17 @@ async function run(cb) {
         args: [
           `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
           '--no-sandbox',
-          '--disable-dev-shm-usage',
+          // '--disable-dev-shm-usage',
           '--disable-setuid-sandbox',
           '--headless=new',  // Puppeteer v21+ 推荐的新无头模式
-          '--disable-gpu',
-          '--disable-software-rasterizer',
-          '--disable-accelerated-2d-canvas',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding',
-          '--disable-infobars',
-          '--single-process',
-          '--no-zygote',
+          // '--disable-gpu',
+          // '--disable-software-rasterizer',
+          // '--disable-accelerated-2d-canvas',
+          // '--disable-backgrounding-occluded-windows',
+          // '--disable-renderer-backgrounding',
+          // '--disable-infobars',
+          // '--single-process',
+          // '--no-zygote',
         ],
         executablePath: '/usr/bin/chromium'
       });

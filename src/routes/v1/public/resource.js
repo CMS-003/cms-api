@@ -65,6 +65,7 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
     }
   })
   const queries = qid.length ? await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true }) : [];
+  sql.aggregate = [];
   queries.forEach(q => {
     if (q.type === 'where') {
       const where = JSON.parse(q.value);
@@ -84,6 +85,9 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
       sql.sort = JSON.parse(q.value)
     } else if (q.type === 'limit') {
       sql.limit = parseInt(q.value)
+    } else if (q.type === 'aggregate') {
+      // @ts-ignore
+      sql.aggregate.push(JSON.parse(q.value))
     }
   })
   let model = models.MResource;
