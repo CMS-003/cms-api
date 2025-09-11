@@ -4,14 +4,14 @@ name: cms-api
 
 steps:
   - name: build
-  image: plugins/docker
-  settings:
-    username: ${DOCKER_USERNAME}
-    password: ${DOCKER_PASSWORD}
-    repo: ruanjiayou/cms-api
-    tags: latest,${DRONE_COMMIT_SHA:0:7}
-    build_args: 
-      - NODE_ENV=production
-  when:
-    branch: main
-    event: push
+    image: plugins/docker
+    settings:
+      username: ${DOCKER_USERNAME}
+      password: ${DOCKER_PASSWORD}
+      repo: ruanjiayou/cms-api
+      tags: latest,${DRONE_COMMIT_SHA:0:7}
+      build_args: 
+        - NODE_ENV=production
+    when:
+      branch: main
+      event: push
