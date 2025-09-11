@@ -7,6 +7,7 @@ steps:
     image: 192.168.0.124:5000/plugins/docker
     pull: if-not-exists
     settings:
+      debug: true
       username: ${DOCKER_USERNAME}
       password: ${DOCKER_PASSWORD}
       repo: ${REGISTRY_BASE}/ruanjiayou/cms-api
