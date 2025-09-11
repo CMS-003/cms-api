@@ -3,8 +3,8 @@ type: docker
 name: cms-api
 
 steps:
-  -name: build
-    image: plugins/docker
+  - name: build
+  image: plugins/docker
   settings:
     username: ${DOCKER_USERNAME}
     password: ${DOCKER_PASSWORD}
