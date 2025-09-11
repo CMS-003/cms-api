@@ -1,10 +1,56 @@
 import { getResourceInfo } from '#services/resource.js';
 import { verifyToken } from '#services/user.js';
+import { getES, getQuery } from '#utils/es.js';
 import Router from 'koa-router'
 import _ from 'lodash'
 import CONST from 'const'
 
 const route = new Router();
+
+route.get('/resources', async ({ request, query, response }) => {
+  const client = getES();
+  if (!client) {
+    return response.fail()
+  }
+  const hql = request.paginate(hql => {
+    hql.where = _.pick(query, ['tags', 'type', 'sort']);
+    const { key, value } = query;
+    if (key && value) {
+      switch (key) {
+        case 'id': hql.where['_id'] = value; break;
+        case 'q':
+          hql.where.q = value;
+          break;
+      }
+    }
+    if (query.q) {
+      hql.where.q = query.q;
+    }
+    if (query.id) {
+      hql.where.id = query.id;
+    }
+    if (query.region) {
+      hql.where.region = query.region;
+    }
+    if (query.status) {
+      // @ts-ignore
+      hql.where.status = parseInt(query.status);
+    }
+    return hql;
+  })
+  const sql = getQuery(hql)
+  const result = await client.search(sql);
+  console.log(JSON.stringify(sql))
+  // @ts-ignore
+  const ids = result.hits.hits.map(hit => hit._id)
+  const items = [];
+  for (let i = 0; i < ids.length; i++) {
+    const item = await getResourceInfo(ids[i], '', false);
+    items.push(item);
+  }
+  // @ts-ignore
+  response.success({ total: result.hits.total.value, items })
+})
 
 route.get('/resource/:_id', async (ctx) => {
   let user_id = '';
@@ -69,14 +115,11 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
   queries.forEach(q => {
     if (q.type === 'where') {
       const where = JSON.parse(q.value);
-      if (Object.keys(where).length === 1 && where.tags) {
+      if (where.tags) {
         if (!sql.where.tags) {
-          sql.where.tags = { $in: [] }
-        }
-        if (_.isArray(where.tags)) {
-          sql.where.tags.$in.push(...where.tags)
+          sql.where.tags = { $in: where.tags }
         } else {
-          sql.where.tags.$in.push(where.tags);
+          sql.where.tags.$in.push(...where.tags)
         }
       } else {
         Object.assign(sql.where, where)
