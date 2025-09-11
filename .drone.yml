@@ -4,7 +4,7 @@ name: cms-api
 
 steps:
   - name: build
-    image: plugins/docker
+    image: 192.168.0.124:5000/plugins/docker
     pull: if-not-exists
     settings:
       username: ${DOCKER_USERNAME}
