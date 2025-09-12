@@ -6,6 +6,9 @@ steps:
   - name: build
     image: 192.168.0.124:5000/plugins/docker
     pull: if-not-exists
+    environment:
+      HTTP_PROXY: ${PROXY}
+      HTTPS_PROXY: ${PROXY}
     settings:
       debug: true
       username: ${DOCKER_USERNAME}
