@@ -11,8 +11,18 @@ const __dirname = constant.PATH.SRC;
 const require = module.createRequire(__filename);
 const defaultIdentifier = pathToFileURL(__filename).toString();
 
-
+/**
+ * 运行代码
+ * @param {string} code 
+ * @param {string} identifier 
+ * @returns 
+ */
 export default async function vmRunCode(code, identifier = defaultIdentifier) {
+  if (!identifier) {
+    identifier = defaultIdentifier;
+  } else {
+    identifier = pathToFileURL(resolve(__filename, '..', identifier)).toString();
+  }
   // 创建沙盒上下文
   const sandbox = {
     process: {
@@ -32,9 +42,14 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
   };
   const context = createContext(sandbox);
 
-  // 定义动态导入回调
+  /**
+   * 定义动态导入回调
+   * @param {string} specifier 
+   * @param {object} referencingModule 父级模块 状态status 路径identifier 上下文context
+   * @returns 
+   */
   async function dynamicImport(specifier, referencingModule) {
-    if (!specifier.startsWith(".")) {
+    if (!specifier.startsWith(".") && !specifier.startsWith('/') && !specifier.startsWith('#')) {
       // 导入第三方
       return import(specifier);
     } else {
@@ -47,7 +62,6 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
       const childModule = new vm.SourceTextModule(importedCode, {
         context,
         identifier: childIdentifier,
-        // @ts-ignore
         importModuleDynamically: dynamicImport, // 递归设置动态导入
       });
       // 链接子模块（这里未自定义 resolve 函数，传入空函数即可）

@@ -1,6 +1,7 @@
 import { getRedis } from '#utils/redis.js';
 import _ from 'lodash'
 import models from '#mongodb.js';
+import CONST from 'const'
 
 /**
  * 资源详情
@@ -9,7 +10,7 @@ import models from '#mongodb.js';
  * @param {boolean} all 
  * @returns 
  */
-export async function getResourceInfo(res_id, user_id, all = false) {
+export async function getResourceInfo(res_id, user_id, all = false, detail = false) {
   const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MStar, MHistory } = models;
   const key = `api:v1:resource:${res_id}:detail`;
   const redis = getRedis();
@@ -18,23 +19,23 @@ export async function getResourceInfo(res_id, user_id, all = false) {
   console.log(str, res_id)
   if (str) {
     doc = JSON.parse(str);
-    if (doc.type !== 'post') {
+    if (detail === false && doc.type !== CONST.RESOURCE.STORY) {
       doc.content = ''
     }
   } else {
     doc = await MResource.model.findOne({ _id: res_id }).lean(true);
     if (doc) {
-      if (doc.type !== 'novel') {
+      if (doc.type !==  CONST.RESOURCE.NOVEL) {
         doc.chapters = await MMediaChapter.model.find({ res_id }, { content: 0 }).sort({ nth: 1 }).lean(true);
       } else {
         doc.chapters = [];
       }
-      if (doc.type === 'pixiv') {
+      if (doc.type ===  CONST.RESOURCE.IMAGE) {
         doc.images = await MMediaPixiv.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       } else {
         doc.images = await MMediaImage.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       }
-      if (doc.type === 'movie' && !_.isEmpty(doc.actors)) {
+      if (doc.type ===  CONST.RESOURCE.MOVIE && !_.isEmpty(doc.actors)) {
         const actors = await MUser.model.find({ _id: { $in: doc.actors.map(a => a._id) } }, { salt: 0, password: 0, source_id: 0, spider_id: 0 }).lean(true);
         doc.actors = actors.map(a => ({ _id: a._id, name: a.nickname, avatar: a.avatar }));
       }

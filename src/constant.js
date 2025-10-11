@@ -15,6 +15,6 @@ export default {
   PATH: {
     ROOT: root_path,
     SRC: path.join(root_path, 'src'),
-    STATIC: path.join(root_path, 'static'),
+    STATIC: process.env.static || path.join(root_path, 'static'),
   }
 }

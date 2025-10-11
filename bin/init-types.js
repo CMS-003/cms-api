@@ -11,7 +11,7 @@ function schema2type(schema, Name, level = 1) {
   const pad = ''.padStart(level * 2, ' ');
   if (schema.type === 'Object') {
     if (_.isEmpty(schema.properties)) {
-      return 'object'
+      return '{ [key: string]: any }'
     } else {
       for (let k in schema.properties) {
         text += pad + k + ': ' + schema2type(schema.properties[k], '', level + 1) + ';\n'
@@ -74,7 +74,7 @@ declare class MConnection extends Base<IConnection> {
     const Name = doc.name.replace(/^M/, '');
     fss.writeFileSync(file_doc, `export interface I${Name} ${schema2type(doc.schema, Name)}`, { flag: 'a', encoding: 'utf-8' })
     fss.writeFileSync(file_model, `
-declare class M${Name} extends Base<I${Name}> {
+declare class M${Name} extends Base<I${Name.startsWith('Resource') ? 'Resource' : Name}> {
   constructor(db: mongoose.Connection, params?: CustomParams<I${Name}>);
 }
 `, { flag: 'a', encoding: 'utf-8' })

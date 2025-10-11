@@ -117,7 +117,7 @@ declare class MMediaSegment extends Base<IMediaSegment> {
   constructor(db: mongoose.Connection, params?: CustomParams<IMediaSegment>);
 }
 
-declare class MResourceDemo extends Base<IResourceDemo> {
+declare class MResourceDemo extends Base<IResource> {
   constructor(db: mongoose.Connection, params?: CustomParams<IResourceDemo>);
 }
 

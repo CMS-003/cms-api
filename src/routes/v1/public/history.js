@@ -71,7 +71,6 @@ route.get('/history', verify, async ({ state, request, models, response }) => {
     })
     const results = await Promise.all(arr);
     results.forEach((v, i) => {
-      // @ts-ignore
       v.detail = list[i];
     })
     response.success({ items: results });

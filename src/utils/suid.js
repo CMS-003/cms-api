@@ -41,15 +41,16 @@ function generateRandomBase62(length = 3) {
 /**
  * 生成 ID
  * @param {number} machineId 
- * @param {Date|number} targetTime 
+ * @param {string|Date|number} targetTime 
  * @returns 
  */
 export function suid(machineId = 1, targetTime = Date.now()) {
   //const targetTime = Date.now(); // 默认使用当前时间
   if (typeof targetTime === 'string') {
     targetTime = new Date(targetTime).getTime();
+  } else if(targetTime instanceof Date) {
+    targetTime = targetTime.getTime();
   }
-  // @ts-ignore
   let timeDifference = targetTime - EPOCH;
 
   // 判断时间是否为负数

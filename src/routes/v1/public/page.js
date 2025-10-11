@@ -10,11 +10,13 @@ route.get('/page/:name', async ({ request, params, models, response }) => {
   if (!page) {
     return response.fail();
   }
+  // @ts-ignore
   page.children = [];
   const components = await models.MComponent.getAll({ where: { template_id: page._id, parent_id: '' }, sort: { order: 1 }, lean: true })
   for (let i = 0; i < components.length; i++) {
     const tree = await getComponentTreeInfo(components[i].tree_id);
     if (tree) {
+      // @ts-ignore
       page.children.push(tree)
     }
   }

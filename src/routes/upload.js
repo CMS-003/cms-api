@@ -29,8 +29,7 @@ route.get('/upload/video/(.*)', async (ctx) => {
     ctx.set({
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
-      // @ts-ignore
-      'Content-Length': chunkSize,
+      'Content-Length': chunkSize.toString(),
       'Content-Type': 'video/mp4',
     });
     ctx.body = file;
@@ -38,8 +37,7 @@ route.get('/upload/video/(.*)', async (ctx) => {
     // 无 Range 请求，返回整段视频
     ctx.status = 200;
     ctx.set({
-      // @ts-ignore
-      'Content-Length': fileSize,
+      'Content-Length': fileSize.toString(),
       'Content-Type': 'video/mp4',
     });
     ctx.body = fs.createReadStream(filepath);

@@ -5,7 +5,7 @@ class Scheduler {
   static tasks = {};
   static async load(doc, context) {
     const { _id, name, cron, script, status } = doc;
-    const sandbox = await vmRunCode(script)
+    const sandbox = await vmRunCode(script, 'schedule_' + _id + '.js')
     const t = Scheduler.tasks[_id];
     if (t) {
       t.job.stop();

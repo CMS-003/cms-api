@@ -56,7 +56,7 @@ function getBaseQuery(options) {
     baseQuery.bool.filter.push({ term: { region: options.region } });
   }
   if (options.type) {
-    baseQuery.bool.filter.push({ terms: { type: _.isString(options.type) ? options.type.split(',').map(type => type).filter(t => !!t) : [options.type] } })
+    baseQuery.bool.filter.push({ terms: { type: _.isString(options.type) ? options.type.split(',').map(type => parseInt(type)).filter(t => !!t) : [options.type] } })
   }
   if (options.status) {
     baseQuery.bool.filter.push({ term: { status: parseInt(options.status, 10) } })
@@ -74,20 +74,16 @@ export function getQuery(hql) {
    */
   let sort = hql.where.q ? { _score: { order: 'desc' } } : { createdAt: { order: 'desc' } };
   const min_score = hql.where.q ? 40 : 0;
-  let [a, b] = (hql.sort || '').split('-')
-  if (a || b) {
-    if (!b) {
-      b = 1
-    } else {
-      a = b;
-      b = -1
+  if (hql.sort) {
+    if (hql.sort.createdAt) {
+      sort = { createdAt: { order: hql.sort.createdAt === 1 ? 'asc' : 'desc' } };
+    } else if (hql.sort.publishedAt) {
+      sort = { publishedAt: { order: hql.sort.publishedAt === 1 ? 'asc' : 'desc' } };
+    } else if (hql.sort.updatedAt) {
+      sort = { updatedAt: { order: hql.sort.updatedAt === 1 ? 'asc' : 'desc' } };
     }
   }
-  if (a === 'createdAt') {
-    sort = { createdAt: { order: b === 1 ? 'asc' : 'desc' } };
-  } else if (a === 'publishedAt') {
-    sort = { publishedAt: { order: b === 1 ? 'asc' : 'desc' } };
-  }
+
   const body = {
     size: hql.limit,
     from: hql.limit * (hql.page - 1),

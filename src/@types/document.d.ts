@@ -3,8 +3,7 @@ export interface IRecord {
   spider_id: string;
   source_id: string;
   origin: string;
-  original: object;
-  resource_id: string;
+  original: { [key: string]: any };
 }
 export interface IQuery {
   _id: string;
@@ -48,8 +47,8 @@ export interface IComponent {
       title: string;
       poster: string;
     }[];
-  attrs: object;
-  style: object;
+  attrs: { [key: string]: any };
+  style: { [key: string]: any };
   createdAt: Date;
   updatedAt: Date;
   queries: string[];
@@ -87,8 +86,8 @@ export interface ITask {
   proxy: boolean;
   url: string;
   filepath: string;
-  params: object;
-  header: object;
+  params: { [key: string]: any };
+  header: { [key: string]: any };
   status: number;
   transcode: number;
   retries: number;
@@ -131,7 +130,7 @@ export interface ISpider {
   desc: string;
   proxy: boolean;
   from: string;
-  headers: object;
+  headers: { [key: string]: any };
   script: string;
   urls: {
       url: string;
@@ -180,7 +179,7 @@ export interface IUser {
 }
 export interface IResource {
   _id: string;
-  type: string;
+  type: number;
   title: string;
   content: string;
   desc: string;
@@ -200,6 +199,11 @@ export interface IResource {
   updatedAt: Date;
   size: number;
   series: string;
+  actors: {
+      _id: string;
+      name: string;
+    }[];
+  origin: string;
   chapters?: IMediaChapter[];
   images?: IMediaImage[];
   videos?: IMediaVideo[];
@@ -221,7 +225,7 @@ export interface IMediaChapter {
   nth: number;
   createdAt: Date;
   updatedAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IMediaAlbum {
   _id: string;
@@ -234,7 +238,7 @@ export interface IMediaAlbum {
   nth: number;
   status: number;
   createdAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IMediaImage {
   _id: string;
@@ -248,7 +252,7 @@ export interface IMediaImage {
   nth: number;
   status: number;
   createdAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IMediaVideo {
   _id: string;
@@ -261,7 +265,7 @@ export interface IMediaVideo {
   nth: number;
   status: number;
   createdAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IMediaPixiv {
   _id: string;
@@ -274,7 +278,7 @@ export interface IMediaPixiv {
   nth: number;
   status: number;
   createdAt: Date;
-  more: object;
+  more: { [key: string]: any };
   uid: string;
 }
 export interface IMediaCaption {
@@ -289,7 +293,7 @@ export interface IMediaCaption {
   status: number;
   createdAt: Date;
   updatedAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IVersion {
   _id: string;
@@ -321,7 +325,7 @@ export interface IConfig {
   title: string;
   desc: string;
   order: number;
-  value: object;
+  value: { [key: string]: any };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -344,7 +348,7 @@ export interface IMediaAudio {
   status: number;
   createdAt: Date;
   updatedAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IMediaSegment {
   _id: string;
@@ -358,7 +362,7 @@ export interface IMediaSegment {
   status: number;
   createdAt: Date;
   updatedAt: Date;
-  more: object;
+  more: { [key: string]: any };
 }
 export interface IResourceDemo {
   _id: string;
@@ -403,7 +407,7 @@ export interface ISns {
   sns_type: string;
   nickname: string;
   avatar: string;
-  detail: object;
+  detail: { [key: string]: any };
   status: number;
   createdAt: Date;
   access_token: string;
@@ -445,8 +449,8 @@ export interface ITemplate {
   desc: string;
   status: number;
   order: number;
-  attrs: object;
-  style: object;
+  attrs: { [key: string]: any };
+  style: { [key: string]: any };
   createdAt: Date;
   updatedAt: Date;
 }
