@@ -13,9 +13,9 @@ import { toSimplified } from 'chinese-simple2traditional';
 
 async function replace(models, o) {
   const { sns_id, sns_type, nickname } = o;
-  const user = await models.MSns.getInfo({ where: { sns_id, sns_type }, lean: true })
-  if (user) {
-    return user._id;
+  const sns = await models.MSns.getInfo({ where: { sns_id, sns_type }, lean: true })
+  if (sns) {
+    return sns.user_id;
   } else {
     const user_id = v7();
     const _id = crypto.createHash('md5').update(`${sns_type}|${sns_id}`).digest('hex');
