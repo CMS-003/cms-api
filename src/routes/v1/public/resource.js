@@ -8,6 +8,46 @@ import path from 'path'
 import CONST from 'const'
 import crypto from 'crypto'
 import { v7 } from 'uuid';
+import constant from '#constant.js'
+import { toSimplified } from 'chinese-simple2traditional';
+
+async function replace(models, o) {
+  const { sns_id, sns_type, nickname } = o;
+  const user = await models.MSns.getInfo({ where: { sns_id, sns_type }, lean: true })
+  if (user) {
+    return user._id;
+  } else {
+    const user_id = v7();
+    const _id = crypto.createHash('md5').update(`${sns_type}|${sns_id}`).digest('hex');
+    await models.MSns.create({
+      _id,
+      sns_id,
+      sns_type,
+      nickname,
+      user_id,
+      avatar: '',
+      detail: {},
+      status: 1,
+      createdAt: new Date(),
+      access_token: '',
+      refresh_token: '',
+    });
+    await models.MUser.create({
+      _id: user_id,
+      name: nickname,
+      nickname,
+      email: '',
+      phone: '',
+      avatar: '',
+      pass: '',
+      salt: '',
+      status: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    return user_id;
+  }
+}
 
 const route = new Router();
 
@@ -100,6 +140,9 @@ route.put('/resource/:_id', async (ctx) => {
   const _id = ctx.params._id
   const data = ctx.request.body;
   const info = await ctx.models.MResource.getInfo({ where: { _id }, lean: true })
+  if (!info) {
+    return ctx.response.fail({ message: 'NotFound' });
+  }
   if (data.status === CONST.STATUS.SUCCESS && info.type !== 6 && info.type !== 1) {
     const videos = await ctx.models.MMediaVideo.getAll({ where: { res_id: _id, status: CONST.STATUS.SUCCESS }, lean: true });
     let size = 0;
@@ -109,15 +152,26 @@ route.put('/resource/:_id', async (ctx) => {
     });
     data.size = size;
   }
+  // if (data.title) {
+  //   data.title = toSimplified(data.title);
+  // }
+  // if (_.isArray(data.tags)) {
+  //   data.tags = data.tags.map(tag => toSimplified(tag));
+  // }
+  // if (_.isArray(data.actors)) {
+  //   for (let i = 0; i < data.actors.length; i++) {
+  //     const uid = await replace(ctx.models, { sns_id: data.actors[i]._id, sns_type: info.origin, nickname: data.actors[i].name })
+  //     data.actors[i]._id = uid;
+  //   }
+  // }
   await ctx.models.MResource.update({ where: { _id }, data: { $set: data } })
   await ctx.redis.del(`api:v1:resource:${_id}:detail`)
-  await getResourceInfo(_id, '', false)
   ctx.response.success();
 })
 
 function destroyFile(filepath) {
   if (typeof filepath === 'string') {
-    const fullpath = path.join('/cms/static', filepath);
+    const fullpath = path.join(constant.PATH.STATIC, filepath);
     try {
       fs.unlinkSync(fullpath);
     } catch (e) {
@@ -152,6 +206,10 @@ route.del('/resource/:_id', async ({ models, request, redis, params, response })
   fs.existsSync(path.join('/cms/static', 'proxy/videos', doc._id)) && fs.readdirSync(path.join('/cms/static', '/proxy/videos', doc._id)).forEach(filename => {
     destroyFile(path.join('/proxy/videos', doc._id, filename))
   });
+  const client = getES();
+  if (client) {
+    await client.delete({ id: doc._id, index: 'cms' })
+  }
   await redis.del(`api:v3:resource:${doc._id}:detail`)
   response.success();
 })

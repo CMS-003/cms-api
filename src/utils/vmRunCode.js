@@ -1,4 +1,4 @@
-import vm, { runInNewContext, createContext } from 'node:vm';
+import vm, { runInNewContext, SourceTextModule, createContext, SyntheticModule } from 'node:vm';
 import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import module from 'node:module'; // 引入 `createRequire` 方法
@@ -17,7 +17,7 @@ const defaultIdentifier = pathToFileURL(__filename).toString();
  * @param {string} identifier 
  * @returns 
  */
-export default async function vmRunCode(code, identifier = defaultIdentifier) {
+export default async function vmRunCode(code, identifier) {
   if (!identifier) {
     identifier = defaultIdentifier;
   } else {
@@ -42,6 +42,18 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
   };
   const context = createContext(sandbox);
 
+  async function defaultLinker(specifier) {
+    const mod = await import(specifier);
+    return new SyntheticModule(
+      Object.keys(mod),
+      function () {
+        for (const [k, v] of Object.entries(mod)) {
+          this.setExport(k, v);
+        }
+      },
+      { identifier: specifier }
+    );
+  }
   /**
    * 定义动态导入回调
    * @param {string} specifier 
@@ -49,7 +61,7 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
    * @returns 
    */
   async function dynamicImport(specifier, referencingModule) {
-    if (!specifier.startsWith(".") && !specifier.startsWith('/') && !specifier.startsWith('#')) {
+    if (!specifier.startsWith(".")) {
       // 导入第三方
       return import(specifier);
     } else {
@@ -59,7 +71,7 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
       // 为子模块构造一个新的 identifier
       const childIdentifier = identifier + '/' + specifier;
       // 创建子模块
-      const childModule = new vm.SourceTextModule(importedCode, {
+      const childModule = new SourceTextModule(importedCode, {
         context,
         identifier: childIdentifier,
         importModuleDynamically: dynamicImport, // 递归设置动态导入
@@ -72,9 +84,8 @@ export default async function vmRunCode(code, identifier = defaultIdentifier) {
       return childModule;
     }
   }
-
   // 创建主模块
-  const module = new vm.SourceTextModule(code, {
+  const module = new SourceTextModule(code, {
     context,
     identifier,
     // @ts-ignore
