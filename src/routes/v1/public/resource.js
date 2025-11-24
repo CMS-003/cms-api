@@ -57,7 +57,7 @@ route.get('/resources', async ({ models, request, query, response }) => {
     return response.fail()
   }
   const hql = request.paginate(hql => {
-    hql.where = _.pick(query, ['tags', 'sort']);
+    hql.where = _.pick(query, ['tags']);
     const { key, value } = query;
     if (key && value) {
       switch (key) {
@@ -69,6 +69,9 @@ route.get('/resources', async ({ models, request, query, response }) => {
     }
     if (!query.sort) {
       hql.sort = { createdAt: -1 }
+    } else {
+      const key = query.sort.toString().replace('-', '')
+      hql.sort = { [key]: query.sort[0] === '-' ? -1 : 1 }
     }
     if (query.type) {
       hql.where.type = parseInt(query.type.toString());
@@ -79,6 +82,9 @@ route.get('/resources', async ({ models, request, query, response }) => {
     if (query.id) {
       hql.where.id = query.id;
     }
+    if (query.origin) {
+      hql.where.origin = query.origin;
+    }
     if (query.region) {
       hql.where.region = query.region;
     }
@@ -87,21 +93,22 @@ route.get('/resources', async ({ models, request, query, response }) => {
     }
     return hql;
   })
-  let ids = [];
+  let pairs = [];
   let total = 0;
   if (_.isEmpty(hql.where)) {
     total = await models.MResource.count(hql);
-    ids = (await models.MResource.getList(hql)).map(v => v._id);
+    pairs = (await models.MResource.getList(hql)).map(v => ({ res_id: v._id }));
   } else {
     const sql = getQuery(hql)
     const result = await client.search(sql);
     // @ts-ignore
     total = result.hits.total.value;
-    ids = result.hits.hits.map(hit => hit._id)
+    // @ts-ignore
+    pairs = result.hits.hits.map(hit => ({ res_id: hit._id, res_type: hit._source.type }))
   }
   const items = [];
-  for (let i = 0; i < ids.length; i++) {
-    const item = await getResourceInfo(ids[i], '', false);
+  for (let i = 0; i < pairs.length; i++) {
+    const item = await getResourceInfo(pairs[i], '', false);
     items.push(item);
   }
   response.success({ total, items })
@@ -115,7 +122,7 @@ route.get('/resource/:_id', async (ctx) => {
   } catch (e) {
 
   }
-  const doc = await getResourceInfo(ctx.params._id, user_id, true, true);
+  const doc = await getResourceInfo({ res_id: ctx.params._id }, user_id, true, true);
   if (!doc) {
     return ctx.response.fail();
   }
@@ -158,12 +165,6 @@ route.put('/resource/:_id', async (ctx) => {
   // if (_.isArray(data.tags)) {
   //   data.tags = data.tags.map(tag => toSimplified(tag));
   // }
-  // if (_.isArray(data.actors)) {
-  //   for (let i = 0; i < data.actors.length; i++) {
-  //     const uid = await replace(ctx.models, { sns_id: data.actors[i]._id, sns_type: info.origin, nickname: data.actors[i].name })
-  //     data.actors[i]._id = uid;
-  //   }
-  // }
   await ctx.models.MResource.update({ where: { _id }, data: { $set: data } })
   await ctx.redis.del(`api:v1:resource:${_id}:detail`)
   ctx.response.success();
@@ -181,7 +182,7 @@ function destroyFile(filepath) {
 }
 route.del('/resource/:_id', async ({ models, request, redis, params, response }) => {
   const { MResource, MRecord, MMediaChapter, MMediaImage, MMediaVideo, } = models;
-  const doc = await getResourceInfo(params._id, '', true, false);
+  const doc = await getResourceInfo({ res_id: params._id }, '', true, false);
   if (!doc) {
     return response.fail();
   }
@@ -233,7 +234,7 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
       hql.where.title = { $regex: query.search };
     }
     if (query.uid) {
-      hql.where.uid = query.uid
+      hql.where.$or = [{ uid: query.uid }, { 'actors._id': query.uid }]
     }
   })
   const queries = qid.length ? await models.MQuery.getAll({ where: { status: 2, _id: { $in: qid } }, attrs: { createdAt: 0, updatedAt: 0 }, lean: true }) : [];
@@ -269,7 +270,7 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
       items[i].content = '';
       continue;
     }
-    const result = await getResourceInfo(items[i]._id, '', false);
+    const result = await getResourceInfo({ res_id: items[i]._id }, '', false);
     items[i] = result;
   }
   response.success({ items })

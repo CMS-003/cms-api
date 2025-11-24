@@ -92,7 +92,10 @@ app.use(koaBody({
     maxFields: 100,
     maxFieldsSize: 1024 * 1024 * 1024,
     keepExtensions: false,
-  }
+  },
+  jsonLimit: '10mb', // JSON body limit
+  formLimit: '10mb', // Form body limit
+  textLimit: '10mb', // Text body limit
 }));
 
 app.use(Convert(Static(path.join(__dirname, '../static'))))

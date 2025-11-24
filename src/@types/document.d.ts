@@ -205,6 +205,7 @@ export interface IResource {
     }[];
   origin: string;
   chapters?: IMediaChapter[];
+  captions?: IMediaCaption[];
   images?: IMediaImage[];
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];

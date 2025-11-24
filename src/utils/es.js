@@ -55,8 +55,11 @@ function getBaseQuery(options) {
   if (options.region) {
     baseQuery.bool.filter.push({ term: { region: options.region } });
   }
+  if (options.origin) {
+    baseQuery.bool.filter.push({ term: { origin: options.origin } });
+  }
   if (options.type) {
-    baseQuery.bool.filter.push({ terms: { type: _.isString(options.type) ? options.type.split(',').map(type => parseInt(type)).filter(t => !!t) : [options.type] } })
+    baseQuery.bool.filter.push({ terms: { type: _.isString(options.type) ? options.type.split(',').filter(t => t !== '').map(type => parseInt(type)) : [options.type] } })
   }
   if (options.status) {
     baseQuery.bool.filter.push({ term: { status: parseInt(options.status, 10) } })

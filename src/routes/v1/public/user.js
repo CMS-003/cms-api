@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import _ from 'lodash'
 import crypto from 'crypto'
 import { v7 } from 'uuid';
+import verify from '#middleware/verify.js';
 
 const route = new Router();
 
@@ -67,5 +68,30 @@ route.post('/user/sync-to-actor', async ({ request, params, models, response }) 
   await models.MResource.update({ where: { 'actors._id': sns_id }, data: { $set: { 'actors.$._id': sns.user_id } } });
   response.success();
 });
+
+route.post('/user/follow/:user_id', verify, async ({ request, state, params, models, response }) => {
+  const data = {
+    follower_id: state.user.id,
+    followee_id: params.user_id,
+    _id: v7(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  const doc = await models.MFollow.getInfo({ where: _.pick(data, ['followee_id', 'follower_id']), lean: true })
+  if (doc) {
+    return response.fail();
+  }
+  await models.MFollow.create(data)
+  response.success();
+})
+
+route.delete('/user/follow/:user_id', verify, async ({ request, state, params, models, response }) => {
+  const where = {
+    follower_id: state.user.id,
+    followee_id: params.user_id,
+  }
+  await models.MFollow.destroy({ where })
+  response.success();
+})
 
 export default route

@@ -4,6 +4,8 @@ import https from 'https'
 import _ from 'lodash'
 import config from '#config/index.js';
 import vmRunCode from '#utils/vmRunCode.js';
+import Logger from '#utils/logger.js'
+const logger = Logger('gatling');
 
 const home = new Router();
 
@@ -35,6 +37,7 @@ const gatling = new Router();
 gatling.all('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
+  logger.info(params)
   const api = await models.MInterface.getInfo({ where, lean: true });
   if (api && api.method === 'all' || api.method === ctx.request.method.toLocaleUpperCase()) {
     const sandbox = await vmRunCode(api.script, 'api_' + params._id + '.js');

@@ -5,44 +5,43 @@ import CONST from 'const'
 
 /**
  * 资源详情
- * @param {string} res_id 
+ * @param {{ res_id: string; res_type?: number }} res
  * @param {string} user_id 
  * @param {boolean} all 
  * @returns 
  */
-export async function getResourceInfo(res_id, user_id, all = false, detail = false) {
-  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MStar, MHistory } = models;
+export async function getResourceInfo(res, user_id, all = false, detail = false) {
+  const { res_id, res_type } = res;
+  const { MUser, MResource, MMediaChapter, MMediaPixiv, MMediaVideo, MMediaImage, MMediaAudio, MMediaCaption, MStar, MHistory } = models;
   const key = `api:v1:resource:${res_id}:detail`;
   const redis = getRedis();
   let doc;
   const str = redis ? await redis.get(key) : null;
-  console.log(str, res_id)
   if (str) {
     doc = JSON.parse(str);
-    if (detail === false && doc.type !== CONST.RESOURCE.STORY) {
-      doc.content = ''
-    }
   } else {
     doc = await MResource.model.findOne({ _id: res_id }).lean(true);
     if (doc) {
-      if (doc.type !==  CONST.RESOURCE.NOVEL) {
+      if (doc.type !== CONST.RESOURCE.NOVEL) {
         doc.chapters = await MMediaChapter.model.find({ res_id }, { content: 0 }).sort({ nth: 1 }).lean(true);
       } else {
         doc.chapters = [];
       }
-      if (doc.type ===  CONST.RESOURCE.IMAGE) {
+      if (doc.type === CONST.RESOURCE.IMAGE) {
         doc.images = await MMediaPixiv.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       } else {
         doc.images = await MMediaImage.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       }
-      if (doc.type ===  CONST.RESOURCE.MOVIE && !_.isEmpty(doc.actors)) {
+      if (doc.type === CONST.RESOURCE.MOVIE && !_.isEmpty(doc.actors)) {
         const actors = await MUser.model.find({ _id: { $in: doc.actors.map(a => a._id) } }, { salt: 0, password: 0, source_id: 0, spider_id: 0 }).lean(true);
         doc.actors = actors.map(a => ({ _id: a._id, name: a.nickname, avatar: a.avatar }));
       }
       doc.videos = await MMediaVideo.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       doc.audios = await MMediaAudio.model.find({ res_id }).sort({ nth: 1 }).lean(true);
+      doc.captions = await MMediaCaption.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       doc.counter = {
         chapters: doc.chapters.length,
+        captions: doc.captions.length,
         images: doc.images.length,
         videos: doc.videos.length,
         audios: doc.audios.length,
@@ -64,6 +63,7 @@ export async function getResourceInfo(res_id, user_id, all = false, detail = fal
   const history = await MHistory.getInfo({ where: { resource_id: res_id, user_id }, sort: { created_at: -1 }, lean: true })
   if (!all && doc) {
     doc.chapters = doc.chapters.map(v => _.omit(v, ['url']));
+    doc.captions = doc.captions.map(v => _.omit(v, ['url']));
     doc.videos = doc.videos.map(v => _.omit(v, ['url']));
     doc.images = doc.images.map(v => _.omit(v, ['url']));
     doc.audios = doc.audios.map(v => _.omit(v, ['url']));

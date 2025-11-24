@@ -80,8 +80,9 @@ route.post('/crawl/:_id', async (ctx) => {
   if (!param) {
     return response.fail({ message: '格式不匹配' })
   }
-  const sandbox = await vmRunCode(rule.script);
+  const sandbox = await vmRunCode(rule.script, '');
   const fn = sandbox.context.module.exports;
+  ctx.request.body.html = Buffer.from(ctx.request.body.html || '', 'base64').toString()
   const { error, data, message } = await fn(ctx, rule, { _id: rule.getResourceId(param.id), source_id: param.id, spider_id: rule._id, origin: url });
   response.body = { code: error ? -1 : 0, message, data }
 })

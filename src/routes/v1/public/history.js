@@ -5,6 +5,7 @@ import { v7 } from 'uuid'
 import verify from '#middleware/verify.js';
 import { verifyToken } from '#services/user.js';
 import { getResourceInfo } from '#services/resource.js';
+import CONST from 'const'
 
 const route = new Router();
 
@@ -66,7 +67,7 @@ route.get('/history', verify, async ({ state, request, models, response }) => {
     const arr = [];
     list.forEach(history => {
       arr.push(new Promise((resolve) => {
-        resolve(getResourceInfo(history.resource_id, state.user.id, false));
+        resolve(getResourceInfo({ res_id: history.resource_id, res_type: CONST.RESOURCE[history.resource_type.toUpperCase()] || 0 }, state.user.id, false));
       }))
     })
     const results = await Promise.all(arr);

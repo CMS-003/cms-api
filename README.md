@@ -23,3 +23,4 @@
 -  ✅ commonjs 改为 esm
 -  ✅ twitter爬取
 -  ✅ resource id 路由重定向到 record的url
+   ✅ 断点续传
