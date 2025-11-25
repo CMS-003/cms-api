@@ -5,7 +5,7 @@ import Router from 'koa-router'
 import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
-import CONST from 'const'
+import define from 'define'
 import crypto from 'crypto'
 import { v7 } from 'uuid';
 import constant from '#constant.js'
@@ -150,8 +150,8 @@ route.put('/resource/:_id', async (ctx) => {
   if (!info) {
     return ctx.response.fail({ message: 'NotFound' });
   }
-  if (data.status === CONST.STATUS.SUCCESS && info.type !== 6 && info.type !== 1) {
-    const videos = await ctx.models.MMediaVideo.getAll({ where: { res_id: _id, status: CONST.STATUS.SUCCESS }, lean: true });
+  if (data.status === define.STATUS.SUCCESS && info.type !== 6 && info.type !== 1) {
+    const videos = await ctx.models.MMediaVideo.getAll({ where: { res_id: _id, status: define.STATUS.SUCCESS }, lean: true });
     let size = 0;
     videos.forEach(v => {
       const duration = v.more.duration;
@@ -266,7 +266,7 @@ route.get('/:app/resources', async ({ request, query, params, models, response }
   }
   const items = await model.getList(sql)
   for (let i = 0; i < items.length; i++) {
-    if (items[i].type === CONST.RESOURCE.ARTICLE) {
+    if (items[i].type === define.RESOURCE.TYPE.ARTICLE) {
       items[i].content = '';
       continue;
     }

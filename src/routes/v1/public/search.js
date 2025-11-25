@@ -47,12 +47,8 @@ route.get('/search', async ({ request, query, models, state, response }) => {
   pairs = result.hits.hits.map(hit => ({ res_id: hit._id, res_type: hit._source.type }))
   const items = [];
   for (let i = 0; i < pairs.length; i++) {
-    if (pairs[i].res_type === 13) {
-      items.push(result.hits.hits[i]._source)
-    } else {
-      const item = await getResourceInfo(pairs[i], '', false);
-      items.push(item);
-    }
+    const item = await getResourceInfo(pairs[i], '', false);
+    items.push(item);
   }
   response.success({ total, items })
 })
