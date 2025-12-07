@@ -22,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@elastic/elasticsearch": "^8.18.0",
+    "@protobuf-ts/runtime": "^2.11.1",
     "alipay-sdk": "4.13.0",
     "cheerio": "^1.0.0",
     "chinese-simple2traditional": "^2.2.2",

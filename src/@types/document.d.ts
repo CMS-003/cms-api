@@ -40,6 +40,7 @@ export interface IComponent {
     action: string;
     method: string;
     query: boolean;
+    source: string;
   };
   url: string;
   resources: {
@@ -92,6 +93,7 @@ export interface ITask {
   transcode: number;
   retries: number;
   createdAt: Date;
+  updatedAt: Date;
 }
 export interface IVerification {
   _id: string;
@@ -205,7 +207,6 @@ export interface IResource {
     }[];
   origin: string;
   chapters?: IMediaChapter[];
-  captions?: IMediaCaption[];
   images?: IMediaImage[];
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];
@@ -318,6 +319,12 @@ export interface IAccount {
   weight: number;
   createdAt: Date;
   updateedAt: Date;
+  password: {
+      pass: string;
+      time: number;
+      status: number;
+    }[];
+  deletedAt: Date;
 }
 export interface IConfig {
   _id: string;

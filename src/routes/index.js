@@ -37,7 +37,7 @@ const gatling = new Router();
 gatling.all('/:_id', async (ctx) => {
   const { params, models, response } = ctx;
   const where = { _id: params._id };
-  logger.info(params)
+  logger.info('gatling params: ' + JSON.stringify(params))
   const api = await models.MInterface.getInfo({ where, lean: true });
   if (api && api.method === 'all' || api.method === ctx.request.method.toLocaleUpperCase()) {
     const sandbox = await vmRunCode(api.script, 'api_' + params._id + '.js');

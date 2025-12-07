@@ -19,11 +19,12 @@ router.get('/', async ({ models, response, request }) => {
 router.get('/:id', async ({ params, models, response }) => {
   const where = { _id: params.id };
   const item = await models.MConfig.getInfo({ where });
-  response.success({ item });
+  response.success(item);
 })
 
 router.post('/', async ({ loadConfig, request, response, models }) => {
-  const data = _.pick(request.body, ['id', 'project_id', 'title', 'desc', 'type', 'value', 'order', 'createdAt', 'updatedAt']);
+  const data = _.pick(request.body, ['_id', 'project_id', 'title', 'desc', 'type', 'value', 'order', 'createdAt', 'updatedAt']);
+  data._id = v4();
   data.createdAt = new Date();
   data.updatedAt = new Date();
   const item = await models.MConfig.create(data);

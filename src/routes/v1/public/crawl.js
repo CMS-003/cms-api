@@ -72,7 +72,7 @@ route.post('/crawl/:_id', async (ctx) => {
   if (!rule) {
     return response.fail({ message: 'NotFound' })
   }
-  if (rule.status !== constant.STATUS.SUCCESS) {
+  if (![2, 3].includes(rule.status)) {
     return response.fail({ message: 'NotReady' })
   }
   const url = rule.getPureUrl(request.body.url);

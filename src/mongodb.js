@@ -48,14 +48,30 @@ export function initTable(db, doc) {
 }
 
 export async function initMongo(mongo_url) {
-  const system = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, 'schema'));
+  const system = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, 'schema'), {
+    // 重试相关配置
+    serverSelectionTimeoutMS: 10000,     // 10秒服务器选择超时
+    socketTimeoutMS: 60000,              // 60秒socket超时
+    maxPoolSize: 20,                     // 最大连接数
+    minPoolSize: 5,                      // 最小连接数
+    retryWrites: true,                   // 启用重试写入
+    retryReads: true,                    // 启用重试读取
+  });
   const Connection = new MConnection(system);
   const JsonSchema = new MJsonSchema(system);
   models.MJsonSchema = JsonSchema;
   const connections = await Connection.getAll({ where: { status: 1 }, lean: true });
   dbs.system = system;
   connections.forEach(connection => {
-    dbs[connection._id] = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, connection._id));
+    dbs[connection._id] = mongoose.createConnection(mongo_url.replace(constant.SYSTEM.MONGO_HOLDER, connection._id), {
+      // 重试相关配置
+      serverSelectionTimeoutMS: 10000,     // 10秒服务器选择超时
+      socketTimeoutMS: 60000,              // 60秒socket超时
+      maxPoolSize: 20,                     // 最大连接数
+      minPoolSize: 5,                      // 最小连接数
+      retryWrites: true,                   // 启用重试写入
+      retryReads: true,                    // 启用重试读取
+    });
   });
   const schemas = await JsonSchema.getAll({ where: { status: 1 }, lean: true })
   if (process.env.NODE_ENV === 'development') {

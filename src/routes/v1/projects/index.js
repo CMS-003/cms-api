@@ -14,11 +14,11 @@ router.get('/', async ({ models, response }) => {
 router.get('/:id', async ({ params, req, models, response }) => {
   const where = { _id: params.id };
   const item = await models.MProject.getInfo({ where });
-  response.success({ item });
+  response.success(item);
 })
 
 router.post('/', async ({ request, response, models }) => {
-  const data = _.pick(request.body, ['_id', 'title', 'name', 'desc', 'cover']);
+  const data = _.omit(request.body, ['_id']);
   data._id = v4();
   const item = await models.MProject.create(data);
   response.success({ item });
