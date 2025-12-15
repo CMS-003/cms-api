@@ -19,6 +19,7 @@ import Mailer from './utils/mailer.js'
 import Scheduler from './utils/scheduler.js';
 import models, { dbs, initMongo } from './mongodb.js';
 import ejs from 'ejs'
+import compress from 'koa-compress';
 import * as pptr from 'puppeteer'
 
 const __filename = fileURLToPath(import.meta.url);
@@ -76,6 +77,17 @@ app.context.loadConfig = async function () {
 
 app.use(bizError);
 app.use(needProject);
+app.use(
+  compress({
+    threshold: 1024,
+    gzip: {},
+    deflate: {},
+    br: {},
+    filter: (content_type) => {
+      return /json|octet-stream|protobuf/i.test(content_type || '')
+    }
+  })
+)
 
 const fn = log4js.connectLogger(logger, {});
 app.use(async (ctx, next) => {

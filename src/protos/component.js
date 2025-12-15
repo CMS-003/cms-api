@@ -3,106 +3,6 @@ import { UnknownFieldHandler } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 // @generated message type with reflection information, may provide speed optimized methods
-class Value$Type extends MessageType {
-    constructor() {
-        super("Value", [
-            { no: 1, name: "string_value", kind: "scalar", oneof: "kind", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "number_value", kind: "scalar", oneof: "kind", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 3, name: "bool_value", kind: "scalar", oneof: "kind", T: 8 /*ScalarType.BOOL*/ },
-            { no: 4, name: "object_value", kind: "message", oneof: "kind", T: () => Object },
-            { no: 5, name: "array_value", kind: "message", oneof: "kind", T: () => Array$ },
-            { no: 6, name: "null_value", kind: "scalar", oneof: "kind", T: 8 /*ScalarType.BOOL*/ }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.kind = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string string_value */ 1:
-                    message.kind = {
-                        oneofKind: "stringValue",
-                        stringValue: reader.string()
-                    };
-                    break;
-                case /* double number_value */ 2:
-                    message.kind = {
-                        oneofKind: "numberValue",
-                        numberValue: reader.double()
-                    };
-                    break;
-                case /* bool bool_value */ 3:
-                    message.kind = {
-                        oneofKind: "boolValue",
-                        boolValue: reader.bool()
-                    };
-                    break;
-                case /* Object object_value */ 4:
-                    message.kind = {
-                        oneofKind: "objectValue",
-                        objectValue: Object.internalBinaryRead(reader, reader.uint32(), options, message.kind.objectValue)
-                    };
-                    break;
-                case /* Array array_value */ 5:
-                    message.kind = {
-                        oneofKind: "arrayValue",
-                        arrayValue: Array$.internalBinaryRead(reader, reader.uint32(), options, message.kind.arrayValue)
-                    };
-                    break;
-                case /* bool null_value */ 6:
-                    message.kind = {
-                        oneofKind: "nullValue",
-                        nullValue: reader.bool()
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* string string_value = 1; */
-        if (message.kind.oneofKind === "stringValue")
-            writer.tag(1, WireType.LengthDelimited).string(message.kind.stringValue);
-        /* double number_value = 2; */
-        if (message.kind.oneofKind === "numberValue")
-            writer.tag(2, WireType.Bit64).double(message.kind.numberValue);
-        /* bool bool_value = 3; */
-        if (message.kind.oneofKind === "boolValue")
-            writer.tag(3, WireType.Varint).bool(message.kind.boolValue);
-        /* Object object_value = 4; */
-        if (message.kind.oneofKind === "objectValue")
-            Object.internalBinaryWrite(message.kind.objectValue, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
-        /* Array array_value = 5; */
-        if (message.kind.oneofKind === "arrayValue")
-            Array$.internalBinaryWrite(message.kind.arrayValue, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
-        /* bool null_value = 6; */
-        if (message.kind.oneofKind === "nullValue")
-            writer.tag(6, WireType.Varint).bool(message.kind.nullValue);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message Value
- */
-export const Value = new Value$Type();
-// @generated message type with reflection information, may provide speed optimized methods
 class KvPair$Type extends MessageType {
     constructor() {
         super("KvPair", [
@@ -157,173 +57,6 @@ class KvPair$Type extends MessageType {
  * @generated MessageType for protobuf message KvPair
  */
 export const KvPair = new KvPair$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class Object$Type extends MessageType {
-    constructor() {
-        super("Object", [
-            { no: 1, name: "fields", kind: "map", K: 9 /*ScalarType.STRING*/, V: { kind: "message", T: () => Value } }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.fields = {};
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* map<string, Value> fields */ 1:
-                    this.binaryReadMap1(message.fields, reader, options);
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    binaryReadMap1(map, reader, options) {
-        let len = reader.uint32(), end = reader.pos + len, key, val;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case 1:
-                    key = reader.string();
-                    break;
-                case 2:
-                    val = Value.internalBinaryRead(reader, reader.uint32(), options);
-                    break;
-                default: throw new globalThis.Error("unknown map entry field for Object.fields");
-            }
-        }
-        map[key ?? ""] = val ?? Value.create();
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* map<string, Value> fields = 1; */
-        for (let k of globalThis.Object.keys(message.fields)) {
-            writer.tag(1, WireType.LengthDelimited).fork().tag(1, WireType.LengthDelimited).string(k);
-            writer.tag(2, WireType.LengthDelimited).fork();
-            Value.internalBinaryWrite(message.fields[k], writer, options);
-            writer.join().join();
-        }
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message Object
- */
-export const Object = new Object$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class Array$$Type extends MessageType {
-    constructor() {
-        super("Array", [
-            { no: 1, name: "values", kind: "message", repeat: 2 /*RepeatType.UNPACKED*/, T: () => Value }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        message.values = [];
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* repeated Value values */ 1:
-                    message.values.push(Value.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* repeated Value values = 1; */
-        for (let i = 0; i < message.values.length; i++)
-            Value.internalBinaryWrite(message.values[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message Array
- */
-export const Array$ = new Array$$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class JSONString$Type extends MessageType {
-    constructor() {
-        super("JSONString", [
-            { no: 1, name: "value", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "data", kind: "scalar", opt: true, T: 12 /*ScalarType.BYTES*/ }
-        ]);
-    }
-    create(value) {
-        const message = globalThis.Object.create((this.messagePrototype));
-        if (value !== undefined)
-            reflectionMergePartial(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader, length, options, target) {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* optional string value */ 1:
-                    message.value = reader.string();
-                    break;
-                case /* optional bytes data */ 2:
-                    message.data = reader.bytes();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message, writer, options) {
-        /* optional string value = 1; */
-        if (message.value !== undefined)
-            writer.tag(1, WireType.LengthDelimited).string(message.value);
-        /* optional bytes data = 2; */
-        if (message.data !== undefined)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.data);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message JSONString
- */
-export const JSONString = new JSONString$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class Widget$Type extends MessageType {
     constructor() {
@@ -424,7 +157,7 @@ export const Widget = new Widget$Type();
 class Resource$Type extends MessageType {
     constructor() {
         super("Resource", [
-            { no: 1, name: "id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 1, name: "_id", kind: "scalar", localName: "_id", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "title", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "cover", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "poster", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
@@ -443,8 +176,8 @@ class Resource$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* optional string id */ 1:
-                    message.id = reader.string();
+                case /* optional string _id */ 1:
+                    message._id = reader.string();
                     break;
                 case /* optional string title */ 2:
                     message.title = reader.string();
@@ -473,9 +206,9 @@ class Resource$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* optional string id = 1; */
-        if (message.id !== undefined)
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* optional string _id = 1; */
+        if (message._id !== undefined)
+            writer.tag(1, WireType.LengthDelimited).string(message._id);
         /* optional string title = 2; */
         if (message.title !== undefined)
             writer.tag(2, WireType.LengthDelimited).string(message.title);
@@ -505,12 +238,12 @@ export const Resource = new Resource$Type();
 class ComponentNode$Type extends MessageType {
     constructor() {
         super("ComponentNode", [
-            { no: 1, name: "id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 1, name: "_id", kind: "scalar", localName: "_id", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "type", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "template_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "project_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "parent_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "tree_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "template_id", kind: "scalar", localName: "template_id", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "project_id", kind: "scalar", localName: "project_id", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "parent_id", kind: "scalar", localName: "parent_id", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "tree_id", kind: "scalar", localName: "tree_id", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 7, name: "title", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 8, name: "name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 9, name: "icon", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
@@ -520,8 +253,8 @@ class ComponentNode$Type extends MessageType {
             { no: 13, name: "status", kind: "scalar", opt: true, T: 5 /*ScalarType.INT32*/ },
             { no: 14, name: "createdAt", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 15, name: "updatedAt", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 16, name: "style", kind: "message", T: () => Value },
-            { no: 17, name: "attrs", kind: "message", T: () => Value },
+            { no: 16, name: "style", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "attrs", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
             { no: 18, name: "widget", kind: "message", T: () => Widget },
             { no: 19, name: "accepts", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
             { no: 20, name: "url", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
@@ -545,23 +278,23 @@ class ComponentNode$Type extends MessageType {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* optional string id */ 1:
-                    message.id = reader.string();
+                case /* optional string _id */ 1:
+                    message._id = reader.string();
                     break;
                 case /* optional string type */ 2:
                     message.type = reader.string();
                     break;
                 case /* optional string template_id */ 3:
-                    message.templateId = reader.string();
+                    message.template_id = reader.string();
                     break;
                 case /* optional string project_id */ 4:
-                    message.projectId = reader.string();
+                    message.project_id = reader.string();
                     break;
                 case /* optional string parent_id */ 5:
-                    message.parentId = reader.string();
+                    message.parent_id = reader.string();
                     break;
                 case /* optional string tree_id */ 6:
-                    message.treeId = reader.string();
+                    message.tree_id = reader.string();
                     break;
                 case /* optional string title */ 7:
                     message.title = reader.string();
@@ -590,13 +323,13 @@ class ComponentNode$Type extends MessageType {
                 case /* optional string updatedAt */ 15:
                     message.updatedAt = reader.string();
                     break;
-                case /* optional Value style */ 16:
-                    message.style = Value.internalBinaryRead(reader, reader.uint32(), options, message.style);
+                case /* optional string style */ 16:
+                    message.style = reader.string();
                     break;
-                case /* optional Value attrs */ 17:
-                    message.attrs = Value.internalBinaryRead(reader, reader.uint32(), options, message.attrs);
+                case /* optional string attrs */ 17:
+                    message.attrs = reader.string();
                     break;
-                case /* optional Widget widget */ 18:
+                case /* Widget widget */ 18:
                     message.widget = Widget.internalBinaryRead(reader, reader.uint32(), options, message.widget);
                     break;
                 case /* repeated string accepts */ 19:
@@ -626,24 +359,24 @@ class ComponentNode$Type extends MessageType {
         return message;
     }
     internalBinaryWrite(message, writer, options) {
-        /* optional string id = 1; */
-        if (message.id !== undefined)
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* optional string _id = 1; */
+        if (message._id !== undefined)
+            writer.tag(1, WireType.LengthDelimited).string(message._id);
         /* optional string type = 2; */
         if (message.type !== undefined)
             writer.tag(2, WireType.LengthDelimited).string(message.type);
         /* optional string template_id = 3; */
-        if (message.templateId !== undefined)
-            writer.tag(3, WireType.LengthDelimited).string(message.templateId);
+        if (message.template_id !== undefined)
+            writer.tag(3, WireType.LengthDelimited).string(message.template_id);
         /* optional string project_id = 4; */
-        if (message.projectId !== undefined)
-            writer.tag(4, WireType.LengthDelimited).string(message.projectId);
+        if (message.project_id !== undefined)
+            writer.tag(4, WireType.LengthDelimited).string(message.project_id);
         /* optional string parent_id = 5; */
-        if (message.parentId !== undefined)
-            writer.tag(5, WireType.LengthDelimited).string(message.parentId);
+        if (message.parent_id !== undefined)
+            writer.tag(5, WireType.LengthDelimited).string(message.parent_id);
         /* optional string tree_id = 6; */
-        if (message.treeId !== undefined)
-            writer.tag(6, WireType.LengthDelimited).string(message.treeId);
+        if (message.tree_id !== undefined)
+            writer.tag(6, WireType.LengthDelimited).string(message.tree_id);
         /* optional string title = 7; */
         if (message.title !== undefined)
             writer.tag(7, WireType.LengthDelimited).string(message.title);
@@ -671,13 +404,13 @@ class ComponentNode$Type extends MessageType {
         /* optional string updatedAt = 15; */
         if (message.updatedAt !== undefined)
             writer.tag(15, WireType.LengthDelimited).string(message.updatedAt);
-        /* optional Value style = 16; */
-        if (message.style)
-            Value.internalBinaryWrite(message.style, writer.tag(16, WireType.LengthDelimited).fork(), options).join();
-        /* optional Value attrs = 17; */
-        if (message.attrs)
-            Value.internalBinaryWrite(message.attrs, writer.tag(17, WireType.LengthDelimited).fork(), options).join();
-        /* optional Widget widget = 18; */
+        /* optional string style = 16; */
+        if (message.style !== undefined)
+            writer.tag(16, WireType.LengthDelimited).string(message.style);
+        /* optional string attrs = 17; */
+        if (message.attrs !== undefined)
+            writer.tag(17, WireType.LengthDelimited).string(message.attrs);
+        /* Widget widget = 18; */
         if (message.widget)
             Widget.internalBinaryWrite(message.widget, writer.tag(18, WireType.LengthDelimited).fork(), options).join();
         /* repeated string accepts = 19; */
@@ -705,3 +438,63 @@ class ComponentNode$Type extends MessageType {
  * @generated MessageType for protobuf message ComponentNode
  */
 export const ComponentNode = new ComponentNode$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Response$Type extends MessageType {
+    constructor() {
+        super("Response", [
+            { no: 1, name: "code", kind: "scalar", opt: true, T: 5 /*ScalarType.INT32*/ },
+            { no: 2, name: "message", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "data", kind: "message", T: () => ComponentNode }
+        ]);
+    }
+    create(value) {
+        const message = globalThis.Object.create((this.messagePrototype));
+        if (value !== undefined)
+            reflectionMergePartial(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader, length, options, target) {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* optional int32 code */ 1:
+                    message.code = reader.int32();
+                    break;
+                case /* optional string message */ 2:
+                    message.message = reader.string();
+                    break;
+                case /* optional ComponentNode data */ 3:
+                    message.data = ComponentNode.internalBinaryRead(reader, reader.uint32(), options, message.data);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message, writer, options) {
+        /* optional int32 code = 1; */
+        if (message.code !== undefined)
+            writer.tag(1, WireType.Varint).int32(message.code);
+        /* optional string message = 2; */
+        if (message.message !== undefined)
+            writer.tag(2, WireType.LengthDelimited).string(message.message);
+        /* optional ComponentNode data = 3; */
+        if (message.data)
+            ComponentNode.internalBinaryWrite(message.data, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message Response
+ */
+export const Response = new Response$Type();
