@@ -21,6 +21,7 @@ function schema2type(schema, Name, level = 1) {
         text += '  images?: IMediaImage[];\n'
         text += '  videos?: IMediaVideo[];\n'
         text += '  audios?: IMediaAudio[];\n'
+        text += '  captions?: IMediaCaption[];\n'
         text += '  actors?: any[];\n'
         text += '  counter?: { [key: string]: number | boolean };\n'
       }

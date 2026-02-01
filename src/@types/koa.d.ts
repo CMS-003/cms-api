@@ -5,9 +5,16 @@ import Application from 'koa';
 import Mailer from '../utils/mailer'
 import Scheduler from '../utils/scheduler';
 import * as schema from './model.d.ts'
+import { Base } from 'schema';
 import { OPT } from 'schema/dist/@types';
 import { createClient } from 'redis'
 import constant from '../constant.js';
+
+
+export interface XQL extends OPT {
+  model?: Base<any>;
+  fields?: string[];
+}
 
 type dbs = { [key: string]: Connection };
 type models = {
@@ -49,7 +56,7 @@ declare module 'koa' {
   }
 
   interface BaseRequest {
-    paginate: (fn?: (hql: OPT) => void) => OPT;
+    paginate: (fn?: (xql: XQL) => void) => XQL;
   }
 
   interface BaseResponse {

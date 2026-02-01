@@ -94,6 +94,7 @@ export interface ITask {
   retries: number;
   createdAt: Date;
   updatedAt: Date;
+  message: string;
 }
 export interface IVerification {
   _id: string;
@@ -153,7 +154,7 @@ export interface IStar {
   title: string;
   cover: string;
   rid: string;
-  type: string;
+  type: number;
   createdAt: Date;
 }
 export interface IFeedback {
@@ -210,6 +211,7 @@ export interface IResource {
   images?: IMediaImage[];
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];
+  captions?: IMediaCaption[];
   actors?: any[];
   counter?: { [key: string]: number | boolean };
 }
@@ -397,6 +399,7 @@ export interface IResourceDemo {
   images?: IMediaImage[];
   videos?: IMediaVideo[];
   audios?: IMediaAudio[];
+  captions?: IMediaCaption[];
   actors?: any[];
   counter?: { [key: string]: number | boolean };
 }

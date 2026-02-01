@@ -3,7 +3,7 @@ FROM 192.168.0.124:5000/ruanjiayou/node:amd64_20-chromium
 WORKDIR /cms/api
 
 COPY ./ /cms/api
-VOLUME ["/cms/api/static/downloads", "/cms/api/static/upload", "/cms/api/static/images", "/cms/api/static/proxy", "/cms/api/static/nas"]
+VOLUME ["/cms/api/static"]
 
 RUN npm install --omit=dev
 
