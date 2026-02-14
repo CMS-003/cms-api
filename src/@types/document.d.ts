@@ -130,6 +130,7 @@ export interface IInterface {
 export interface ISpider {
   _id: string;
   name: string;
+  type: string;
   desc: string;
   proxy: boolean;
   from: string;
@@ -143,6 +144,7 @@ export interface ISpider {
   pattern: string;
   status: number;
   createdAt: Date;
+  pid: string;
   toJSON(): object;
   getParams(url: string): { [key:string]: any };
   getPureUrl(url: string): string;

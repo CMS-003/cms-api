@@ -187,8 +187,7 @@ route.del('/resource/:_id', async ({ models, request, redis, params, response })
     return response.fail();
   }
   destroyFile(doc.thumbnail);
-  destroyFile(doc.post);
-  destroyFile(doc.post);
+  destroyFile(doc.poster);
   await MRecord.model.deleteOne({ _id: doc._id })
   await MResource.model.deleteOne({ _id: doc._id })
   for (let i = 0; i < doc.images.length; i++) {
@@ -209,7 +208,11 @@ route.del('/resource/:_id', async ({ models, request, redis, params, response })
   });
   const client = getES();
   if (client) {
-    await client.delete({ id: doc._id, index: 'cms' })
+    try {
+      await client.delete({ id: doc._id, index: 'cms' })
+    } catch (e) {
+
+    }
   }
   await redis.del(`api:v3:resource:${doc._id}:detail`)
   response.success();

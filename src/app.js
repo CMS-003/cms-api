@@ -130,12 +130,14 @@ async function run(cb) {
     let browser = null
     if (process.env.NODE_ENV === 'production') {
       browser = await pptr.launch({
+        protocolTimeout: 120000,
+        timeout: 120000,
         headless: true,
         args: [
           `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
           '--no-sandbox',
           '--disable-setuid-sandbox',
-          // '--disable-dev-shm-usage',
+          '--disable-dev-shm-usage',
           '--headless=new',  // Puppeteer v21+ 推荐的新无头模式
           '--disable-gpu',
           '--disable-software-rasterizer',
@@ -143,16 +145,20 @@ async function run(cb) {
           '--disable-backgrounding-occluded-windows',
           '--disable-renderer-backgrounding',
           '--disable-infobars',
+          '--lang=en-US',
+          '--disable-features=IsolateOrigins,site-per-process',
         ],
         executablePath: '/usr/bin/chromium'
       });
     } else {
       browser = await pptr.launch({
         headless: false,
+        userDataDir: './pptr-profile',
         args: [
           `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
           '--no-sandbox',
-          // '--headless=new'
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
         ],
         executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
       });

@@ -55,7 +55,7 @@ export async function getResourceInfo(res, user_id, all = false, detail = false)
       } else {
         doc.chapters = [];
       }
-      if (doc.type === define.RESOURCE.TYPE.IMAGE) {
+      if (doc.origin === 'pixiv_image' && doc.type === define.RESOURCE.TYPE.IMAGE) {
         doc.images = await MMediaPixiv.model.find({ res_id }).sort({ nth: 1 }).lean(true);
       } else {
         doc.images = await MMediaImage.model.find({ res_id }).sort({ nth: 1 }).lean(true);
