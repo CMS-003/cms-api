@@ -307,7 +307,7 @@ export interface IVersion {
   name: string;
   desc: string;
   path: string;
-  verson: string;
+  version: string;
   status: number;
   createdAt: Date;
 }
@@ -494,4 +494,13 @@ export interface IStat {
   resource_id: string;
   resource_type: string;
   created_at: Date;
+}
+export interface ICompilation {
+  _id: string;
+  title: string;
+  cover: string;
+  desc: string;
+  createdAt: Date;
+  updatedAt: Date;
+  res_ids: string[];
 }

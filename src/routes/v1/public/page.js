@@ -8,7 +8,7 @@ route.get('/page/:name', async ({ request, params, models, response }) => {
   const where = { $or: [{ name: params.name }, { _id: params.name }] }
   const page = await models.MTemplate.getInfo({ where, lean: true });
   if (!page) {
-    return response.fail();
+    return response.success();
   }
   // @ts-ignore
   page.children = [];

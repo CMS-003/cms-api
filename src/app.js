@@ -16,11 +16,9 @@ import bizError from './middleware/bizError.js'
 import needProject from './middleware/project.js'
 import { BizError, genByBiz } from './utils/bizError.js'
 import Mailer from './utils/mailer.js'
-import Scheduler from './utils/scheduler.js';
 import models, { dbs, initMongo } from './mongodb.js';
 import ejs from 'ejs'
 import compress from 'koa-compress';
-import * as pptr from 'puppeteer'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,7 +59,6 @@ app.request.paginate = function (fn) {
 // 加载model和业务逻辑层
 app.context.consts = constant;
 app.context.config = config;
-app.context.scheduler = Scheduler;
 app.context.loadConfig = async function () {
   const docs = await app.context.models.MConfig.getAll({ lean: true });
   docs.forEach(item => {
@@ -126,47 +123,6 @@ async function run(cb) {
   app.context.dbs = dbs;
   app.context.models = models;
   app.context.redis = await initRedis();
-  app.context.getBrowser = async function () {
-    let browser = null
-    if (process.env.NODE_ENV === 'production') {
-      browser = await pptr.launch({
-        protocolTimeout: 120000,
-        timeout: 120000,
-        headless: true,
-        args: [
-          `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--headless=new',  // Puppeteer v21+ 推荐的新无头模式
-          '--disable-gpu',
-          '--disable-software-rasterizer',
-          '--disable-accelerated-2d-canvas',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-renderer-backgrounding',
-          '--disable-infobars',
-          '--lang=en-US',
-          '--disable-features=IsolateOrigins,site-per-process',
-        ],
-        executablePath: '/usr/bin/chromium'
-      });
-    } else {
-      browser = await pptr.launch({
-        headless: false,
-        userDataDir: './pptr-profile',
-        args: [
-          `--proxy-server=${config.proxy}`, // HTTP/HTTPS/SOCKS 代理
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-        ],
-        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-      });
-    }
-    app.context.browser = browser
-    return browser;
-  }
-  await app.context.getBrowser();
   process.on('beforeExit', () => {
     console.log('beforeExit')
     app.context.browser && app.context.browser.close();
@@ -181,11 +137,6 @@ async function run(cb) {
   if (typeof cb === 'function') {
     await cb(app);
   }
-  // 加载定时任务
-  const schedules = await models.MSchedule.getAll({ lean: true });
-  schedules.forEach(v => {
-    Scheduler.load(v, app.context);
-  })
   return app;
 }
 export {

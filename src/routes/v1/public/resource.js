@@ -211,7 +211,7 @@ route.del('/resource/:_id', async ({ models, request, redis, params, response })
     try {
       await client.delete({ id: doc._id, index: 'cms' })
     } catch (e) {
-
+      console.log(e.message);
     }
   }
   await redis.del(`api:v3:resource:${doc._id}:detail`)
