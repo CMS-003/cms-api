@@ -26,7 +26,7 @@ router.post('/', async ({ request, response, models }) => {
 
 router.put('/:id', async ({ params, request, response, models }) => {
   const where = { _id: params.id };
-  const data = _.pick(request.body, ['name', 'desc', 'cover', 'title', 'status']);
+  const data = _.pick(request.body, ['name', 'desc', 'cover', 'title', 'path', 'status']);
   const item = await models.MProject.update({ where, data });
   response.success({ item });
 });

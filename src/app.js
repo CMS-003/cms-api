@@ -5,6 +5,8 @@ import Koa from 'koa'
 import Convert from 'koa-convert'
 import Static from 'koa-static'
 import Cors from 'koa2-cors'
+import conditional from 'koa-conditional-get'
+import etag from 'koa-etag'
 import { koaBody } from 'koa-body'
 import config from './config/index.js'
 import log4js from 'log4js'
@@ -24,6 +26,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = new Koa();
 const logger = Logger('access');
+
+// 先If-None-Match再弱etag
+app.use(conditional());
+app.use(
+  compress({
+    threshold: 1024,
+    gzip: {},
+    deflate: {},
+    br: {},
+    filter: (content_type) => {
+      return /json|octet-stream|protobuf/i.test(content_type || '')
+    }
+  })
+);
+app.use(etag({ weak: true }))
 
 app.response.success = function (data, params = {}) {
   const { status = 200, code = 0, message = '' } = params;
@@ -74,17 +91,6 @@ app.context.loadConfig = async function () {
 
 app.use(bizError);
 app.use(needProject);
-app.use(
-  compress({
-    threshold: 1024,
-    gzip: {},
-    deflate: {},
-    br: {},
-    filter: (content_type) => {
-      return /json|octet-stream|protobuf/i.test(content_type || '')
-    }
-  })
-)
 
 const fn = log4js.connectLogger(logger, {});
 app.use(async (ctx, next) => {
