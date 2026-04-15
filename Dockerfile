@@ -1,4 +1,4 @@
-FROM 192.168.0.124:5000/ruanjiayou/node:amd64_20-chromium
+FROM node:24base
 
 WORKDIR /cms/api
 
