@@ -1,9 +1,10 @@
-FROM node:24base
+FROM node:24-base
 
 WORKDIR /cms/api
 
 COPY ./ /cms/api
 VOLUME ["/cms/api/static"]
+# /cms/projects  /cms/static/upload
 
 RUN npm install --omit=dev
 

@@ -450,6 +450,7 @@ export interface IProject {
   status: number;
   createdAt: Date;
   updatedAt: Date;
+  path: string;
 }
 export interface ITemplate {
   _id: string;

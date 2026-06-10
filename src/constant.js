@@ -12,6 +12,7 @@ export default {
     DEFAULT_LIMIT: 20,
     MONGO_HOLDER: '*',
   },
+  VALID_METHODS: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   PATH: {
     ROOT: root_path,
     SRC: path.join(root_path, 'src'),

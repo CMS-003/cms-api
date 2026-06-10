@@ -5,8 +5,15 @@ import path from 'path'
 import mime from 'mime'
 import shortid from 'shortid'
 import constant from '#constant.js'
+import { getRedis } from '#utils/redis.js'
 
 const route = new Router();
+
+route.get('/remote/apps', async ({ response }) => {
+  const redis = getRedis()
+  const items = JSON.parse(await redis.get('api:v1:apps') || '[]');
+  response.success({ items })
+})
 
 route.get('/remote/app/:app/versions', async ({ request, response, models }) => {
   const { MVersion } = models;

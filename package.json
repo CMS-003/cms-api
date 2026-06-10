@@ -12,8 +12,8 @@
     "#*": "./src/*"
   },
   "scripts": {
-    "start": "node ./src/server.js",
-    "dev": "cross-env NODE_ENV=development proxy=http://192.168.0.125:8888 nodemon --watch src/ ./src/server.js ",
+    "start": "node --experimental-vm-modules ./src/server.js",
+    "dev": "cross-env NODE_ENV=development proxy=http://192.168.0.125:8888 nodemon --experimental-vm-modules --watch src/ ./src/server.js ",
     "build": "rm -rf ./dist/* && tsc",
     "test": "NODE_ENV=test jest",
     "auto-deploy": "git pull && docker-compose restart"

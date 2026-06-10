@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "ES6",
     "module": "NodeNext",
     "moduleResolution": "nodenext",
-    "checkJs": true,
+    "checkJs": false,
     "baseUrl": "./src",
     "paths": {
       "#*": [

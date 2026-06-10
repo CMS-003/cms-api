@@ -1,4 +1,3 @@
-import { Model, Schema, Document, Connection } from 'mongoose';
 import mongoose from 'mongoose';
 import Koa, { ParameterizedContext, BaseContext, ExtendableContext } from 'koa'
 import Application from 'koa';
@@ -10,7 +9,7 @@ import { OPT } from 'schema/dist/@types';
 import { createClient } from 'redis'
 import constant from '../constant.js';
 
-
+const { Model, Schema, Document, Connection } = mongoose;
 export interface XQL extends OPT {
   model?: Base<any>;
   fields?: string[];
