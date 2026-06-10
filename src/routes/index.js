@@ -33,19 +33,19 @@ home.post('test/email', async (ctx) => {
   }
 })
 
-const gatling = new Router();
-gatling.all('/:_id', async (ctx) => {
-  const { params, models, response } = ctx;
-  const where = { _id: params._id };
-  logger.info('gatling params: ' + JSON.stringify(params))
-  const api = await models.MInterface.getInfo({ where, lean: true });
-  if (api && api.method === 'all' || api.method === ctx.request.method.toLocaleUpperCase()) {
-    const sandbox = await vmRunCode(api.script, 'api_' + params._id + '.js');
-    await sandbox.context.module.exports(ctx);
-  } else {
-    response.fail();
-  }
-});
-home.use('gatling', gatling.routes(), gatling.allowedMethods());
+// const gatling = new Router();
+// gatling.all('/:_id', async (ctx) => {
+//   const { params, models, response } = ctx;
+//   const where = { _id: params._id };
+//   logger.info('gatling params: ' + JSON.stringify(params))
+//   const api = await models.MInterface.getInfo({ where, lean: true });
+//   if (api && api.method === 'all' || api.method === ctx.request.method.toLocaleUpperCase()) {
+//     const sandbox = await vmRunCode(api.script, 'api_' + params._id + '.js');
+//     await sandbox.context.module.exports(ctx);
+//   } else {
+//     response.fail();
+//   }
+// });
+// home.use('gatling', gatling.routes(), gatling.allowedMethods());
 
 export default home

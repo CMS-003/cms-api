@@ -10,7 +10,7 @@ const routeDir = path.join(__dirname, 'routes')
 
 const filepaths = [];
 loader({ dir: routeDir, recusive: true }, info => {
-  const route = path.relative(routeDir, info.dir).replace(path.sep, '/')
+  const route = path.relative(routeDir, info.dir).replace(/\\/g, '/')
   filepaths.push({ route, file: info.fullpath });
 })
 
