@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import got from 'got'
-import CONST from 'const'
+import CONST from 'define'
 
 const route = new Router();
 

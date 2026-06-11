@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import suid from '#utils/suid.js'
+import { suid } from '#utils/suid.js'
 
 const route = new Router();
 

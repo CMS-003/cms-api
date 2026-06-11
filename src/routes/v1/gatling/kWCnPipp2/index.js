@@ -45,8 +45,3 @@ route.post('/', async (ctx) => {
 })
 
 export default route;
-
-
-module.exports = async function (ctx) {
-
-}

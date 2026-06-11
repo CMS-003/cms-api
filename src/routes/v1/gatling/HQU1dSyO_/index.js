@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import crypto from 'crypto'
 import { Client } from '@elastic/elasticsearch'
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import Router from 'koa-router'
 import define from 'define'
 
